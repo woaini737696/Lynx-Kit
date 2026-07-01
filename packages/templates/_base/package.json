@@ -1,0 +1,7 @@
+{
+  "name": "@lynxkit/template-base",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LynxKit 模板共享基础层（仅供模板复制使用，不直接发布）",
+  "license": "MIT"
+}

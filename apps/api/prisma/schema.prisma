@@ -1,0 +1,167 @@
+// LynxKit Prisma Schema
+// 与 packages/shared/src/types 中的 Zod schema 保持同步（作为前后端契约真源）
+// 详见产品文档 §9.1
+
+generator client {
+  provider = "prisma-client-js"
+  // 使用 ESM 兼容输出，与 Node.js 20 + type:module 配合
+  // 注意：Prisma 5 默认输出路径为 node_modules/.prisma/client
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// 平台用户
+model User {
+  id          String    @id @default(cuid())
+  /// 登录邮箱（唯一）
+  email       String    @unique
+  /// 显示名
+  name        String?
+  /// 头像 URL
+  avatar      String?
+  /// 手机号（唯一，可选）
+  phone       String?   @unique
+  /// 关联的 Lynx AI 账户 ID
+  lynxAiId    String?   @unique
+  /// bcrypt 哈希后的密码（仅 Credentials Provider 使用）
+  password    String?
+  /// 用户角色：user / admin / super_admin
+  role        String    @default("user")
+  /// 账号状态：active / suspended / deleted
+  status      String    @default("active")
+  /// 移动端推送 token（FCM）
+  deviceToken String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  servers  Server[]
+  projects Project[]
+
+  @@map("users")
+}
+
+/// 用户服务器（SSH 凭证已加密存储）
+model Server {
+  id               String   @id @default(cuid())
+  userId           String
+  name             String
+  ip               String
+  port             Int      @default(22)
+  username         String
+  /// KMS 加密后的密码（AES-256-GCM）
+  encryptedPassword String
+  /// 可选 SSH 密钥（加密）
+  sshKey           String?
+  /// 服务器状态：pending / connected / docker_ready / caddy_ready / error
+  status           String   @default("pending")
+  dockerReady      Boolean  @default(false)
+  caddyReady       Boolean  @default(false)
+  /// 系统信息（连接后自动探测，如 "Ubuntu 22.04 LTS"）
+  osInfo           String?
+  cpuCores         Int?
+  memoryMB         Int?
+  diskGB           Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects Project[]
+
+  @@index([userId])
+  @@map("servers")
+}
+
+/// 用户产品项目
+model Project {
+  id           String          @id @default(cuid())
+  userId       String
+  serverId     String
+  name         String
+  /// 产品类型：static-site / service-booking / content-publish / light-commerce / event-manage / admin-dashboard
+  type         String
+  /// 用户回答生成的 JSON 配置
+  config       Json            @default("{}")
+  /// 项目状态：draft / clarifying / generating / building / deploying / deployed / error
+  status       String          @default("draft")
+  /// 平台分配的子域名
+  domain       String?
+  /// 用户自定义域名
+  customDomain String?
+  /// 版本号（每次部署自增）
+  version      Int             @default(1)
+  /// 部署后的访问 URL
+  deployUrl    String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  server   Server           @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  logs     DeployLog[]
+  versions ProjectVersion[]
+
+  @@index([userId])
+  @@index([serverId])
+  @@map("projects")
+}
+
+/// 项目版本快照（用于回滚）
+model ProjectVersion {
+  id        String   @id @default(cuid())
+  projectId String
+  version   Int
+  /// 该版本对应的配置 JSON 快照
+  config    Json
+  /// 代码包哈希（用于校验和回滚）
+  codeHash  String
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_versions")
+}
+
+/// 部署日志
+model DeployLog {
+  id        String   @id @default(cuid())
+  projectId String
+  /// 部署状态：pending / success / failed
+  status    String   @default("pending")
+  /// 部署输出日志
+  logs      String   @default("")
+  /// 部署耗时（秒）
+  duration  Int?
+  /// 失败时的错误信息
+  error     String?
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("deploy_logs")
+}
+
+/// 产品模板（与 packages/templates/<type>/template.json 对应）
+model Template {
+  id          String   @id @default(cuid())
+  /// 模板类型（唯一）：static-site / service-booking 等
+  type        String   @unique
+  name        String
+  description String
+  /// 模板版本号
+  version     String   @default("1.0.0")
+  /// 模板问题列表（JSON）
+  questions   Json
+  /// 配置映射规则（JSON）
+  configMap   Json
+  /// 模板文件路径（相对 packages/templates 根目录）
+  basePath    String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("templates")
+}

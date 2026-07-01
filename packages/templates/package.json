@@ -1,0 +1,7 @@
+{
+  "name": "@lynxkit/templates",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LynxKit 用户产品模板库 - 6 大类预设架构模板基座",
+  "license": "MIT"
+}

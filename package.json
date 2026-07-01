@@ -1,0 +1,38 @@
+{
+  "name": "lynxkit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LynxKit - 原生双端 AI 产品构建平台（桌面端 + 移动端 + Web）",
+  "license": "MIT",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:api": "turbo run dev --filter=@lynxkit/api",
+    "dev:web": "turbo run dev --filter=@lynxkit/web",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:push": "pnpm --filter @lynxkit/api db:push",
+    "db:generate": "pnpm --filter @lynxkit/api db:generate",
+    "db:studio": "pnpm --filter @lynxkit/api db:studio",
+    "clean": "turbo run clean && rimraf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "prettier": "^3.3.0",
+    "rimraf": "^5.0.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^19.0.0",
+      "@types/react-dom": "^19.0.0"
+    }
+  }
+}

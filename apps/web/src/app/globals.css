@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --lynx-50: #fff4ed;
+  --lynx-100: #ffe6d4;
+  --lynx-200: #ffc8a8;
+  --lynx-300: #ffa371;
+  --lynx-400: #ff8757;
+  --lynx-500: #ff6b35;
+  --lynx-600: #f04e0e;
+  --lynx-700: #c73c0b;
+  --lynx-800: #9e2f0e;
+  --lynx-900: #7f2810;
+  --lynx-950: #451006;
+  --background: #ffffff;
+  --foreground: #18181b;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+  }
+}

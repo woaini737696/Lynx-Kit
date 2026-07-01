@@ -1,0 +1,45 @@
+# 本地开发环境依赖（PostgreSQL + Redis）
+# 启动: docker compose -f docker-compose.dev.yml up -d
+# 停止: docker compose -f docker-compose.dev.yml down
+# 清空数据: docker compose -f docker-compose.dev.yml down -v
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lynxkit-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: lynxkit
+      POSTGRES_PASSWORD: lynxkit_dev
+      POSTGRES_DB: lynxkit
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lynxkit -d lynxkit"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: lynxkit-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass lynxkit_redis
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "lynxkit_redis", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    name: lynxkit_postgres_data
+  redis_data:
+    name: lynxkit_redis_data

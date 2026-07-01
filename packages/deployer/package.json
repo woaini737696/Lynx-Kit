@@ -1,0 +1,29 @@
+{
+  "name": "@lynxkit/deployer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LynxKit 部署执行模块（SSH / Docker Compose / Caddy / 沙箱 / 健康检查）",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@lynxkit/shared": "workspace:*",
+    "node-ssh": "^13.2.0",
+    "pino": "^9.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,0 +1,67 @@
+# LynxKit 通用 Docker Compose 编排
+# 业务方接入后可调整 service 名称 / 卷名 / 端口
+#
+# 使用：
+#   docker compose up -d
+#
+# 必需环境变量（在 .env 中提供）：
+#   DATABASE_URL=postgresql://lynxkit:lynxkit@postgres:5432/lynxkit
+#   DATABASE_HOST=postgres
+#   POSTGRES_USER=lynxkit
+#   POSTGRES_PASSWORD=lynxkit
+#   POSTGRES_DB=lynxkit
+#   DOMAIN=example.com
+
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lynxkit_app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://lynxkit:lynxkit@postgres:5432/lynxkit?schema=public
+      - NEXTAUTH_URL=https://${DOMAIN:-localhost}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-please-change-me}
+      - DOMAIN=${DOMAIN:-localhost}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+      - "80:80"
+      - "443:443"
+    networks:
+      - lynxkit-net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: lynxkit_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=lynxkit
+      - POSTGRES_PASSWORD=lynxkit
+      - POSTGRES_DB=lynxkit
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lynxkit -d lynxkit"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lynxkit-net
+    # 默认不暴露到宿主机，仅容器网络内可见
+    # 如需本地调试：ports:
+    #   - "5432:5432"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  lynxkit-net:
+    driver: bridge

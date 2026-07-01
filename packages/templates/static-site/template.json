@@ -1,0 +1,103 @@
+{
+  "id": "static-site",
+  "name": "品牌展示",
+  "description": "个人官网、作品集、企业官网、落地页",
+  "architecture": "static",
+  "version": "1.0.0",
+  "features": [
+    "首页 Hero",
+    "关于我",
+    "服务介绍",
+    "作品集",
+    "联系方式"
+  ],
+  "screenshots": [
+    "home.png",
+    "about.png",
+    "portfolio.png",
+    "contact.png"
+  ],
+  "questions": [
+    {
+      "id": "serviceName",
+      "question": "品牌/服务名称？",
+      "type": "text",
+      "required": true,
+      "placeholder": "Lynx Studio"
+    },
+    {
+      "id": "heroTitle",
+      "question": "首页大标题",
+      "type": "text",
+      "required": true,
+      "default": "{{serviceName}}"
+    },
+    {
+      "id": "heroSubtitle",
+      "question": "首页副标题",
+      "type": "text",
+      "required": false,
+      "placeholder": "用设计与代码构建数字产品"
+    },
+    {
+      "id": "primaryColor",
+      "question": "主色调偏好？",
+      "type": "color-select",
+      "required": true,
+      "default": "#3B82F6",
+      "options": [
+        { "label": "极客蓝", "value": "#3B82F6" },
+        { "label": "暖橙", "value": "#FF6B35" },
+        { "label": "墨绿", "value": "#065F46" },
+        { "label": "玫红", "value": "#BE185D" },
+        { "label": "黑白", "value": "#111827" }
+      ]
+    },
+    {
+      "id": "aboutText",
+      "question": "关于我/我们的介绍文字",
+      "type": "textarea",
+      "required": false,
+      "placeholder": "简单介绍一下自己、团队或公司..."
+    },
+    {
+      "id": "services",
+      "question": "提供哪些服务？（每行一项，可选填）",
+      "type": "textarea",
+      "required": false,
+      "placeholder": "品牌设计\n前端开发\n产品咨询"
+    },
+    {
+      "id": "portfolioItems",
+      "question": "作品集项目（每行一项，可选填）",
+      "type": "textarea",
+      "required": false,
+      "placeholder": "项目名称 - 描述\n项目名称 - 描述"
+    },
+    {
+      "id": "contactPhone",
+      "question": "联系电话",
+      "type": "text",
+      "required": false,
+      "placeholder": "13800138000"
+    },
+    {
+      "id": "contactEmail",
+      "question": "联系邮箱",
+      "type": "text",
+      "required": true,
+      "placeholder": "hello@example.com"
+    }
+  ],
+  "configMapping": {
+    "serviceName": "config.serviceName",
+    "heroTitle": "config.heroTitle",
+    "heroSubtitle": "config.heroSubtitle",
+    "primaryColor": "config.theme.primaryColor",
+    "aboutText": "config.about.text",
+    "services": "config.services",
+    "portfolioItems": "config.portfolioItems",
+    "contactPhone": "config.contact.phone",
+    "contactEmail": "config.contact.email"
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "id": "service-booking",
+  "name": "服务预约",
+  "description": "教练预约、美容理疗、摄影档期、咨询预约",
+  "architecture": "booking",
+  "version": "1.0.0",
+  "features": [
+    "首页 Hero + 服务介绍",
+    "在线预约（时段选择 + 表单）",
+    "管理后台（预约列表 + 日历视图）",
+    "用户登录与历史预约",
+    "通知提醒（邮件/短信）",
+    "PWA 离线访问"
+  ],
+  "screenshots": [
+    "home.png",
+    "booking.png",
+    "admin.png"
+  ],
+  "questions": [
+    {
+      "id": "serviceName",
+      "question": "服务名称/品牌名？",
+      "type": "text",
+      "required": true,
+      "placeholder": "Sarah 瑜伽工作室"
+    },
+    {
+      "id": "serviceType",
+      "question": "服务类型？",
+      "type": "select",
+      "required": true,
+      "options": [
+        "一对一咨询",
+        "美容理疗",
+        "摄影拍摄",
+        "课程培训"
+      ]
+    },
+    {
+      "id": "heroTitle",
+      "question": "首页大标题",
+      "type": "text",
+      "required": true,
+      "default": "{{serviceName}}"
+    },
+    {
+      "id": "heroSubtitle",
+      "question": "副标题",
+      "type": "text",
+      "required": false,
+      "placeholder": "专注流瑜伽与冥想"
+    },
+    {
+      "id": "primaryColor",
+      "question": "主色调偏好？",
+      "type": "color-select",
+      "required": true,
+      "default": "#10B981",
+      "options": [
+        { "label": "暖橙", "value": "#FF6B35" },
+        { "label": "深蓝", "value": "#1e40af" },
+        { "label": "墨绿", "value": "#065f46" },
+        { "label": "玫红", "value": "#be185d" },
+        { "label": "黑白", "value": "#111827" }
+      ]
+    },
+    {
+      "id": "workDays",
+      "question": "可预约工作日？",
+      "type": "multi-select",
+      "required": true,
+      "options": [
+        "周一",
+        "周二",
+        "周三",
+        "周四",
+        "周五",
+        "周六",
+        "周日"
+      ]
+    },
+    {
+      "id": "workHours",
+      "question": "可预约时段？",
+      "type": "time-range",
+      "required": true,
+      "default": { "start": "09:00", "end": "18:00" }
+    },
+    {
+      "id": "duration",
+      "question": "单次服务时长？",
+      "type": "select",
+      "required": true,
+      "options": [
+        "30分钟",
+        "1小时",
+        "1.5小时",
+        "2小时"
+      ]
+    },
+    {
+      "id": "price",
+      "question": "单次服务价格（元）？",
+      "type": "number",
+      "required": false,
+      "placeholder": "299"
+    },
+    {
+      "id": "description",
+      "question": "服务描述",
+      "type": "textarea",
+      "required": false,
+      "placeholder": "简单描述你的服务内容和特色..."
+    },
+    {
+      "id": "contactPhone",
+      "question": "联系电话",
+      "type": "text",
+      "required": true,
+      "placeholder": "13800138000"
+    },
+    {
+      "id": "contactWechat",
+      "question": "微信号（选填）",
+      "type": "text",
+      "required": false
+    },
+    {
+      "id": "logo",
+      "question": "上传 Logo",
+      "type": "image",
+      "required": false
+    }
+  ],
+  "configMapping": {
+    "serviceName": "config.serviceName",
+    "serviceType": "config.serviceType",
+    "heroTitle": "config.heroTitle",
+    "heroSubtitle": "config.heroSubtitle",
+    "primaryColor": "config.theme.primaryColor",
+    "workDays": "config.booking.workDays",
+    "workHours": "config.booking.workHours",
+    "duration": "config.booking.duration",
+    "price": "config.booking.price",
+    "description": "config.about.text",
+    "contactPhone": "config.contact.phone",
+    "contactWechat": "config.contact.wechat",
+    "logo": "config.brand.logo"
+  }
+}

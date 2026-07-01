@@ -1,0 +1,95 @@
+// 通用基础 Prisma 数据模型
+// 所有模板共享此基础 schema，业务方在 schema.prisma 中通过 extend 扩展业务模型
+//
+// 业务方接入步骤：
+//   1. 复制此文件为 schema.prisma
+//   2. 配置 datasource url（从环境变量 DATABASE_URL 读取）
+//   3. 在 generator client 中按需调整 output
+//   4. 在文件末尾追加业务模型（参考各模板 prisma/extends 目录）
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// 用户表
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  phone     String?
+  /// 角色：admin / user / guest
+  role      String   @default("user")
+  /// 状态：active / disabled
+  status    String   @default("active")
+  /// 密码哈希（仅密码登录时使用，OAuth 用户可空）
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions      Session[]
+  notifications Notification[]
+  files         File[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+/// 会话表（用于服务端 session / refresh token）
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  /// 客户端信息（user-agent / IP 等）
+  userAgent String?
+  ip        String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// 站内通知
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  /// 通知类型：system / booking / order / comment 等
+  type      String
+  title     String
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+/// 文件资源表（上传文件元信息）
+model File {
+  id        String   @id @default(cuid())
+  userId    String?
+  filename  String
+  /// 存储路径或 URL
+  url       String
+  /// 存储后端返回的 key（用于删除/签名 URL）
+  key       String?
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+}
