@@ -9,8 +9,6 @@ import {
 } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import http from "node:http";
-import fs from "node:fs";
 import { createTray, showNotification, setTrayLabel, destroyTray } from "./services/notification.js";
 import { saveFile, openFolder, showInFolder } from "./services/filesystem.js";
 import { detectOllama, listLocalModels } from "./services/local-ai.js";
@@ -24,75 +22,11 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = process.env.NODE_ENV === "development";
 
-// 编译后 preload.js 与 main.js 同目录
-const PRELOAD_PATH = path.join(__dirname, "preload.js");
-// Next.js 静态导出目录 out/，位于 app 根（编译产物在 dist-electron 上一级）
-const OUT_DIR = path.join(__dirname, "..", "out");
+// electron-vite 产物：main 在 out/main/，preload 在 out/preload/index.js
+const PRELOAD_PATH = path.join(__dirname, "..", "preload", "index.js");
 
 let win: BrowserWindow | null = null;
 let tray: Tray | null = null;
-let staticServer: http.Server | null = null;
-
-/**
- * 生产环境下启动一个轻量本地 http 服务托管 Next.js 静态导出（out/），
- * 避免 file:// 协议下 `/_next/...` 绝对路径资源加载失败。
- */
-function startStaticServer(): string {
-  const port = 4173;
-  staticServer = http.createServer((req, res) => {
-    let urlPath = decodeURIComponent(req.url ?? "/");
-    if (urlPath === "/") urlPath = "/index.html";
-    const clean = urlPath.split("?")[0]?.split("#")[0] ?? "/index.html";
-    const filePath = path.join(OUT_DIR, clean);
-
-    // 路径穿越防护
-    if (!filePath.startsWith(OUT_DIR)) {
-      res.statusCode = 403;
-      res.end("Forbidden");
-      return;
-    }
-
-    fs.readFile(filePath, (err, data) => {
-      if (err) {
-        // SPA 回退到 index.html
-        const fallback = path.join(OUT_DIR, "index.html");
-        fs.readFile(fallback, (e2, d2) => {
-          if (e2) {
-            res.statusCode = 404;
-            res.end("Not Found");
-            return;
-          }
-          res.setHeader("Content-Type", "text/html; charset=utf-8");
-          res.end(d2);
-        });
-        return;
-      }
-      const ext = path.extname(filePath).toLowerCase();
-      const mime: Record<string, string> = {
-        ".html": "text/html; charset=utf-8",
-        ".js": "text/javascript; charset=utf-8",
-        ".mjs": "text/javascript; charset=utf-8",
-        ".css": "text/css; charset=utf-8",
-        ".json": "application/json; charset=utf-8",
-        ".svg": "image/svg+xml",
-        ".png": "image/png",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".gif": "image/gif",
-        ".ico": "image/x-icon",
-        ".woff": "font/woff",
-        ".woff2": "font/woff2",
-        ".ttf": "font/ttf",
-        ".map": "application/json; charset=utf-8",
-        ".txt": "text/plain; charset=utf-8",
-      };
-      res.setHeader("Content-Type", mime[ext] ?? "application/octet-stream");
-      res.end(data);
-    });
-  });
-  staticServer.listen(port);
-  return `http://localhost:${port}`;
-}
 
 function createWindow(): void {
   win = new BrowserWindow({
@@ -119,11 +53,11 @@ function createWindow(): void {
   });
 
   if (isDev) {
-    void win.loadURL("http://localhost:3000");
+    void win.loadURL("http://localhost:5173");
     win.webContents.openDevTools({ mode: "detach" });
   } else {
-    const url = startStaticServer();
-    void win.loadURL(url);
+    // electron-vite 构建产物在 out/renderer/index.html
+    void win.loadFile(path.join(__dirname, "..", "renderer", "index.html"));
   }
 
   // 外部链接在系统浏览器打开
@@ -240,7 +174,6 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
-  staticServer?.close();
   destroyTray();
   globalShortcut.unregisterAll();
 });

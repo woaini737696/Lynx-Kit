@@ -9,17 +9,13 @@ directories:
   output: release
   buildResources: build
 
-# 打包产物包含的文件：编译后的主进程 + Next.js 静态导出
+# 打包产物包含的文件：electron-vite 构建产物（out/）+ package.json
 files:
-  - dist-electron/**/*
   - out/**/*
   - package.json
-  - "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}"
-  - "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}"
-  - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
 
 extraMetadata:
-  main: dist-electron/main.js
+  main: out/main/index.js
 
 # macOS / Windows / Linux 平台配置
 mac:

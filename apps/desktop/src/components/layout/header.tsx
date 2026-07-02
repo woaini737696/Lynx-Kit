@@ -1,7 +1,5 @@
-"use client";
-
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import {
   PanelLeft,
   Sun,
@@ -30,7 +28,7 @@ const THEMES = [
  * - 用户菜单：登录态显示头像，未登录显示登录按钮
  */
 export function Header() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
   const theme = useUIStore((s) => s.theme);
   const setTheme = useUIStore((s) => s.setTheme);
@@ -100,7 +98,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push("/login")}
+            onClick={() => navigate("/login")}
           >
             <LogIn className="mr-1.5 h-4 w-4" />
             登录
@@ -110,7 +108,7 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => router.push("/settings/profile")}
+          onClick={() => navigate("/settings/profile")}
           aria-label="个人资料"
         >
           <User className="h-4 w-4" />

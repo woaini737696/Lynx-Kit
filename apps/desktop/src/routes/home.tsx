@@ -1,5 +1,3 @@
-"use client";
-
 import { Sparkles, Zap, ShieldCheck, Code2 } from "lucide-react";
 import { InspirationInput } from "@/components/build/inspiration-input";
 import { isElectron } from "@/lib/electron";

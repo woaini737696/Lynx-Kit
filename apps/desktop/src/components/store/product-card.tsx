@@ -1,6 +1,4 @@
-"use client";
-
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Star, Download, ShoppingCart } from "lucide-react";
 import {
   Card,
@@ -27,7 +25,7 @@ const PRICING_LABEL: Record<string, string> = {
  */
 export function ProductCard({ product, className }: ProductCardProps) {
   return (
-    <Link href={`/store/${product.id}`} className="block">
+    <Link to={`/store/${product.id}`} className="block">
       <Card
         className={cn(
           "h-full cursor-pointer overflow-hidden transition hover:border-lynx-500/50 hover:shadow-md",
@@ -36,7 +34,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
       >
         <div className="flex h-32 items-center justify-center bg-gradient-to-br from-lynx-500/15 to-lynx-400/5">
           {product.coverUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={product.coverUrl}
               alt={product.name}

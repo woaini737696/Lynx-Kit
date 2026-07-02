@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@lynxkit/ui-web";
@@ -11,8 +9,6 @@ import { useUIStore } from "@lynxkit/store";
  * - TanStack Query：服务端状态管理（构建会话 / 商店 / 创作者 / AI 配置）
  * - 主题 Provider：根据 @lynxkit/store 的 ui-store 同步 .dark class 到 <html>
  * - Toaster：全局通知容器（来自 @lynxkit/ui-web）
- *
- * 单独拆为客户端组件，便于根 layout（Server Component）导出 metadata。
  */
 function ThemeSync({ theme }: { theme: "light" | "dark" | "system" }) {
   React.useEffect(() => {
