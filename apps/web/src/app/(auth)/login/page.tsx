@@ -27,7 +27,7 @@ export default function LoginPage() {
     try {
       if (mode === "email") {
         const res = await authApi.login(email, password);
-        login(res.token, res.user);
+        login(res.accessToken, res.user);
         toast({ title: "登录成功", description: `欢迎回来，${res.user.name ?? "创作者"}` });
       } else {
         // 手机号 + 验证码（此处仅占位，等 StoreApi 暴露 sendCode 后接入）

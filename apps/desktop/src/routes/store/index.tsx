@@ -13,11 +13,15 @@ import type { StoreProduct } from "@lynxkit/shared";
 
 const CATEGORIES: { value: StoreCategory | "all"; label: string }[] = [
   { value: "all", label: "全部" },
-  { value: StoreCategory.APP, label: "应用" },
-  { value: StoreCategory.TEMPLATE, label: "模板" },
-  { value: StoreCategory.PLUGIN, label: "插件" },
-  { value: StoreCategory.COMPONENT, label: "组件" },
-  { value: StoreCategory.PROMPT, label: "提示词" },
+  { value: StoreCategory.SOCIAL, label: "社交" },
+  { value: StoreCategory.SYSTEM, label: "系统工具" },
+  { value: StoreCategory.WORKSTATION, label: "生产力" },
+  { value: StoreCategory.DATA, label: "数据分析" },
+  { value: StoreCategory.ADMIN, label: "后台管理" },
+  { value: StoreCategory.APP, label: "完整应用" },
+  { value: StoreCategory.MARKETING, label: "营销" },
+  { value: StoreCategory.HARDWARE, label: "硬件/IoT" },
+  { value: StoreCategory.AGENT, label: "AI Agent" },
   { value: StoreCategory.WORKFLOW, label: "工作流" },
 ];
 

@@ -34,7 +34,7 @@ export default function RegisterPage() {
         password,
         name: name || email.split("@")[0],
       });
-      login(res.token, res.user);
+      login(res.accessToken, res.user);
       toast({
         title: "注册成功",
         description: "欢迎加入 LynxKit，开始你的造物之旅",

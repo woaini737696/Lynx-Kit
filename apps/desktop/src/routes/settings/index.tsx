@@ -25,13 +25,13 @@ const SECTIONS = [
     desc: "管理账号信息、头像与密码",
   },
   {
-    href: "/settings/profile",
+    href: "/settings/notifications",
     icon: Bell,
     title: "通知设置",
     desc: "构建完成通知、系统托盘行为",
   },
   {
-    href: "/settings/profile",
+    href: "/settings/about",
     icon: Info,
     title: "关于",
     desc: "应用版本与更新检查",

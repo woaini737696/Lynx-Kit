@@ -79,3 +79,12 @@ export const resetPasswordSchema = z.object({
 export const refreshTokenSchema = z.object({
   refreshToken: z.string().min(1, "refreshToken 不能为空"),
 });
+
+/**
+ * 更新个人资料（name / phone / avatar）
+ */
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, "昵称至少 2 位").max(50, "昵称最多 50 位").optional(),
+  phone: phoneSchema.optional(),
+  avatar: z.string().url("头像必须是有效 URL").optional(),
+});

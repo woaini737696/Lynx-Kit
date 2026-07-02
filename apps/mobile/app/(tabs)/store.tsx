@@ -16,11 +16,15 @@ import { Store } from 'lucide-react-native';
 
 const CATEGORIES: { label: string; value: StoreCategory | null }[] = [
   { label: '全部', value: null },
-  { label: '模板', value: StoreCategory.TEMPLATE },
-  { label: '插件', value: StoreCategory.PLUGIN },
-  { label: '组件', value: StoreCategory.COMPONENT },
-  { label: '应用', value: StoreCategory.APP },
-  { label: '提示词', value: StoreCategory.PROMPT },
+  { label: '社交', value: StoreCategory.SOCIAL },
+  { label: '系统工具', value: StoreCategory.SYSTEM },
+  { label: '生产力', value: StoreCategory.WORKSTATION },
+  { label: '数据分析', value: StoreCategory.DATA },
+  { label: '后台管理', value: StoreCategory.ADMIN },
+  { label: '完整应用', value: StoreCategory.APP },
+  { label: '营销', value: StoreCategory.MARKETING },
+  { label: '硬件/IoT', value: StoreCategory.HARDWARE },
+  { label: 'AI Agent', value: StoreCategory.AGENT },
   { label: '工作流', value: StoreCategory.WORKFLOW },
 ];
 

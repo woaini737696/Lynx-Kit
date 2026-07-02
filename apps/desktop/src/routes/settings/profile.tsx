@@ -12,13 +12,14 @@ import {
   Button,
   Avatar,
   AvatarFallback,
+  toast,
 } from "@lynxkit/ui-web";
-import { toast } from "@lynxkit/ui-web";
 import { useAuthStore } from "@lynxkit/store";
 import { useAuth } from "@/hooks/use-auth";
+import { authApi } from "@/lib/api";
 
 export default function ProfilePage() {
-  const { user, updateProfile } = useAuthStore();
+  const { user, updateProfile: updateLocalProfile } = useAuthStore();
   const { fetchMe } = useAuth();
   const [name, setName] = React.useState(user?.name ?? "");
   const [phone, setPhone] = React.useState(user?.phone ?? "");
@@ -35,10 +36,32 @@ export default function ProfilePage() {
   }, [user]);
 
   const save = async () => {
+    // 只提交变更字段，避免空值覆盖
+    const patch: { name?: string; phone?: string } = {};
+    if (name.trim() && name !== user?.name) patch.name = name.trim();
+    if (phone !== user?.phone) patch.phone = phone || undefined;
+
+    if (Object.keys(patch).length === 0) {
+      toast({ title: "没有需要更新的字段", variant: "default" });
+      return;
+    }
+
     setSaving(true);
     try {
-      updateProfile({ name, phone });
+      const updated = await authApi.updateProfile(patch);
+      // 同步更新本地 store（保持 token 不变）
+      updateLocalProfile({
+        name: updated.name,
+        phone: updated.phone,
+        avatar: updated.avatar,
+      });
       toast({ title: "资料已更新", variant: "success" });
+    } catch (e) {
+      toast({
+        title: "保存失败",
+        description: e instanceof Error ? e.message : String(e),
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
@@ -91,13 +114,13 @@ export default function ProfilePage() {
           </div>
         </CardContent>
         <CardFooter className="justify-end border-t bg-muted/30 py-3">
-          <Button onClick={save} disabled={saving} className="bg-lynx-500 text-white hover:bg-lynx-600">
+          <Button onClick={() => void save()} disabled={saving} className="bg-lynx-500 text-white hover:bg-lynx-600">
             {saving ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            保存
+            {saving ? "保存中..." : "保存"}
           </Button>
         </CardFooter>
       </Card>

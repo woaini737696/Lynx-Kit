@@ -1,12 +1,19 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Package, Plus, ExternalLink } from "lucide-react";
+import { Package, Plus, ExternalLink, Rocket, ArrowRight } from "lucide-react";
 import {
   Card,
   CardContent,
   Button,
   Badge,
   Skeleton,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
   toast,
 } from "@lynxkit/ui-web";
 import { creatorApi } from "@/lib/api";
@@ -50,10 +57,47 @@ export default function CreatorProductsPage() {
           <Package className="h-6 w-6 text-lynx-500" />
           <h1 className="text-2xl font-bold">我的产品</h1>
         </div>
-        <Button className="bg-lynx-500 text-white hover:bg-lynx-600">
-          <Plus className="mr-2 h-4 w-4" />
-          上架新产品
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="bg-lynx-500 text-white hover:bg-lynx-600">
+              <Plus className="mr-2 h-4 w-4" />
+              上架新产品
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Rocket className="h-5 w-5 text-lynx-500" />
+                上架新产品
+              </DialogTitle>
+              <DialogDescription>
+                LynxKit 的产品通过 AI 构建流水线生成，请在构建会话完成部署后上架。
+              </DialogDescription>
+            </DialogHeader>
+            <ol className="space-y-2 rounded-md border bg-muted/20 px-4 py-3 text-sm">
+              <li className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-lynx-500/15 text-xs text-lynx-600">1</span>
+                在首页输入想法，创建构建会话
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-lynx-500/15 text-xs text-lynx-600">2</span>
+                完成 9 层 Agent 流水线，生成代码
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-lynx-500/15 text-xs text-lynx-600">3</span>
+                在部署页一键部署并上架到商店
+              </li>
+            </ol>
+            <DialogFooter>
+              <Link to="/">
+                <Button className="bg-lynx-500 text-white hover:bg-lynx-600">
+                  去构建
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {loading ? (

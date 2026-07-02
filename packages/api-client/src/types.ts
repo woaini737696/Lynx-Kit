@@ -16,8 +16,8 @@ import type { AIProvider, ProductType } from "@lynxkit/shared";
 export interface LoginResponse {
   /** 用户信息 */
   user: import("@lynxkit/shared").User;
-  /** 访问令牌 */
-  token: string;
+  /** 访问令牌（与后端 accessToken 字段对齐） */
+  accessToken: string;
   /** 刷新令牌（可选） */
   refreshToken?: string;
   /** 过期时间（秒） */

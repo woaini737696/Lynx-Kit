@@ -38,6 +38,16 @@ export class AuthApi {
     return this.client.get<User>("/v1/auth/me");
   }
 
+  /** 更新当前用户资料（name / phone / avatar） */
+  async updateProfile(input: {
+    name?: string;
+    phone?: string;
+    avatar?: string;
+  }): Promise<User> {
+    const data = await this.client.put<{ user: User }>("/v1/auth/me", input);
+    return data.user;
+  }
+
   /** 发送手机验证码 */
   async sendCode(phone: string, scene: SendCodeScene): Promise<SendCodeResult> {
     return this.client.post<SendCodeResult>("/v1/auth/send-code", {

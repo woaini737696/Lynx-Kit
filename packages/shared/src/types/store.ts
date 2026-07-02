@@ -7,21 +7,32 @@
 import type { ProductType } from "./product";
 
 /**
- * 商店产品分类
+ * 商店产品分类（与 db storeCategoryEnum 对齐，应用场景分类）
+ *
+ * 与 ProductType 大部分对齐（SOCIAL/SYSTEM/WORKSTATION/DATA/ADMIN/APP/MARKETING/HARDWARE），
+ * 额外补充 AGENT 与 WORKFLOW 两个商店专属分类。
  */
 export enum StoreCategory {
-  /** 模板 */
-  TEMPLATE = "template",
-  /** 插件 */
-  PLUGIN = "plugin",
-  /** 组件 */
-  COMPONENT = "component",
+  /** 社交类应用 */
+  SOCIAL = "SOCIAL",
+  /** 系统工具 */
+  SYSTEM = "SYSTEM",
+  /** 工作站 / 生产力 */
+  WORKSTATION = "WORKSTATION",
+  /** 数据分析 / BI */
+  DATA = "DATA",
+  /** 后台管理 */
+  ADMIN = "ADMIN",
   /** 完整应用 */
-  APP = "app",
-  /** AI 提示词 */
-  PROMPT = "prompt",
-  /** 工作流 */
-  WORKFLOW = "workflow",
+  APP = "APP",
+  /** 营销类应用 */
+  MARKETING = "MARKETING",
+  /** 硬件 / IoT */
+  HARDWARE = "HARDWARE",
+  /** AI Agent 产品 */
+  AGENT = "AGENT",
+  /** 工作流产品 */
+  WORKFLOW = "WORKFLOW",
 }
 
 /**

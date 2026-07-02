@@ -30,6 +30,7 @@ import {
   sendCodeSchema,
   verifyCodeSchema,
   refreshTokenSchema,
+  updateProfileSchema,
 } from "@lynxkit/shared";
 import { users } from "@lynxkit/db";
 
@@ -308,6 +309,69 @@ authRoutes.post("/logout", authMiddleware, async (c) => {
   logger.info({ userId: getCurrentUser(c).id }, "用户登出");
   return c.json({ loggedOut: true });
 });
+
+/**
+ * @openapi
+ * PUT /auth/me
+ * @summary 更新当前用户资料（name / phone / avatar）
+ * @tags auth
+ * @security BearerAuth
+ */
+authRoutes.put(
+  "/me",
+  authMiddleware,
+  zValidator("json", updateProfileSchema),
+  async (c) => {
+    const input = c.req.valid("json");
+    const currentUser = getCurrentUser(c);
+    const db = getDb();
+
+    // 过滤掉 undefined 字段，避免覆盖为 null
+    const patch: Record<string, string> = {};
+    for (const [k, v] of Object.entries(input)) {
+      if (v !== undefined) patch[k] = v;
+    }
+
+    if (Object.keys(patch).length === 0) {
+      throw new BadRequestError("没有可更新的字段");
+    }
+
+    // 手机号唯一性校验
+    if (patch.phone) {
+      const existing = await db.query.users.findFirst({
+        where: eq(users.phone, patch.phone),
+      });
+      if (existing && existing.id !== currentUser.id) {
+        throw new ConflictError("该手机号已被其他账号绑定");
+      }
+    }
+
+    const [updated] = await db
+      .update(users)
+      .set({ ...patch, updatedAt: new Date() })
+      .where(eq(users.id, currentUser.id))
+      .returning();
+
+    if (!updated) {
+      throw new NotFoundError("用户");
+    }
+
+    logger.info({ userId: updated.id }, "用户资料已更新");
+
+    return c.json({
+      user: {
+        id: updated.id,
+        email: updated.email,
+        name: updated.name,
+        avatar: updated.avatar,
+        phone: updated.phone,
+        role: updated.role,
+        status: updated.status,
+        createdAt: updated.createdAt,
+      },
+    });
+  },
+);
 
 /**
  * @openapi

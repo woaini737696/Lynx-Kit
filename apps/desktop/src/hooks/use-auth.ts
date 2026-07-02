@@ -20,7 +20,7 @@ export function useAuth() {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       authApi.login(email, password),
     onSuccess: (res) => {
-      setUser(res.user, res.token);
+      setUser(res.user, res.accessToken);
       toast({ title: "登录成功", variant: "success" });
     },
   });
@@ -28,7 +28,7 @@ export function useAuth() {
   const registerMutation = useMutation({
     mutationFn: authApi.register,
     onSuccess: (res) => {
-      setUser(res.user, res.token);
+      setUser(res.user, res.accessToken);
       toast({ title: "注册成功，已自动登录", variant: "success" });
     },
   });

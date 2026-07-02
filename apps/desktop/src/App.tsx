@@ -18,6 +18,8 @@ import CreatorProductsPage from './routes/creator/products';
 import SettingsPage from './routes/settings/index';
 import AiModelsPage from './routes/settings/ai-models';
 import ProfilePage from './routes/settings/profile';
+import NotificationsPage from './routes/settings/notifications';
+import AboutPage from './routes/settings/about';
 
 export default function App() {
   return (
@@ -41,6 +43,8 @@ export default function App() {
               <Route path="settings" element={<SettingsPage />} />
               <Route path="settings/ai-models" element={<AiModelsPage />} />
               <Route path="settings/profile" element={<ProfilePage />} />
+              <Route path="settings/notifications" element={<NotificationsPage />} />
+              <Route path="settings/about" element={<AboutPage />} />
             </Route>
           </Routes>
         </HashRouter>
