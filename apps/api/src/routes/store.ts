@@ -6,10 +6,11 @@
  *   GET  /:productId              产品详情
  *   GET  /category/:slug          按分类列表
  *   GET  /search                 搜索（全文 + pgvector 语义）
+ *   POST /publish                从构建会话上架产品（需 auth）
  *   POST /:productId/purchase     购买（需 auth）
  *   POST /:productId/review       评价（需 auth）
  *
- * 公开接口无需 auth；购买与评价需 auth 中间件。
+ * 公开接口无需 auth；上架 / 购买与评价需 auth 中间件。
  */
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
@@ -23,7 +24,9 @@ import {
   storeCategoryEnum,
   transactionStatusEnum,
 } from "@lynxkit/db";
+import { createStoreProductSchema } from "@lynxkit/shared";
 import { getDb } from "../lib/db.js";
+import { publishBuildToStore } from "../lib/publish-service.js";
 import { logger } from "../lib/logger.js";
 import { authMiddleware, getCurrentUser } from "../middleware/auth.js";
 import {
@@ -93,6 +96,16 @@ const reviewSchema = z.object({
 });
 
 /**
+ * 上架请求体（sessionId + createStoreProductSchema 字段）
+ *
+ * 复用 @lynxkit/shared 的 createStoreProductSchema 做字段校验，
+ * 额外补 sessionId（必填，标识从哪个构建会话发布）。
+ */
+const publishSchema = createStoreProductSchema.extend({
+  sessionId: z.string().uuid("会话 ID 格式错误"),
+});
+
+/**
  * 构建排序条件
  */
 function buildOrderBy(sort: string) {
@@ -110,6 +123,52 @@ function buildOrderBy(sort: string) {
       return [desc(storeProducts.createdAt)];
   }
 }
+
+/**
+ * @openapi
+ * POST /store/publish
+ * @summary 从构建会话上架产品到商店
+ * @tags store
+ * @security BearerAuth
+ */
+storeRoutes.post(
+  "/publish",
+  authMiddleware,
+  zValidator("json", publishSchema),
+  async (c) => {
+    const input = c.req.valid("json");
+    const user = getCurrentUser(c);
+    const db = getDb();
+
+    // 委托给 publish-service（含会话校验 / 重复发布检查 / 插入）
+    const result = await publishBuildToStore(
+      {
+        sessionId: input.sessionId,
+        userId: user.id,
+        name: input.name,
+        description: input.description,
+        category: input.category,
+        pricingType: input.pricingType,
+        price: input.price,
+        tags: input.tags,
+        version: input.version,
+        demoUrl: input.demoUrl,
+        readme: input.readme,
+        coverUrl: input.coverUrl,
+        repoUrl: input.repoUrl,
+        subscriptionMonths: input.subscriptionMonths,
+      },
+      { db },
+    );
+
+    logger.info(
+      { productId: result.product.id, sessionId: input.sessionId, userId: user.id },
+      "产品已上架到商店（待审核）",
+    );
+
+    return c.json({ ok: true, product: result.product }, 201);
+  },
+);
 
 /**
  * @openapi

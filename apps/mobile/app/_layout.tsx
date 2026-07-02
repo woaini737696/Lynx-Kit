@@ -65,6 +65,10 @@ function RootStack() {
         name="settings/ai-models"
         options={{ title: 'AI 模型配置', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
       />
+      <Stack.Screen
+        name="settings/profile"
+        options={{ title: '编辑个人资料', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+      />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

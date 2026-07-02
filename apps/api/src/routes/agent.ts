@@ -24,6 +24,7 @@ import { buildSessions, buildLogs } from "@lynxkit/db";
 import { getDb } from "../lib/db.js";
 import { getRedis } from "../lib/redis.js";
 import { enqueueBuild } from "../lib/queue.js";
+import { generateClarifyQuestions } from "../lib/clarify-service.js";
 import { logger } from "../lib/logger.js";
 import { getCurrentUser } from "../middleware/auth.js";
 import {
@@ -184,18 +185,35 @@ agentRoutes.post(
       .set({ status: "CLARIFYING", updatedAt: new Date() })
       .where(eq(buildSessions.id, sessionId));
 
-    // TODO: 调用 agent-core clarifyNext 生成下一问题
-    // 当前返回静态问题模板（按产品类型）
-    const questions = generateClarifyQuestions(session.productType);
-
-    await writeLog(sessionId, "clarify", "INFO", "需求澄清已启动", {
-      questionCount: questions.length,
+    // 调用 agent-core 的 IntentAgent + ClarifyAgent 生成动态问题
+    const result = await generateClarifyQuestions({
+      sessionId,
+      userId: user.id,
+      inspiration:
+        session.description ??
+        (session.config as { userInput?: string })?.userInput ??
+        "",
+      answers: (session.config as { answers?: Record<string, unknown> })
+        ?.answers,
     });
+
+    await writeLog(
+      sessionId,
+      "clarify",
+      "INFO",
+      "需求澄清已启动（agent-core 动态生成）",
+      {
+        questionCount: result.questions.length,
+        productType: result.productType,
+      },
+    );
 
     return c.json({
       sessionId,
       stage: "clarify",
-      questions,
+      productType: result.productType,
+      questions: result.questions,
+      answers: result.answers,
     });
   },
 );
@@ -452,52 +470,4 @@ function buildChatSystemPrompt(session: {
     "",
     "请根据用户的修改要求，给出具体的代码改动建议或配置调整方案。",
   ].join("\n");
-}
-
-/**
- * 根据产品类型生成澄清问题（静态模板）
- *
- * TODO: 替换为 agent-core clarifyNext 的动态问题生成
- */
-function generateClarifyQuestions(productType: string): Array<{
-  id: string;
-  question: string;
-  type: "text" | "select" | "multiselect";
-  options?: string[];
-  required: boolean;
-}> {
-  return [
-    {
-      id: "project_name",
-      question: "项目名称是什么？",
-      type: "text",
-      required: true,
-    },
-    {
-      id: "target_users",
-      question: "目标用户群体是哪些？",
-      type: "text",
-      required: true,
-    },
-    {
-      id: "core_features",
-      question: "必须包含的核心功能有哪些？",
-      type: "text",
-      required: true,
-    },
-    {
-      id: "design_style",
-      question: "偏好的设计风格？",
-      type: "select",
-      options: ["极简", "现代", "商务", "活泼", "暗色系"],
-      required: false,
-    },
-    {
-      id: "deploy_target",
-      question: "部署目标？",
-      type: "select",
-      options: ["Vercel", "自托管", "桌面端打包", "仅预览"],
-      required: false,
-    },
-  ];
 }

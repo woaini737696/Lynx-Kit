@@ -36,6 +36,7 @@ export default defineConfig({
     ],
     environment: "node",
     globals: false,
+    setupFiles: ["./vitest.setup.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],

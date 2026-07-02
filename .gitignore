@@ -6,7 +6,7 @@ node_modules/
 dist/
 .next/
 out/
-build/
+/build/
 dist-electron/
 *.tsbuildinfo
 .turbo/

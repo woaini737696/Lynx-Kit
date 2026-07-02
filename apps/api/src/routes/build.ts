@@ -30,7 +30,7 @@ import {
 } from "@lynxkit/db";
 
 import { getDb } from "../lib/db.js";
-import { enqueueBuild } from "../lib/queue.js";
+import { startBuildOrSync } from "../lib/build-service.js";
 import { logger } from "../lib/logger.js";
 import { getCurrentUser } from "../middleware/auth.js";
 import {
@@ -260,27 +260,38 @@ buildRoutes.post(
       .set({ status: "DEVELOPING", updatedAt: new Date() })
       .where(eq(buildSessions.id, id));
 
-    // 入队 BullMQ
-    const jobId = await enqueueBuild({
+    // 入队 BullMQ（Redis 不可用时由 build-service 同步降级执行）
+    const startResult = await startBuildOrSync({
       sessionId: session.id,
       userId: user.id,
-      userInput: session.description ?? (session.config as { userInput?: string })?.userInput ?? "",
-      answers: (session.config as { answers?: Record<string, unknown> })?.answers ?? input.answers,
+      userInput:
+        session.description ??
+        (session.config as { userInput?: string })?.userInput ??
+        "",
+      answers:
+        (session.config as { answers?: Record<string, unknown> })?.answers ??
+        input.answers,
       serverId: input.serverId ?? session.serverId ?? undefined,
       domain: input.domain,
     });
 
-    logger.info({ sessionId: session.id, jobId }, "构建任务已入队");
-
-    // 队列不可用时同步执行回退（开发环境）
-    if (!jobId) {
-      logger.warn({ sessionId: session.id }, "Redis 不可用，构建将同步执行（开发模式）");
+    if (startResult.sync) {
+      logger.warn(
+        { sessionId: session.id },
+        "Redis 不可用，构建已同步执行完成（开发模式）",
+      );
+    } else {
+      logger.info(
+        { sessionId: session.id, jobId: startResult.jobId },
+        "构建任务已入队",
+      );
     }
 
     return c.json({
       sessionId: session.id,
-      jobId,
-      status: "DEVELOPING",
+      jobId: startResult.jobId,
+      sync: startResult.sync,
+      status: startResult.status,
       streamUrl: `/api/v1/agent/${session.id}/stream`,
     });
   },

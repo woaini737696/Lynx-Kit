@@ -18,7 +18,7 @@ export default function SettingsScreen() {
     {
       label: '个人资料',
       icon: User,
-      onPress: () => router.push('/(tabs)/profile'),
+      onPress: () => router.push('/settings/profile'),
     },
     {
       label: '通知设置',

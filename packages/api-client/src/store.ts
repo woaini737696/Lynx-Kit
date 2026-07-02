@@ -60,7 +60,7 @@ export class StoreApi {
     return data.product;
   }
 
-  /** 从构建会话上架产品（后端暂未实现，返回未实现错误） */
+  /** 从构建会话上架产品到商店（POST /v1/store/publish） */
   async publish(input: PublishStoreProductInput): Promise<PublishResult> {
     return this.client.post<PublishResult>("/v1/store/publish", input);
   }
