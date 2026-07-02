@@ -1,6 +1,6 @@
-import { drizzle as neonDrizzle, type NeonDatabase } from "drizzle-orm/neon-http";
+import { drizzle as neonDrizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { drizzle as pgDrizzle, type NodePostgresDatabase } from "drizzle-orm/node-postgres";
+import { drizzle as pgDrizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
 
@@ -28,7 +28,7 @@ export interface CreateDbEnv {
  * const user = await db.query.users.findFirst({ with: { servers: true } });
  * ```
  */
-export type Database = NeonDatabase<typeof schema> | NodePostgresDatabase<typeof schema>;
+export type Database = NeonHttpDatabase<typeof schema> | NodePgDatabase<typeof schema>;
 
 /**
  * 判断连接字符串是否指向 Neon serverless。

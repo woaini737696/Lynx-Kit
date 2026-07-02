@@ -65,12 +65,14 @@ function createWindow(): void {
 
   // 捕获渲染进程 console 消息（Electron 30+ 签名：details 对象）
   win.webContents.on("console-message", (_e, details) => {
-    const level = (details as { level: number }).level;
-    const message = (details as { message: string }).message;
-    const line = (details as { lineNumber: number }).lineNumber;
-    const sourceId = (details as { sourceId: string }).sourceId;
-    const tag = ["LOG", "WARN", "ERROR", "DEBUG"][level] ?? "LOG";
-    logDebug(`[renderer:${tag}] ${message} (${sourceId}:${line})`);
+    const d = details as unknown as {
+      level: number;
+      message: string;
+      lineNumber: number;
+      sourceId: string;
+    };
+    const tag = ["LOG", "WARN", "ERROR", "DEBUG"][d.level] ?? "LOG";
+    logDebug(`[renderer:${tag}] ${d.message} (${d.sourceId}:${d.lineNumber})`);
   });
   // 捕获渲染进程未处理的异常
   win.webContents.on("render-process-gone", (_e, details) => {

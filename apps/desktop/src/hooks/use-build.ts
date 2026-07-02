@@ -108,7 +108,7 @@ export function useBuild() {
               id: crypto.randomUUID(),
               sessionId,
               agent: (event.agent ?? "frontend") as never,
-              level: event.type === "error" ? "error" : "info",
+              level: "info",
               message: event.data,
               createdAt: event.timestamp ?? new Date().toISOString(),
             } as AgentLog);
