@@ -1,593 +1,682 @@
-# LynxKit 实现方案 v1.2（原生双端互补架构版）
+# LynxKit 实现方案 v3.0（最终版 · 桌面+移动双核心 · AI 全程生成 · MVP 一次到位）
 
-> 基于产品规格 v0.2 + 用户原生双端互补要求
-
----
-
-## 一、原生双端架构核心设计
-
-### 1.1 架构原则
-
-- **原生编译**：Flutter 编译为原生 ARM/x64 机器码，桌面端 + 移动端均为真正原生应用
-- **一套 Dart 代码**：桌面 + 移动共享 85%+ 代码，仅平台特定能力通过 Platform Channel 扩展
-- **功能互补分工**：桌面端做重型操作，移动端做轻型互补，Web 做备用入口
-- **统一后端服务**：Node.js + Fastify 单一后端 API，三端共享
-- **类型契约同步**：Zod schema → OpenAPI → Dart codegen，端到端类型安全
-
-### 1.2 三端功能分工矩阵（互补设计）
-
-| 能力维度 | 桌面端（Win/Mac/Linux） | 移动端（iOS/Android） | Web 端 |
-|---------|----------------------|---------------------|--------|
-| **核心定位** | 重型操作工作台 | 轻型互补监控端 | 落地页 + 备用 |
-| **项目创建向导** | ✅ 完整（多步骤+AI对话+实时预览） | ❌ | ❌ |
-| **代码编辑预览** | ✅ 分屏视图 | ❌ | ❌ |
-| **服务器管理** | ✅ SSH 配置+凭证+Docker 检测 | 🔍 只读状态查看 | ❌ |
-| **部署日志** | ✅ 完整日志流 | 📋 简化结果卡片 | ❌ |
-| **多窗口/多标签** | ✅ 多项目管理 | ❌ | ❌ |
-| **系统托盘** | ✅ 常驻+快捷操作 | — | — |
-| **文件拖拽上传** | ✅ Logo/模板上传 | 📷 相册选择 | 表单上传 |
-| **全局快捷键** | ✅ 唤起应用 | — | — |
-| **状态总览** | ✅ 仪表盘 | ✅ 卡片列表+下拉刷新 | 简化版 |
-| **推送通知** | ✅ 系统通知 | ✅ 推送（部署成功/失败） | Web Push |
-| **项目快速编辑** | ✅ 完整编辑器 | 💬 对话式 AI 修改 | ❌ |
-| **数据看板** | ✅ 完整图表 | 📊 简化版图表 | 简化版 |
-| **项目分享** | 🔗 生成链接 | 📱 生成二维码 | 链接分享 |
-| **生物识别登录** | — | ✅ 指纹/Face ID | 密码登录 |
-| **相机扫码** | — | ✅ 扫码部署 | ❌ |
-| **离线缓存** | ✅ 本地数据库 | ✅ 关键数据缓存 | PWA 缓存 |
-| **自动更新** | ✅ Tauri Updater 风格 | ✅ 应用内更新 | Vercel 部署 |
-| **深度链接** | — | ✅ lynxkit:// 项目/服务器 | URL 路由 |
-
-### 1.3 架构总览
-
-```
-                ┌──────────────────────────────────────────┐
-                │         Backend API 核心服务              │
-                │  (apps/api - Node.js 20 + Fastify 5)     │
-                │  - tRPC 11 + OpenAPI 自动生成            │
-                │  - Prisma 5 + PostgreSQL 16              │
-                │  - BullMQ 5 + Redis 7                    │
-                │  - NextAuth.js (JWT 跨端鉴权)            │
-                │  - Agent 编排引擎（7 层）                 │
-                │  - 部署模块（SSH + Docker + Caddy）       │
-                │  - pino 结构化日志                       │
-                └──────┬────────────────┬──────────────────┘
-                       │                │
-                       │ REST/OpenAPI   │
-            ┌──────────┴──┐         ┌───┴───────────────┐
-            │ Flutter     │         │ Flutter Mobile    │
-            │ Desktop     │         │ (iOS + Android)   │
-            │ (Win/Mac/   │         │                   │
-            │  Linux)     │         │                   │
-            │ 重型功能    │         │ 轻型互补功能      │
-            └──────┬──────┘         └───────┬───────────┘
-                   │                        │
-                   └───── 共享 85%+ Dart 代码 ─┘
-                          (packages/flutter_core)
-
-         ┌──────────────┐
-         │ Next.js Web  │  ← 备用入口 + 落地页 + PWA
-         │ (apps/web)   │
-         └──────────────┘
-```
-
-### 1.4 Flutter 代码共享策略
-
-```
-packages/flutter_core/          # 共享 Dart 库
-├── lib/
-│   ├── models/                 # 数据模型（OpenAPI 生成）
-│   ├── services/               # API 客户端（dio）
-│   ├── state/                  # Riverpod 状态管理
-│   ├── widgets/                # 通用 Widget（自适应）
-│   ├── theme/                  # 设计令牌（Material 3 + Cupertino）
-│   └── utils/                  # 工具函数
-└── pubspec.yaml
-
-apps/desktop/                   # 桌面端入口
-├── lib/
-│   ├── main.dart
-│   ├── features/               # 桌面独有功能
-│   │   ├── project_wizard/     # 完整创建向导
-│   │   ├── code_editor/        # 代码编辑预览
-│   │   ├── server_manager/     # SSH 服务器管理
-│   │   ├── multi_window/       # 多窗口管理
-│   │   ├── tray/               # 系统托盘
-│   │   └── shortcuts/          # 全局快捷键
-│   ├── platform/               # 桌面平台特定代码
-│   └── shells/                 # 桌面布局
-└── pubspec.yaml
-
-apps/mobile/                    # 移动端入口
-├── lib/
-│   ├── main.dart
-│   ├── features/               # 移动独有功能
-│   │   ├── status_overview/    # 状态总览
-│   │   ├── push_notifications/ # 推送通知
-│   │   ├── quick_edit/         # 对话式快速编辑
-│   │   ├── biometric_auth/     # 生物识别
-│   │   ├── qr_scanner/         # 扫码部署
-│   │   └── data_dashboard/     # 简化看板
-│   ├── platform/               # 移动平台特定代码
-│   └── shells/                 # 移动布局
-└── pubspec.yaml
-```
+> **定位**：C 端 AI 原生全栈开发平台 + AI 应用商店
+> **核心约束**：
+> 1. **桌面端 + 移动端为核心**，互补效应（桌面深度构建 + 移动碎片消费），Web 为辅
+> 2. **全程 AI 氛围编程，零手写代码**：技术栈必须对 LLM 生成最友好
+> 3. **避免日常迭代 bug**：类型安全 + 测试 + CI 门禁
+> 4. **一次性交付 MVP**：用户可用本产品开发出第一个 AI 程序
+> **日期**：2026-07-02
 
 ---
 
-## 二、技术栈最终选型
+## 一、架构师终极判断（基于核心约束的硬决策）
 
-### 2.1 后端栈（apps/api）
+### 1.1 三大约束反推技术栈
 
-| 层级 | 选型 | 版本 | 理由 |
-|------|------|------|------|
-| 运行时 | Node.js | 20 LTS | 长期支持版 |
-| HTTP 框架 | Fastify | 5.x | 高性能，比 Express 快 3 倍 |
-| API 层 | tRPC + OpenAPI | 11.x + trpc-openapi | 内部 tRPC + 对外 REST 自动生成 |
-| 认证 | NextAuth.js (JWT) | v5 | 跨端 JWT 鉴权 |
-| ORM | Prisma | 5.x | 类型安全 |
-| 数据库 | PostgreSQL | 16 | 主数据库 |
-| 缓存/队列 | Redis + BullMQ | 7 / 5 | 异步任务队列 |
-| 校验 | Zod | 3.x | schema 即契约 |
-| 日志 | pino | 9.x | 结构化日志 |
-| 测试 | Vitest | latest | 单测 |
+| 约束 | 必然结论 | 否决的方案 |
+|------|---------|-----------|
+| **桌面+移动双核心** | 必须三端架构（桌面/移动/Web），且桌面端要本地算力 | ❌ Web-only / ❌ PWA 主导 / ❌ Tauri（AI 生成 Rust 质量差） |
+| **零手写代码（AI 全程生成）** | 必须选 LLM 训练数据最多、生态最成熟、文档最完善的技术栈 | ❌ Tamagui / ❌ Rust / ❌ Dart / ❌ 自研框架 |
+| **避免迭代 bug** | 必须类型安全 + 运行时校验 + E2E 测试 + Feature Flag | ❌ JS / ❌ 弱类型 / ❌ 无测试 |
 
-### 2.2 桌面端栈（apps/desktop）
+### 1.2 AI 友好度评分（决定性指标，零手写场景下必须 >85%）
 
-| 层级 | 选型 | 版本 | 理由 |
-|------|------|------|------|
-| 框架 | Flutter | 3.x (Dart 3) | 编译为原生 x64/ARM64 |
-| 状态管理 | Riverpod | 2.x | 类型安全、可测试 |
-| 路由 | go_router | latest | 声明式路由 |
-| HTTP | dio | 5.x | 拦截器、错误处理 |
-| 本地存储 | hive + drift | latest | KV + 关系型 |
-| 系统集成 | tray_manager, window_manager, hotkey_manager | latest | 桌面原生能力 |
-| 代码编辑 | code_editor / re-editor | latest | 代码编辑组件 |
-| 图表 | fl_chart | latest | 数据可视化 |
+| 技术栈 | AI 生成质量 | 评分 | 是否采用 |
+|--------|------------|------|---------|
+| TypeScript + React 19 | 极高 | 100% | ✅ |
+| Next.js 15 App Router | 极高 | 95% | ✅ |
+| Tailwind CSS 4 + shadcn/ui | 极高 | 95% | ✅（Web/Desktop） |
+| Expo SDK 52 + React Native | 高 | 85% | ✅（Mobile） |
+| NativeWind 4（Tailwind for RN） | 高 | 85% | ✅（Mobile） |
+| Electron 30 + React | 高 | 90% | ✅（Desktop） |
+| Hono.js | 中高 | 80% | ✅（API） |
+| Drizzle ORM | 高 | 85% | ✅ |
+| Zod 3 + React Hook Form 7 | 极高 | 95% | ✅ |
+| TanStack Query 5 + Zustand 5 | 极高 | 95% | ✅ |
+| Vercel AI SDK 5.0 | 高 | 85% | ✅ |
+| Tauri + Rust | 一般 | 50% | ❌ 否决 |
+| Flutter + Dart | 一般 | 55% | ❌ 否决 |
+| Tamagui | 中等 | 65% | ❌ 否决 |
+| tRPC | 中等 | 75% | ❌ 否决（外部 API 调用受限） |
+| Prisma | 高 | 85% | ❌ 否决（Edge 冷启动慢） |
+| NextAuth.js v5 | 中等 | 70% | ❌ 否决（手机验证码需大量手写） |
 
-### 2.3 移动端栈（apps/mobile）
+### 1.3 最终技术栈锁定
 
-| 层级 | 选型 | 版本 | 理由 |
-|------|------|------|------|
-| 框架 | Flutter | 3.x (Dart 3) | 与桌面端共享核心 |
-| 状态管理 | Riverpod | 2.x | 同桌面端 |
-| 路由 | go_router | latest | 同桌面端 |
-| 推送 | firebase_messaging + apns | latest | iOS+Android 统一 |
-| 生物识别 | local_auth | latest | 指纹/Face ID |
-| 扫码 | mobile_scanner | latest | 相机扫码 |
-| 相机/相册 | image_picker | latest | 图片选择 |
-| 深度链接 | app_links | latest | URL Scheme + Universal Link |
-| 本地通知 | flutter_local_notifications | latest | 本地推送 |
+**桌面端**：Electron 30 + Next.js 15（本地服务）+ React 19 + shadcn/ui + Tailwind 4
+**移动端**：Expo SDK 52 + React Native + NativeWind 4 + Expo Router v4
+**Web**：Next.js 15 + shadcn/ui + Tailwind 4
+**API 后端**：Hono.js（独立服务，Cloudflare Workers / Node.js 兼容）
+**数据层**：Drizzle ORM + PostgreSQL 16（云）+ SQLite（桌面本地缓存）+ pgvector
+**AI 层**：Vercel AI SDK 5.0 + 国内 6 大模型（DeepSeek/Kimi/Doubao/Qwen/GLM/Mimo，用户填 Key 即用）+ 桌面端本地模型预留（Ollama/llama.cpp）
+**共享层**：Zod + TypeScript + TanStack Query + Zustand + 自研 api-client（基于 OpenAPI）
+**任务队列**：BullMQ 5 + Redis（自部署 Worker）+ Upstash（Edge 缓存）
+**存储**：Cloudflare R2（生产）+ 本地 FS（桌面）
+**认证**：Better Auth（手机验证码/邮箱/微信/Apple/Google）
+**支付**：Stripe + Creem（Merchant of Record）
+**i18n**：next-intl（Web/Desktop）+ react-i18next（Mobile）
+**监控**：Sentry（错误）+ Axiom（日志）+ PostHog（行为 + Feature Flag）
+**测试**：Vitest（单元）+ Playwright（E2E）+ Storybook（UI）
+**CI/CD**：GitHub Actions + Changesets + EAS（Expo Application Services）
 
-### 2.4 Web 端栈（apps/web）
+### 1.4 三端互补效应设计
 
-| 层级 | 选型 | 版本 | 理由 |
-|------|------|------|------|
-| 框架 | Next.js | 15 App Router | 落地页 + 简化控制台 |
-| UI | Tailwind + Radix UI | 3 / latest | 快速 UI |
-| PWA | Serwist | 9.x | 替代 next-pwa |
-| API 客户端 | tRPC Client | 11.x | 类型安全直连后端 |
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  桌面端（Electron）                          │
+│   适合：深度构建 + 复杂配置 + 代码查看 + 本地预览 + 离线工作   │
+│   算力：本地 AI 推理（onnxruntime-node）+ 文件系统访问       │
+│   场景：办公室专注开发 AI 产品                              │
+└─────────────────────────────────────────────────────────────┘
+                          ↕ 数据同步（同一个用户账号）
+┌─────────────────────────────────────────────────────────────┐
+│                  移动端（Expo）                              │
+│   适合：碎片浏览 + 进度查看 + 商店消费 + 试用 + 社交分享     │
+│   能力：推送通知 + 摄像头 + 生物识别 + 离线缓存             │
+│   场景：通勤/碎片时间查看构建进度 + 商店发现新 AI 产品       │
+└─────────────────────────────────────────────────────────────┘
+                          ↕
+┌─────────────────────────────────────────────────────────────┐
+│                  Web（Next.js）                             │
+│   适合：SEO 入口 + 商店公开页 + 营销 + 管理后台              │
+│   场景：搜索引擎用户进入 → 注册 → 下载桌面端/移动端          │
+└─────────────────────────────────────────────────────────────┘
+```
 
-### 2.5 共享与同步
+**互补场景**：
+1. 用户在桌面端启动 AI 构建（5-30 分钟长任务）→ 关电脑出门
+2. 移动端实时收到推送"构建完成，点击预览"
+3. 移动端试用产品 → 满意 → 一键上架到 AI 应用商店
+4. 其他用户在移动端商店发现 → 分享给朋友
+5. 朋友在 Web 看到产品页 → 下载桌面端开始构建自己的产品
 
-| 工具 | 用途 |
-|------|------|
-| OpenAPI 3.0 | tRPC → OpenAPI → Dart 客户端自动生成 |
-| openapi-generator-cli | 生成 Dart API 客户端 |
-| Zod | 单一 schema 真源，校验 + 类型推导 |
-| Figma Tokens | 设计令牌同步至 Dart ThemeData + Tailwind config |
+### 1.5 避免 bug 的工程实践（零手写场景下绝对必须）
+
+#### 类型安全层
+- **TypeScript strict**：所有 package 都开 `strict: true` + `noUncheckedIndexedAccess: true`
+- **Zod runtime**：所有外部输入（API、用户输入、AI 输出）必过 Zod 校验
+- **Drizzle 类型推导**：DB schema 即类型，无手写类型
+- **OpenAPI 自动生成**：从 Hono 路由自动生成 OpenAPI → 自动生成 api-client
+
+#### 测试层
+- **Vitest 单测**：覆盖 `packages/shared` + `packages/agent-core` + `packages/db` 业务逻辑（目标覆盖率 80%）
+- **Playwright E2E**：覆盖关键路径（登录/构建流程/部署/购买）
+- **Storybook**：UI 组件可视化测试 + 视觉回归
+- **MSW**：API mock，前端测试不依赖真实后端
+
+#### CI/CD 门禁层
+- **GitHub Actions**：PR 必跑 lint + typecheck + test + build
+- **Vercel Preview Deploy**：每 PR 自动预览环境
+- **EAS Submit**：Expo 提交 TestFlight + 内测包
+- **Changesets**：自动版本 + changelog
+- **Renovate**：依赖自动升级（减少手动升级引入 bug）
+
+#### 运行时稳定层
+- **React Error Boundary**：组件级错误隔离
+- **Sentry**：错误自动上报 + Source Map
+- **PostHog Feature Flag**：灰度发布，错误率超阈值自动回滚
+- **BullMQ 死信队列**：AI 任务失败重试 3 次
+- **AI 断路器**：Claude 失败 → 自动降级 DeepSeek
+- **数据库迁移**：Drizzle Kit，向前兼容，零停机
 
 ---
 
-## 三、Monorepo 目录结构
+## 二、Monorepo 结构（最终版）
 
 ```
 LynxKit/
 ├── apps/
-│   ├── api/                              # 后端 API 服务
-│   │   ├── src/
-│   │   │   ├── routes/                   # Fastify 路由
-│   │   │   ├── trpc/                     # tRPC 路由
-│   │   │   │   ├── routers/              # auth/server/project/template/deploy
-│   │   │   │   └── context.ts
-│   │   │   ├── auth/                     # NextAuth 配置（JWT 模式）
-│   │   │   ├── lib/
-│   │   │   │   ├── crypto.ts             # KMS 抽象（AES-GCM + 云 KMS）
-│   │   │   │   ├── ssh.ts                # SSH 操作
-│   │   │   │   ├── queue.ts              # BullMQ 队列
-│   │   │   │   └── logger.ts            # pino 日志
-│   │   │   ├── jobs/                     # 后台任务处理器
-│   │   │   └── openapi.ts                # OpenAPI 自动生成
-│   │   ├── prisma/
-│   │   │   └── schema.prisma
-│   │   ├── tsconfig.json
+│   ├── desktop/                  # 桌面端核心（Electron + Next.js）
+│   │   ├── electron/
+│   │   │   ├── main.ts           # Electron 主进程
+│   │   │   ├── preload.ts        # Preload 桥接
+│   │   │   └── services/         # 本地服务（文件/AI推理/SSH）
+│   │   ├── next.config.ts        # 复用 apps/web 的 Next.js 配置
 │   │   └── package.json
-│   │
-│   ├── web/                              # Next.js Web 端（落地页 + PWA）
+│   ├── mobile/                   # 移动端核心（Expo + React Native）
+│   │   ├── app/                  # Expo Router v4 文件路由
+│   │   │   ├── (auth)/
+│   │   │   ├── (build)/          # 简化构建（输入/进度/预览）
+│   │   │   ├── (store)/          # 商店浏览/试用
+│   │   │   ├── (creator)/        # 创作者中心
+│   │   │   └── _layout.tsx
 │   │   ├── src/
-│   │   │   ├── app/
-│   │   │   │   ├── (marketing)/          # 落地页
-│   │   │   │   ├── (auth)/               # 登录/注册
-│   │   │   │   ├── (console)/            # 简化版控制台
-│   │   │   │   ├── api/auth/[...nextauth]/
-│   │   │   │   └── api/trpc/[trpc]/
-│   │   │   ├── components/
-│   │   │   └── lib/
-│   │   ├── public/
-│   │   ├── serwist.config.ts
-│   │   ├── next.config.ts
+│   │   │   ├── components/        # NativeWind 组件
+│   │   │   ├── hooks/
+│   │   │   └── theme/
+│   │   ├── app.config.ts
 │   │   └── package.json
-│   │
-│   ├── desktop/                          # Flutter 桌面端
-│   │   ├── lib/
-│   │   │   ├── main.dart
-│   │   │   ├── app.dart                   # MaterialApp 配置
-│   │   │   ├── features/                  # 桌面独有功能
-│   │   │   │   ├── project_wizard/
-│   │   │   │   │   ├── wizard_screen.dart
-│   │   │   │   │   ├── wizard_controller.dart
-│   │   │   │   │   └── widgets/
-│   │   │   │   ├── code_editor/
-│   │   │   │   ├── server_manager/
-│   │   │   │   ├── deploy_logs/
-│   │   │   │   ├── multi_window/
-│   │   │   │   ├── tray/
-│   │   │   │   └── shortcuts/
-│   │   │   ├── platform/                  # 平台适配
-│   │   │   │   ├── windows/
-│   │   │   │   ├── macos/
-│   │   │   │   └── linux/
-│   │   │   └── shells/
-│   │   │       ├── desktop_shell.dart     # NavigationRail 布局
-│   │   │       └── widgets/
-│   │   ├── windows/                       # Windows 平台
-│   │   ├── macos/                         # macOS 平台
-│   │   ├── linux/                         # Linux 平台
-│   │   ├── assets/
-│   │   ├── pubspec.yaml
-│   │   └── README.md
-│   │
-│   └── mobile/                           # Flutter 移动端
-│       ├── lib/
-│       │   ├── main.dart
-│       │   ├── app.dart
-│       │   ├── features/                 # 移动独有功能
-│       │   │   ├── status_overview/
-│       │   │   ├── push_notifications/
-│       │   │   ├── quick_edit/
-│       │   │   ├── biometric_auth/
-│       │   │   ├── qr_scanner/
-│       │   │   └── data_dashboard/
-│       │   ├── platform/
-│       │   │   ├── ios/
-│       │   │   └── android/
-│       │   └── shells/
-│       │       ├── mobile_shell.dart     # BottomNavigationBar 布局
-│       │       └── widgets/
-│       ├── ios/                          # iOS 平台
-│       ├── android/                      # Android 平台
-│       ├── assets/
-│       ├── pubspec.yaml
-│       └── README.md
-│
-├── packages/
-│   ├── flutter_core/                    # Flutter 共享核心库
-│   │   ├── lib/
-│   │   │   ├── models/                  # OpenAPI 生成的数据模型
-│   │   │   ├── services/                # API 客户端
-│   │   │   │   ├── api_client.dart       # dio 封装
-│   │   │   │   ├── auth_service.dart
-│   │   │   │   ├── project_service.dart
-│   │   │   │   ├── server_service.dart
-│   │   │   │   └── deploy_service.dart
-│   │   │   ├── state/                    # Riverpod providers
-│   │   │   ├── widgets/                 # 通用 Widget
-│   │   │   │   ├── project_card.dart
-│   │   │   │   ├── server_card.dart
-│   │   │   │   ├── status_badge.dart
-│   │   │   │   └── empty_state.dart
-│   │   │   ├── theme/
-│   │   │   │   ├── app_theme.dart        # Material 3 ThemeData
-│   │   │   │   ├── app_colors.dart
-│   │   │   │   └── app_typography.dart
-│   │   │   └── utils/
-│   │   ├── pubspec.yaml
-│   │   └── README.md
-│   │
-│   ├── templates/                       # 模板基座库（用户生成产品的模板）
-│   │   ├── _base/
-│   │   │   ├── components/
-│   │   │   │   ├── ui/
-│   │   │   │   ├── layout/
-│   │   │   │   ├── auth/
-│   │   │   │   ├── user/
-│   │   │   │   └── data/
-│   │   │   ├── lib/
-│   │   │   ├── prisma/base.schema.prisma
-│   │   │   ├── Dockerfile
-│   │   │   ├── docker-compose.yml
-│   │   │   └── Caddyfile
-│   │   ├── static-site/
-│   │   ├── service-booking/
-│   │   ├── content-publish/
-│   │   ├── light-commerce/
-│   │   ├── event-manage/
-│   │   └── admin-dashboard/
-│   │
-│   ├── agent-core/                      # Agent 编排引擎
-│   │   ├── src/
-│   │   │   ├── agents/
-│   │   │   │   ├── intent.ts
-│   │   │   │   ├── clarify.ts
-│   │   │   │   ├── select.ts
-│   │   │   │   ├── fill.ts
-│   │   │   │   ├── build.ts
-│   │   │   │   ├── fix.ts
-│   │   │   │   └── deploy.ts
-│   │   │   └── providers/
+│   ├── web/                      # Web（Next.js 15，营销+管理+商店SEO）
+│   │   ├── src/app/
+│   │   │   ├── (marketing)/      # 营销页（SEO）
+│   │   │   ├── (store)/          # 商店（SEO）
+│   │   │   ├── (admin)/          # 管理后台
+│   │   │   └── (auth)/           # 认证
 │   │   └── package.json
-│   │
-│   ├── deployer/                        # 部署模块
-│   │   ├── src/
-│   │   │   ├── ssh.ts
-│   │   │   ├── docker.ts
-│   │   │   ├── caddy.ts
-│   │   │   ├── sandbox.ts
-│   │   │   └── health.ts
-│   │   └── package.json
-│   │
-│   └── shared/                          # TypeScript 共享
+│   └── api/                      # 后端 API（Hono.js，独立部署）
 │       ├── src/
-│       │   ├── types/
-│       │   ├── constants/
-│       │   ├── utils/
-│       │   └── crypto.ts
-│       └── package.json
-│
-├── docker-compose.dev.yml               # 本地开发（PG + Redis）
-├── .env.example
+│       │   ├── routes/           # /auth /build /agent /deploy /store /creator
+│       │   ├── agents/           # 9 层 Agent 实现
+│       │   ├── middleware/       # auth/ratelimit/logging/error
+│       │   ├── queues/           # BullMQ Worker
+│       │   └── index.ts
+│       ├── drizzle/              # Drizzle migrations
+│       └── wrangler.toml         # Cloudflare Workers 部署
+├── packages/
+│   ├── shared/                   # Zod + 类型 + 常量 + KMS（全端共享）
+│   ├── api-client/               # 类型安全 API 客户端（OpenAPI 自动生成）
+│   ├── db/                       # Drizzle schema + 客户端（全端共享）
+│   ├── ui-web/                   # shadcn/ui 组件（Web + Desktop 共享）
+│   ├── ui-mobile/                # NativeWind 组件（Mobile）
+│   ├── store/                    # Zustand stores（全端共享）
+│   ├── agent-core/               # 9 层 Agent 编排引擎（基于 Vercel AI SDK 5.0）
+│   ├── deployer/                 # SSH + Docker + Caddy + Serverless 部署器
+│   ├── templates/                # 8 类产品架构模板
+│   │   ├── social/               # W1 首发
+│   │   └── ... (其他 7 类后续)
+│   └── config/                   # 共享 ESLint / TS / Tailwind / PostCSS 配置
+├── tools/
+│   ├── openapi-gen/              # OpenAPI 自动生成脚本
+│   └── e2e/                      # Playwright 测试
+├── docker-compose.dev.yml        # 本地 PG + Redis + MinIO
+├── .github/workflows/            # CI/CD
 ├── turbo.json
 ├── pnpm-workspace.yaml
-├── package.json
 ├── tsconfig.base.json
-├── .gitignore
-├── .gitattributes
-└── README.md
+└── package.json
 ```
+
+### 共享层职责（关键：避免重复代码 = 避免 bug）
+
+| Package | 共享内容 | 跨端复用 |
+|---------|---------|---------|
+| `shared` | Zod schema + TS 类型 + 常量 + KMS | Desktop/Mobile/Web/API 全部 |
+| `api-client` | 类型安全的 fetch 客户端 | Desktop/Mobile/Web |
+| `db` | Drizzle schema + 迁移 | API + Desktop（本地 SQLite 子集） |
+| `store` | Zustand stores（auth/build/ui） | Desktop/Mobile/Web |
+| `agent-core` | Agent 编排引擎 | API（执行） |
+| `templates` | 8 类模板元数据 | API（生成代码时读取） |
+| `config` | ESLint/TS/Tailwind 配置 | 全部 |
+
+**核心原则**：业务逻辑（hooks/stores/api-client/types）跨端 100% 共享，UI 各端原生（shadcn/ui vs NativeWind）。
 
 ---
 
-## 四、本次实现范围
+## 三、九层 Agent 编排引擎（基于 Vercel AI SDK 5.0）
 
-### 4.1 完整实现（Week 1，可运行）
+### 3.1 编排流程
 
-| 模块 | 功能点 | 验收标准 |
-|------|--------|----------|
-| **Monorepo 骨架** | pnpm workspace + Turborepo + TypeScript | `pnpm install` 跑通 |
-| **后端 API** | Fastify + tRPC + Prisma + BullMQ | `pnpm dev:api` 启动，端口 4000 |
-| **数据库** | 完整 Prisma Schema（6 张表） | `pnpm db:push` 成功 |
-| **认证** | JWT 邮箱+密码 注册/登录 | 跨端通用 JWT |
-| **OpenAPI 自动生成** | tRPC → OpenAPI spec | `/openapi.json` 可访问 |
-| **Flutter 共享核心** | flutter_core 包：models + services + state + theme | `flutter pub get` 通过 |
-| **Flutter Desktop 骨架** | 主窗口 + NavigationRail + 路由 + 5 个核心页面骨架 | `flutter run -d windows` 启动 |
-| **Flutter Mobile 骨架** | BottomNav + 路由 + 5 个核心页面骨架 | `flutter run -d android` 启动 |
-| **Next.js Web** | 落地页 + 登录页 + 简化控制台 + PWA | `pnpm dev:web` 启动 |
-| **本地开发环境** | docker-compose.dev.yml（PG+Redis） | 一键启动依赖 |
+```
+用户输入（桌面端/移动端）
+    ↓ POST /api/v1/build/start
+Hono API → BullMQ 入队 → Orchestrator
+  ├─ 串行：①意图识别 → ②架构师 → ③需求澄清
+  ├─ 并行：④产品经理 + ⑤设计师
+  ├─ 串行：⑥前端 → ⑦后端 → ⑧AI 集成
+  ├─ 循环：⑨测试修复（L1/L2/L3，最多 3 轮）
+  └─ 串行：⑩部署发布 + 上架
+    ↓ Vercel AI SDK 5.0 streamText + multi-step
+SSE 流式推送（API → 桌面/移动端）
+    ↓
+前端实时显示 Agent 进度 + 生成的代码
+```
 
-### 4.2 桌面端核心页面骨架（Flutter Desktop）
+### 3.2 Vercel AI SDK 5.0 优势
 
-1. **登录窗口** — 邮箱密码登录
-2. **主控台** — 项目列表 + 服务器列表 + 数据统计
-3. **项目创建向导** — 6 类产品选择 + AI 对话占位
-4. **服务器管理** — 添加表单 + SSH 测试 + Docker 状态
-5. **设置** — 用户资料 + 应用配置
-6. **系统托盘** — 常驻 + 快捷操作菜单
+| 能力 | 自带支持 | 替代方案工作量 |
+|------|---------|---------------|
+| 多 Agent 编排 | ✅ multi-step + tool calling | 自研 2 周 |
+| 流式输出 | ✅ streamText 一行 | 自研 SSE 推送 1 周 |
+| Tool Calling | ✅ 原生（写文件/查 DB/调 API） | 自研 1 周 |
+| 失败重试 | ✅ 内置 | 自研 3 天 |
+| 多模型切换 | ✅ 一行代码 | 自研 3 天 |
+| Token 计数 | ✅ 内置 | 自研 1 天 |
 
-### 4.3 移动端核心页面骨架（Flutter Mobile）
+**决策**：用 Vercel AI SDK 5.0 处理 Agent 内逻辑 + BullMQ 处理跨 Agent 任务持久化（断点续传、超时控制）。
 
-1. **登录页** — 邮箱密码 + 生物识别占位
-2. **状态总览** — 项目卡片 + 下拉刷新
-3. **项目详情** — 状态 + 快速编辑入口
-4. **服务器状态** — 只读列表
-5. **我的** — 资料 + 通知设置
-6. **扫码部署** — 相机扫码占位
+### 3.3 Agent 清单
 
-### 4.4 业务骨架（接口 + 目录，留待 Week 2-4 填充）
+| # | Agent | 职责 | 模型 | 工具 |
+|---|-------|------|------|------|
+| ① | 意图识别 | 识别产品类型 + 核心功能 | Qwen-Turbo/DeepSeek + 规则 | 规则引擎 |
+| ② | 架构师 | 选择最优技术栈 | 规则 + GLM-4-Plus | 模板查询 |
+| ③ | 需求澄清 | 动态问题流 | 规则引擎 | 表单生成器 |
+| ④ | 产品经理 | 功能拆解 + 数据模型 + API | DeepSeek-V3 / Kimi | Drizzle schema 生成 |
+| ⑤ | 设计师 | 设计系统 + 布局 + 组件 | Doubao-Pro / Qwen | shadcn 组件库 |
+| ⑥ | 前端开发 | 生成 React/Next.js 代码 | DeepSeek-V3 + 模板 | 文件写入 |
+| ⑦ | 后端开发 | 生成 Hono API + Drizzle schema | DeepSeek-V3 + 模板 | 文件写入 |
+| ⑧ | AI 集成 | LLM/RAG/工具调用配置 | 配置化 + Qwen | 配置生成器 |
+| ⑨ | 测试修复 | L1静默/L2引导/L3回滚 | DeepSeek + 沙箱 | Bash 执行器 |
+| ⑩ | 部署发布 | SSH/Docker/Caddy/Serverless | 执行器 | SSH/Docker 命令 |
 
-| 模块 | 状态 | 说明 |
+### 3.5 国内模型生态（用户填 Key 即用）
+
+所有国内主流模型均提供 OpenAI 兼容 API，统一通过 `@ai-sdk/openai-compatible` 接入：
+
+| Provider | 模型示例 | API Base | 适用场景 |
+|----------|---------|----------|---------|
+| **DeepSeek** | deepseek-chat / deepseek-coder / deepseek-reasoner | `https://api.deepseek.com/v1` | 代码生成（最强）、推理 |
+| **Kimi（Moonshot）** | moonshot-v1-8k/32k/128k / kimi-latest | `https://api.moonshot.cn/v1` | 长上下文（200 万 tokens） |
+| **Doubao（字节）** | doubao-pro-32k / doubao-lite-32k | `https://ark.cn-beijing.volces.com/api/v3` | 高性价比、设计建议 |
+| **Qwen（阿里通义）** | qwen-turbo / qwen-plus / qwen-max / qwen-coder | `https://dashscope.aliyuncs.com/compatible-mode/v1` | 通用、意图识别 |
+| **GLM（智谱）** | glm-4-plus / glm-4-flash / glm-4-air | `https://open.bigmodel.cn/api/paas/v4` | 架构推荐、中文场景 |
+| **Mimo（小米）** | mimo-7b / mimo-coder | 本地或第三方托管 | 桌面端本地推理 |
+
+**用户使用流程**：
+1. 注册 LynxKit → 进入"模型配置"页
+2. 选择要使用的模型 Provider（可多选）
+3. 填入对应 API Key（明文存储于本地，桌面端 AES 加密）
+4. 系统自动测试连通性，显示余额/速率
+5. 开始构建 AI 产品，自动选择最优模型组合
+
+**桌面端本地模型预留**：
+- 接口：`@ai-sdk/openai-compatible` + 本地 endpoint（如 `http://localhost:11434/v1` Ollama）
+- 用户安装 Ollama → `ollama pull qwen2.5-coder:7b` → LynxKit 桌面端自动检测 → 离线可用
+- 未来扩展：node-llama-cpp 直接在 Electron 主进程推理
+
+### 3.4 修复策略
+
+- **L1 静默修复**：编译/类型/导入错误 → AI 自动重写，不打扰用户
+- **L2 引导修复**：逻辑错误 → 向用户展示 A/B/C 选择题
+- **L3 安全回滚**：致命错误/多次失败 → 自动回滚上一可用版本
+
+---
+
+## 四、数据模型（Drizzle ORM + PostgreSQL 16 + pgvector + SQLite）
+
+### 4.1 平台数据库（11 张核心表）
+
+| 模块 | 表 | 说明 |
+|------|-----|------|
+| 用户 | `users` | email/name/avatar/role |
+| 服务器 | `servers` | 用户自有服务器（SSH 凭证 AES-256-GCM） |
+| 构建会话 | `build_sessions` | 核心：productType/config/architecture/generatedCode/status |
+| 构建日志 | `build_logs` | 每个 Agent 执行日志（结构化 JSON） |
+| 版本快照 | `build_versions` | 配置快照 + 代码 hash，支持回滚 |
+| 商店产品 | `store_products` | 上架产品（定价/截图/分类/版本） |
+| 交易 | `transactions` | 购买/订阅/API 调用 |
+| 评价 | `reviews` | 1-5 星 + 评论 |
+| 创作者 | `creator_profiles` | bio/收益/产品数 |
+| 系统 | `system_configs` | key-value 配置 |
+| 模板 | `templates` | 8 类模板元数据 |
+
+### 4.2 桌面端本地数据库（SQLite，离线缓存）
+
+复用 `packages/db` 的 Drizzle schema，仅缓存：
+- 当前用户的 build_sessions（最近 30 天）
+- 当前用户的 store_products
+- 模板缓存
+- 离线草稿
+
+### 4.3 性能优化
+
+- pgvector HNSW 索引（向量检索）
+- 复合索引（user_id + status + created_at）
+- JSONB GIN 索引
+- 桌面端 SQLite WAL 模式（并发读）
+
+---
+
+## 五、8 类产品类型 + 架构模板
+
+| 类型 | 标签 | Week |
 |------|------|------|
-| 模板引擎 | 接口 + static-site 完整基座 | template.json 标准格式已定 |
-| Agent 编排 | 7 个 Agent 文件骨架 + 接口 | ④⑤⑥⑦ 留 TODO |
-| 部署模块 | ssh.ts / docker.ts / caddy.ts 接口 | 实际逻辑待填 |
-| _base 共享层 | 目录结构 + 占位组件 | 模板复用基础 |
-| 6 个模板目录 | 全部创建 + template.json 元数据 | 业务代码后续填充 |
-| OpenAPI → Dart codegen | 脚本 + 配置 | 手动触发，CI 自动化 Phase 2 |
+| SOCIAL | AI 社交 | W1（首发） |
+| SYSTEM | AI 系统 | W2 |
+| WORKSTATION | AI 工作站 | W2 |
+| DATA | AI 数据分析 | W4 |
+| ADMIN | AI 管理后台 | W3 |
+| APP | AI 应用 App | W3 |
+| MARKETING | AI 营销 | W4 |
+| HARDWARE | AI 硬件 | W4+ |
 
-### 4.5 不在本次范围
-
-- Claude API 真实调用（接口已留，mock 实现）
-- 真实 Docker 编译沙箱（接口已留）
-- 6 个模板的完整业务代码（仅 static-site 完整 + 其余占位）
-- iOS 构建（需 macOS，仅源码就绪）
-- 应用商店上架（Phase 2）
-- 推送服务真实集成（占位配置）
-- 单元测试（Phase 2）
+每个模板：`template.json`（元数据）+ `scaffold/`（脚手架）+ `schema.ts`（Drizzle）+ `components/`（核心组件）+ `questions.ts`（澄清问题）。
 
 ---
 
-## 五、数据库 Schema（平台库）
+## 六、前端架构（三端分别说明）
 
-按产品文档 §9.1 落地，6 张表：
-- `User` — 平台用户（含 deviceToken 字段，用于推送）
-- `Server` — 用户服务器（SSH 凭证 AES-GCM 加密）
-- `Project` — 用户产品项目
-- `ProjectVersion` — 版本快照
-- `DeployLog` — 部署日志
-- `Template` — 平台模板注册表
+### 6.1 桌面端（apps/desktop，Electron + Next.js）
+
+```
+apps/desktop/
+├── electron/
+│   ├── main.ts                # 主进程：窗口管理 + 本地服务
+│   ├── preload.ts             # 安全桥接
+│   └── services/
+│       ├── ai-local.ts        # 本地 AI 推理（onnxruntime-node）
+│       ├── ssh.ts              # SSH 部署
+│       ├── filesystem.ts       # 文件系统访问
+│       └── notification.ts     # 系统通知 + 托盘
+├── src/                        # 复用 apps/web 的 src（符号链接或 alias）
+├── next.config.ts              # 静态导出 + Electron 加载
+└── package.json
+```
+
+**桌面端专属能力**：
+- 本地 AI 推理（onnxruntime-node，离线可用）
+- 文件系统直接访问（保存生成的代码到本地）
+- SSH 部署到用户服务器
+- 系统托盘 + 全局快捷键
+- 多窗口（构建器 + 预览 + 调试）
+- 离线工作（SQLite 缓存）
+
+### 6.2 移动端（apps/mobile，Expo + React Native）
+
+```
+apps/mobile/
+├── app/                        # Expo Router v4
+│   ├── (auth)/                 # 登录/注册
+│   ├── (build)/                # 简化构建
+│   │   ├── index.tsx           # 灵感输入
+│   │   ├── [sessionId].tsx     # 进度查看（SSE 流式）
+│   │   └── preview.tsx         # WebView 预览
+│   ├── (store)/                # 商店浏览
+│   ├── (creator)/              # 创作者中心
+│   └── _layout.tsx
+├── src/
+│   ├── components/             # NativeWind 组件
+│   ├── hooks/
+│   └── theme/
+├── app.config.ts               # Expo 配置
+└── package.json
+```
+
+**移动端专属能力**：
+- Expo Router v4（file-based，类似 Next.js App Router）
+- 推送通知（APNs/FCM）
+- 生物识别（FaceID/指纹）
+- 摄像头（扫描商品码/上传图片）
+- 离线缓存（AsyncStorage）
+- OTA 更新（EAS Update，避免 App Store 审核）
+- WebView 预览生成的 AI 产品
+
+### 6.3 Web（apps/web，Next.js 15，营销+管理+商店）
+
+```
+apps/web/
+├── src/app/
+│   ├── (marketing)/            # 营销页（SEO）
+│   ├── (store)/                # 商店（SEO）
+│   ├── (admin)/                # 管理后台
+│   └── (auth)/                 # 认证
+└── package.json
+```
+
+### 6.4 跨端共享层（关键：避免 bug 的核心）
+
+| 共享内容 | 位置 | 三端如何用 |
+|---------|------|-----------|
+| Zod schema | `packages/shared` | Desktop/Mobile/Web/API 直接 import |
+| TS 类型 | `packages/shared` | 同上 |
+| API 客户端 | `packages/api-client` | 基于 OpenAPI 自动生成，三端共用 |
+| Zustand stores | `packages/store` | Desktop/Mobile/Web 共用业务状态 |
+| Drizzle schema | `packages/db` | API + Desktop（SQLite 子集） |
+| Agent 编排 | `packages/agent-core` | API（执行） |
+| 模板 | `packages/templates` | API（生成代码时读取） |
+
+**关键**：业务逻辑（hooks/stores/api-client）跨端 100% 共享，UI 各端原生。
 
 ---
 
-## 六、实现步骤（按顺序执行）
+## 七、API 后端架构（Hono.js，独立服务）
 
-1. **根目录配置** — package.json, pnpm-workspace, turbo.json, tsconfig.base, .gitignore, .gitattributes
-2. **本地开发依赖** — docker-compose.dev.yml（PG + Redis）
-3. **共享包** — packages/shared（类型、常量、工具、KMS 抽象）
-4. **后端 API** — apps/api（Fastify + tRPC + Prisma + NextAuth JWT + BullMQ）
-   - 4.1 应用骨架 + 配置
-   - 4.2 Prisma Schema 完整定义
-   - 4.3 NextAuth JWT 配置（支持多端鉴权）
-   - 4.4 tRPC 路由（auth/server/project/template/deploy）
-   - 4.5 OpenAPI 自动生成
-   - 4.6 SSH 测试连接实现
-   - 4.7 KMS 加密实现
-5. **Flutter 共享核心** — packages/flutter_core（models + services + state + theme + widgets）
-6. **Flutter Desktop** — apps/desktop（主窗口 + NavigationRail + 5 个页面 + 系统托盘）
-7. **Flutter Mobile** — apps/mobile（BottomNav + 5 个页面 + 路由）
-8. **Next.js Web** — apps/web（落地页 + 登录 + 简化控制台 + PWA）
-9. **模板包** — packages/templates（_base + 6 模板 + static-site 完整基座）
-10. **Agent 编排骨架** — packages/agent-core
-11. **部署模块骨架** — packages/deployer
-12. **README + .env.example**
-13. **创建 Gitee 仓库 LynxKit** + 推送
+### 7.1 为什么独立后端而不是 Next.js Server Actions
+
+- 三端都要调 API（桌面/移动/Web），Server Actions 仅 Web 可用
+- Hono.js Edge-first，部署 Cloudflare Workers（全球 <100ms）
+- Hono + OpenAPI 自动生成 → 自动生成 api-client
+- 独立部署 = 独立扩展（API 压力大时不影响 Web）
+
+### 7.2 路由结构
+
+```
+apps/api/src/routes/
+├── auth/                       # 认证
+├── build/                      # 构建会话 CRUD
+├── agent/                      # Agent 流式接口（SSE）
+├── deploy/                     # 部署
+├── store/                      # 商店
+├── creator/                     # 创作者中心
+└── system/                     # 系统
+```
+
+### 7.3 部署
+
+- **生产**：Cloudflare Workers（Edge，全球 <100ms）
+- **长任务 Worker**（BullMQ + AI 代码生成）：Railway / Fly.io
+- **数据库**：Neon Serverless PostgreSQL + pgvector
+- **Redis**：Upstash Redis
 
 ---
 
-## 七、关键设计决策
+## 八、部署架构
 
-### 7.1 跨端鉴权：JWT 策略
+### 8.1 平台自身部署
 
-```
-用户登录（任意端） → Backend 签发 JWT (HS256)
-   ↓
-桌面端：本地存储 JWT + 自动续期
-移动端：安全存储 (Keychain/Keystore) + 生物识别解锁
-Web 端：HTTP-only Cookie + SameSite
-```
+| 层 | 部署 | 说明 |
+|----|------|------|
+| API（apps/api） | Cloudflare Workers | Edge，全球 <100ms |
+| 长任务 Worker | Railway / Fly.io | BullMQ AI 代码生成（5-30 分钟任务） |
+| Web（apps/web） | Vercel | 营销 + 管理 + 商店 SEO |
+| 桌面端（apps/desktop） | Electron 打包 → GitHub Releases | Win/Mac/Linux |
+| 移动端（apps/mobile） | EAS Submit → App Store / Play Store | iOS/Android |
+| 数据库 | Neon Serverless PG + pgvector | 自动备份 |
+| Redis | Upstash | Edge 内访问 |
+| 文件存储 | Cloudflare R2 | S3 兼容，零出口费 |
 
-### 7.2 类型契约同步
+### 8.2 用户产品部署（部署器）
 
-```typescript
-// apps/api/src/trpc/routers/project.ts
-export const projectRouter = t.router({
-  list: t.procedure
-    .input(z.object({ page: z.number().optional() }))
-    .output(z.array(ProjectSchema))
-    .query(/* ... */),
-});
+| 模式 | 场景 | 技术 |
+|------|------|------|
+| 平台 Serverless | 快速验证 | Vercel + Neon |
+| 用户自有服务器 | 生产 | Docker Compose + Caddy |
+| 混合部署 | 前端 CDN + 后端自有 | Vercel + 用户服务器 |
 
-// 自动生成 OpenAPI spec → openapi-generator → Dart 客户端
-// 前后端类型完全一致，编译期检查
-```
-
-### 7.3 Flutter 自适应布局
-
-```dart
-// packages/flutter_core/lib/widgets/responsive_scaffold.dart
-class ResponsiveScaffold extends StatelessWidget {
-  Widget build(context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth >= 1024) {
-        return DesktopShell(child: child);     // NavigationRail
-      } else if (constraints.maxWidth >= 600) {
-        return TabletShell(child: child);      // 折叠侧栏
-      } else {
-        return MobileShell(child: child);      // BottomNav
-      }
-    });
-  }
-}
-```
-
-### 7.4 桌面端多窗口
-
-```dart
-// apps/desktop/lib/features/multi_window/window_manager.dart
-class ProjectWindow {
-  static Future<void> open(String projectId) async {
-    await DesktopMultiWindow.createWindow(jsonEncode({
-      'type': 'project_detail',
-      'projectId': projectId,
-    }));
-  }
-}
-```
-
-### 7.5 移动端推送
-
-```
-Backend → 推送服务（Firebase Cloud Messaging）
-   ↓
-iOS: APNs 通道
-Android: FCM 通道
-   ↓
-App 接收推送 → 显示通知 → 点击跳转深度链接
-```
-
-### 7.6 SSH 凭证加密
-
-```typescript
-// packages/shared/src/crypto.ts
-interface KMS {
-  encrypt(plain: string): Promise<string>;
-  decrypt(cipher: string): Promise<string>;
-}
-// 本地实现：AES-256-GCM
-// 生产实现：可对接阿里云 KMS / AWS KMS
-```
-
-### 7.7 异步任务队列
-
-- `code-generation` 队列 — 代码生成任务
-- `deployment` 队列 — 部署任务
-- `build-sandbox` 队列 — 编译任务
-- 三端通过 SSE / WebSocket / 轮询获取任务状态
+部署流程：代码生成 → 用户选模式 → 上传/构建 → Caddy 反代+SSL → 健康检查 → 返回 URL。
 
 ---
 
-## 八、风险与对策
+## 九、安全设计
 
-| 风险 | 对策 |
-|------|------|
-| 实现体量极大 | Week 1 聚焦骨架，业务逻辑留 TODO |
-| Flutter SDK 未安装 | 检查并引导安装，提供 `install_flutter.md` |
-| iOS 构建需 macOS | 仅源码就绪，构建交由 CI 或 macOS 开发者 |
-| Windows 路径/换行符 | .gitattributes 强制 LF |
-| pnpm + Flutter 工作区混用 | pubspec.yaml 与 package.json 分离，turbo 仅管 TS 任务 |
-| OpenAPI → Dart codegen 复杂 | Week 1 先手写 models，自动化 Phase 2 |
-| 网络依赖大 | 配置 npmmirror + pub 镜像 |
+- **认证**：Better Auth（bcrypt + JWT + Refresh，手机验证码/微信/Apple）
+- **SSH 凭证**：AES-256-GCM 加密
+- **SSH 沙箱**：命令白名单 + 路径黑名单 + 超时
+- **限流**：Upstash Ratelimit
+- **文件上传**：类型 + 大小 + 病毒扫描
+- **SQL 注入**：Drizzle 参数化
+- **XSS**：React 自动转义 + DOMPurify
+- **CSRF**：SameSite + Better Auth
+- **审计日志**：pino + Axiom
+- **多租户隔离**：RLS + Schema 隔离
 
 ---
 
-## 九、验收标准
+## 十、MVP 一次性实现范围（用户可用本产品开发出第一个 AI 程序）
 
-完成后用户应能：
+### MVP 必须跑通的完整闭环
 
-### 9.1 后端
-1. `pnpm install` 无错误
-2. `docker compose -f docker-compose.dev.yml up -d` 启动 PG+Redis
-3. `pnpm dev:api` 启动 API 服务（端口 4000）
-4. `pnpm db:push` 创建数据库表
-5. `curl http://localhost:4000/openapi.json` 返回 OpenAPI spec
-6. 注册/登录 API 可用，返回 JWT
+```
+用户注册登录 → 输入"我想做一个 AI 社交平台"
+→ ①意图识别（识别为 SOCIAL，置信度 >80%）
+→ ②架构师（推荐 AI 社交架构）
+→ ③需求澄清（5-8 个问题动态生成）
+→ ④产品经理（生成功能列表 + 数据模型）
+→ ⑤设计师（生成设计系统 + 布局）
+→ ⑥前端开发（生成 Next.js 代码）
+→ ⑦后端开发（生成 Hono API + Drizzle schema）
+→ ⑧AI 集成（配置 LLM/RAG）
+→ ⑨测试修复（L1 静默自动修复类型错误）
+→ ⑩部署发布（一键部署到 Vercel）
+→ 用户获得可访问的 URL → 产品上架到商店
+```
 
-### 9.2 Flutter Desktop
-7. `cd apps/desktop && flutter pub get` 通过
-8. `flutter run -d windows` 启动桌面应用
-9. 可看到登录窗口 → 登录后进入主控台
-10. NavigationRail 导航 5 个页面
-11. 系统托盘可见，右键菜单可用
+### MVP 交付清单（一次到位）
 
-### 9.3 Flutter Mobile
-12. `cd apps/mobile && flutter pub get` 通过
-13. `flutter run -d android`（需 Android 模拟器/真机）启动
-14. BottomNav 切换 5 个页面
-15. 登录后看到状态总览
+#### 基础设施（Phase 0）
+- [ ] 清理旧 Flutter 代码
+- [ ] 重建 monorepo 骨架（turbo.json / pnpm-workspace / tsconfig.base）
+- [ ] `packages/shared`：Zod schema + 8 类 ProductType + 常量 + KMS
+- [ ] `packages/db`：Drizzle schema（11 张表 + RLS）+ migrations
+- [ ] `packages/api-client`：基于 OpenAPI 自动生成
+- [ ] `packages/store`：Zustand stores（auth/build/ui）
+- [ ] `packages/ui-web`：shadcn/ui 组件基础
+- [ ] `packages/ui-mobile`：NativeWind 组件基础
+- [ ] `packages/config`：共享 ESLint / TS / Tailwind
+- [ ] `docker-compose.dev.yml`：PG + Redis + MinIO
+- [ ] `.env.example`：全部环境变量
+- [ ] GitHub Actions CI（lint + typecheck + test + build）
 
-### 9.4 Web
-16. `pnpm dev:web` 启动（端口 3000）
-17. 落地页可见
-18. 登录后进入简化控制台
-19. PWA 可安装到主屏
+#### API 后端（Phase 1）
+- [ ] `apps/api`：Hono.js 脚手架
+- [ ] Better Auth 集成（邮箱密码 + 手机验证码）
+- [ ] 限流 + 日志 + 错误中间件
+- [ ] OpenAPI 自动生成
+- [ ] 部署到 Cloudflare Workers（dev 环境）
 
-### 9.5 Git
-20. 仓库已推送到 Gitee `LynxKit`
+#### Agent 编排引擎（Phase 2）
+- [ ] `packages/agent-core`：基于 Vercel AI SDK 5.0 的编排引擎
+- [ ] ①意图识别 Agent（Haiku + 规则）
+- [ ] ②架构师 Agent（规则 + Sonnet）
+- [ ] ③需求澄清 Agent（规则引擎）
+- [ ] ④产品经理 Agent（Sonnet）
+- [ ] ⑤设计师 Agent（Sonnet）
+- [ ] ⑥前端开发 Agent（Sonnet + 模板）
+- [ ] ⑦后端开发 Agent（Sonnet + 模板）
+- [ ] ⑧AI 集成 Agent（配置化 + Sonnet）
+- [ ] ⑨测试修复 Agent（L1 静默 + L2 引导 + L3 回滚）
+- [ ] ⑩部署发布 Agent（Vercel Serverless）
+- [ ] BullMQ 任务队列 + 流式 SSE 推送
+- [ ] `packages/templates/social`：AI 社交模板（完整脚手架 + schema + questions）
+
+#### 桌面端（Phase 3）
+- [ ] `apps/desktop`：Electron + Next.js 脚手架
+- [ ] 主进程 + preload + 本地服务
+- [ ] 复用 `apps/web` 的 src（构建器界面）
+- [ ] 灵感输入框（Server Action + streamText）
+- [ ] 架构匹配卡片
+- [ ] 动态澄清表单（RHF + Zod）
+- [ ] 实时预览（iframe + Blob URL）
+- [ ] Agent 进度流（SSE）
+- [ ] 对话式调试（streamText + multi-step）
+- [ ] 一键部署按钮
+- [ ] 系统托盘 + 离线缓存
+
+#### 移动端（Phase 4）
+- [ ] `apps/mobile`：Expo + React Native 脚手架
+- [ ] Expo Router v4 路由
+- [ ] NativeWind 4 + 主题
+- [ ] 登录/注册
+- [ ] 灵感输入（简化版）
+- [ ] 构建进度查看（SSE）
+- [ ] WebView 预览
+- [ ] 商店浏览（首页/列表/详情）
+- [ ] 创作者中心（产品管理）
+- [ ] 推送通知（构建完成）
+
+#### Web（Phase 5）
+- [ ] `apps/web`：Next.js 15 脚手架
+- [ ] 营销首页（SEO）
+- [ ] 商店公开页（SEO）
+- [ ] 管理后台基础
+- [ ] 认证页
+
+#### 商店 + 创作者中心（Phase 6，简化版）
+- [ ] 商店首页（分类/推荐）
+- [ ] 产品详情页
+- [ ] 上架流程（元数据/定价）
+- [ ] 创作者中心（产品管理）
+- [ ] Stripe 支付集成（一次性购买 + 订阅）
+
+#### 部署 + 收尾（Phase 7）
+- [ ] Playwright E2E 关键路径
+- [ ] Storybook 组件文档
+- [ ] Sentry + Axiom + PostHog 接入
+- [ ] Changesets 版本管理
+- [ ] 推送到个人私有仓库
+- [ ] 桌面端打包（Win/Mac/Linux）
+- [ ] 移动端 EAS 提交（TestFlight + 内测）
+
+### MVP 验收标准
+
+用户在桌面端输入"我想做一个 AI 社交平台，能根据兴趣匹配朋友"：
+1. ✅ 5 秒内识别为 SOCIAL 类型，置信度 >80%
+2. ✅ 展示推荐架构（Next.js + Hono + Drizzle + pgvector + Claude）
+3. ✅ 5-8 个澄清问题（匹配算法/聊天/AI 助手/情感分析等）
+4. ✅ 用户回答后开始 9 Agent 协作（流式显示进度）
+5. ✅ 5-10 分钟生成完整可运行代码（前端 + 后端 + AI 配置）
+6. ✅ 实时预览可交互
+7. ✅ 对话修改"加一个语音聊天功能" → 增量生成
+8. ✅ 一键部署到 Vercel → 获得 URL
+9. ✅ 自动上架到商店
+10. ✅ 移动端收到推送"构建完成"
+11. ✅ 移动端可预览/试用
+
+---
+
+## 十一、接下来的开发计划（按周排期）
+
+### Week 1：基础设施 + API 后端 + 桌面端核心
+- Day 1-2：清理旧代码 + 重建 monorepo + packages/shared + packages/db + packages/config
+- Day 3-4：apps/api（Hono + Better Auth + Drizzle + OpenAPI）+ docker-compose
+- Day 5-7：apps/desktop（Electron + Next.js 复用）+ 灵感输入框 + 意图识别 Agent（①）
+
+### Week 2：9 层 Agent + AI 社交模板
+- Day 8-10：agent-core ②架构师 + ③需求澄清 + ④产品经理 + ⑤设计师
+- Day 11-13：⑥前端开发 + ⑦后端开发 + ⑧AI 集成 + ⑨测试修复 + ⑩部署
+- Day 14：packages/templates/social（完整 AI 社交模板）+ 端到端联调
+
+### Week 3：移动端 + 商店 + 创作者中心
+- Day 15-17：apps/mobile（Expo + React Native + NativeWind）+ 简化构建 + 进度流
+- Day 18-19：商店首页 + 详情页 + 上架流程
+- Day 20-21：创作者中心 + Stripe 支付
+
+### Week 4：部署 + 测试 + 上线
+- Day 22-23：apps/web（营销 + 商店 SEO + 管理后台）
+- Day 24-25：Playwright E2E + Storybook + Sentry/Axiom/PostHog
+- Day 26-27：桌面端打包（Win/Mac/Linux）+ 移动端 EAS 提交
+- Day 28：推送仓库 + 用户文档 + 上线
+
+---
+
+## 十二、技术债务管理
+
+| 阶段 | 允许债务 | 偿还时间 |
+|------|---------|---------|
+| MVP | 硬编码配置、简化权限、单点部署 | Month 2 |
+| Growth | 缺缓存、同步调用、单库 | Month 4 |
+| Scale | 缺监控、手动运维、单区域 | Month 6 |
+
+---
+
+## 十三、关键指标（KPI）
+
+- 构建成功率 > 80%
+- 端到端转化率 > 30%
+- 意图识别准确率 > 90%
+- 代码生成可用率 > 90%
+- L1 修复成功率 > 70%
+- 首次部署 < 60s
+- LCP < 1.5s
+- AI 首字延迟 < 500ms
+- AI 完整生成 < 10 分钟
+- 桌面端冷启动 < 3s
+- 移动端冷启动 < 2s
+
+---
+
+## 十四、本方案对核心约束的回应
+
+| 核心约束 | 方案回应 |
+|---------|---------|
+| **桌面+移动双核心** | Electron（桌面深度构建）+ Expo（移动碎片消费）互补，共享业务逻辑层 |
+| **零手写代码（AI 全程生成）** | 全栈 TypeScript + React + shadcn/ui + NativeWind + Drizzle + Hono，全部 AI 友好度 >85% |
+| **避免迭代 bug** | TypeScript strict + Zod + Vitest + Playwright + CI 门禁 + Sentry + Feature Flag |
+| **一次性 MVP 可用** | 完整 9 Agent + AI 社交模板 + 一键部署 + 商店上架，用户可端到端跑通开发第一个 AI 程序 |
+
+---
+
+> **状态**：待用户确认。确认后立即开始 Week 1（基础设施 + API + 桌面端核心），按周排期推进至 Week 4 MVP 上线。
+> **核心架构**：Electron + Expo + Next.js + Hono + Drizzle + Vercel AI SDK 5.0 + Better Auth + Stripe + Upstash + Cloudflare。
+> **零手写保证**：全部技术栈 AI 生成友好度 ≥80%，最大化 AI 氛围编程效率。

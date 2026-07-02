@@ -1,0 +1,43 @@
+{
+  "name": "@lynxkit/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LynxKit 平台数据库层 - Drizzle ORM schema + 客户端工厂（PostgreSQL + pgvector）",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./schema": {
+      "types": "./src/schema/index.ts",
+      "default": "./src/schema/index.ts"
+    },
+    "./client": {
+      "types": "./src/client.ts",
+      "default": "./src/client.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "push": "drizzle-kit push",
+    "studio": "drizzle-kit studio",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "drizzle-orm": "^0.33.0",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/pg": "^8.11.0",
+    "drizzle-kit": "^0.24.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.5.0"
+  }
+}

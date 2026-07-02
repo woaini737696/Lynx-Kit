@@ -1,43 +1,55 @@
 /**
- * ID 生成工具
- */
-
-/**
- * 生成 CUID（兼容 Prisma 默认 ID 格式）
+ * ID 生成工具 - LynxKit v1.0
  *
- * Week 1 简化版：基于时间戳 + 随机数
- * 生产环境应使用 @paralleldrive/cuid2
+ * 基于 nanoid，提供业务前缀的 ID 生成器。
  */
-export function generateId(prefix: string = ""): string {
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).slice(2, 10);
-  const id = `c${timestamp}${random}`;
-  return prefix ? `${prefix}_${id}` : id;
-}
+
+import { nanoid } from "nanoid";
 
 /**
- * 生成短 ID（用于分享链接等）
+ * 生成 nanoid（默认 21 位）
  */
-export function generateShortId(length: number = 8): string {
-  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
+export const createId = (size = 21): string => nanoid(size);
 
 /**
- * 生成随机字符串（用于密钥、token 等）
+ * 生成构建会话 ID（前缀 ses_）
  */
-export function generateRandomString(length: number = 32): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  const cryptoObj = typeof crypto !== "undefined" ? crypto : require("crypto").webcrypto;
-  const values = new Uint32Array(length);
-  cryptoObj.getRandomValues(values);
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(values[i] % chars.length);
-  }
-  return result;
-}
+export const createSessionId = (): string => `ses_${nanoid(16)}`;
+
+/**
+ * 生成构建 ID（前缀 bld_）
+ */
+export const createBuildId = (): string => `bld_${nanoid(16)}`;
+
+/**
+ * 生成 Agent 日志 ID（前缀 log_）
+ */
+export const createLogId = (): string => `log_${nanoid(16)}`;
+
+/**
+ * 生成交易订单号（前缀 txn_ + 时间戳）
+ */
+export const createTransactionId = (): string => {
+  const ts = Date.now().toString(36);
+  return `txn_${ts}${nanoid(10)}`;
+};
+
+/**
+ * 生成商店产品 ID（前缀 prod_）
+ */
+export const createProductId = (): string => `prod_${nanoid(16)}`;
+
+/**
+ * 生成评价 ID（前缀 rev_）
+ */
+export const createReviewId = (): string => `rev_${nanoid(16)}`;
+
+/**
+ * 生成短 ID（8 位，用于分享链接）
+ */
+export const createShortId = (length = 8): string => nanoid(length);
+
+/**
+ * 生成随机 token（用于 refresh token / API token）
+ */
+export const createToken = (size = 32): string => nanoid(size);

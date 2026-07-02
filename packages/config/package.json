@@ -1,0 +1,37 @@
+{
+  "name": "@lynxkit/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LynxKit monorepo 共享配置（ESLint / TypeScript / Tailwind / PostCSS / Biome）",
+  "type": "module",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tsconfig.nextjs.json": "./tsconfig.nextjs.json",
+    "./eslint": "./eslint.config.js",
+    "./biome.json": "./biome.json",
+    "./tailwind.preset": "./tailwind.preset.ts",
+    "./postcss": "./postcss.config.js"
+  },
+  "scripts": {
+    "clean": "rimraf .turbo"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@biomejs/biome": "^1.9.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.6.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.0"
+  }
+}

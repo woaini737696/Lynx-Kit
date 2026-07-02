@@ -1,18 +1,22 @@
 /**
- * 结构化日志（基于 pino）
+ * Pino 日志单例 - LynxKit API
  *
- * 开发模式启用 pino-pretty 美化输出；
- * 生产模式输出 JSON 便于 ELK / Loki 采集。
+ * 开发模式启用 pino-pretty 彩色输出；
+ * 生产模式输出 JSON 便于 ELK / Loki / Axiom 采集。
+ *
+ * 全局统一使用此 logger，避免每个模块各自创建 pino 实例。
  */
 import pino from "pino";
 
-const isDev = process.env.NODE_ENV !== "production";
+import { env } from "../env.js";
+
+const isDev = env.NODE_ENV === "development";
 
 export const logger = pino({
-  level: process.env.LOG_LEVEL ?? (isDev ? "debug" : "info"),
+  level: env.NODE_ENV === "test" ? "silent" : isDev ? "debug" : "info",
   base: {
     service: "lynxkit-api",
-    env: process.env.NODE_ENV ?? "development",
+    env: env.NODE_ENV,
   },
   timestamp: pino.stdTimeFunctions.isoTime,
   ...(isDev

@@ -1,8 +1,7 @@
 /**
- * LynxKit 加密抽象层
+ * LynxKit 加密抽象层 - v1.0
  *
- * Week 1 提供本地 AES-256-GCM 实现。
- * 生产环境可替换为云 KMS（阿里云 KMS / AWS KMS）实现。
+ * 提供本地 AES-256-GCM 实现（local-kms），可替换为云 KMS（aliyun / aws / tencent）。
  */
 
 export * from "./kms.js";

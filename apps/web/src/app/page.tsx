@@ -1,195 +1,95 @@
-import Link from "next/link";
-import {
-  ArrowRight,
-  Boxes,
-  Layers,
-  Rocket,
-  ShieldCheck,
-  Sparkles,
-  Wrench,
-} from "lucide-react";
+import { MessageSquare, Cpu, Rocket } from "lucide-react";
+import { Navbar } from "@/components/marketing/navbar";
+import { Hero } from "@/components/marketing/hero";
+import { Features } from "@/components/marketing/features";
+import { ProductTypes } from "@/components/marketing/product-types";
+import { Pricing } from "@/components/marketing/pricing";
+import { Testimonials } from "@/components/marketing/testimonials";
+import { CTA } from "@/components/marketing/cta";
+import { Footer } from "@/components/marketing/footer";
 
-import { APP_CONFIG, PRODUCT_TYPES } from "@lynxkit/shared";
-
-import { Button } from "@/components/ui/button";
-
-// 三个核心特性
-const FEATURES = [
+const STEPS = [
   {
-    icon: Layers,
-    title: "架构透明",
-    description:
-      "生成可见的、可读的、可改的源码。不锁死供应商，你的产品你完全拥有。",
+    icon: <MessageSquare className="h-5 w-5" />,
+    title: "描述你的想法",
+    desc: "用自然语言告诉 AI 你想构建什么",
+    step: "01",
   },
   {
-    icon: Sparkles,
-    title: "模板优先",
-    description:
-      "6 类产品模板覆盖官网、预约、内容、电商、活动、后台，意图识别自动选型。",
+    icon: <Cpu className="h-5 w-5" />,
+    title: "AI 自动生成",
+    desc: "9 层 Agent 协同产出完整代码与部署方案",
+    step: "02",
   },
   {
-    icon: ShieldCheck,
-    title: "零运维",
-    description:
-      "Docker + Caddy 自动化部署到你自己的服务器，L1 自修复 + L2 引导修复。",
+    icon: <Rocket className="h-5 w-5" />,
+    title: "部署上架",
+    desc: "一键部署到云端，并可发布到 LynxKit 商店",
+    step: "03",
   },
-] as const;
+];
 
-export default function LandingPage() {
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      {/* 顶部导航 */}
-      <header className="sticky top-0 z-40 border-b border-zinc-100 bg-white/80 backdrop-blur">
-        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-lynx-500 text-white">
-              <Boxes className="h-5 w-5" />
-            </span>
-            <span className="text-lg font-bold text-zinc-900">
-              {APP_CONFIG.name}
-            </span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild>
-              <Link href="/login">登录</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/register">免费注册</Link>
-            </Button>
-          </div>
-        </nav>
-      </header>
-
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
       <main className="flex-1">
-        {/* Hero */}
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-lynx-50 via-white to-white" />
-          <div className="absolute left-1/2 top-0 -z-10 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-lynx-200/30 blur-3xl" />
-          <div className="mx-auto max-w-6xl px-4 py-24 text-center md:px-6 md:py-32">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-lynx-200 bg-lynx-50 px-4 py-1.5 text-sm font-medium text-lynx-700 animate-fade-in">
-              <Rocket className="h-4 w-4" />
-              原生双端 AI 产品构建平台
-            </div>
-            <h1 className="bg-gradient-to-br from-zinc-900 to-zinc-700 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent md:text-7xl animate-slide-up">
-              {APP_CONFIG.tagline}
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-600 md:text-xl animate-slide-up">
-              不会代码，也能独立做产品。从想法到上线，LynxKit 用 AI 帮你把产品造出来。
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row animate-slide-up">
-              <Button size="lg" asChild>
-                <Link href="/register">
-                  立即开始
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/login">已有账号，登录</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        <Hero />
+        <Features />
+        <ProductTypes />
 
-        {/* 特性介绍 */}
-        <section className="mx-auto max-w-6xl px-4 py-20 md:px-6">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-zinc-900 md:text-4xl">
-              为什么选择 LynxKit
-            </h2>
-            <p className="mt-3 text-zinc-600">
-              把复杂留给自己，把简单交给你
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {FEATURES.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <div
-                  key={feature.title}
-                  className="rounded-2xl border border-zinc-100 bg-white p-8 shadow-sm transition-shadow hover:shadow-md"
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-lynx-50 text-lynx-600">
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <h3 className="mt-5 text-xl font-semibold text-zinc-900">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-600">
-                    {feature.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* 产品类型展示 */}
-        <section className="border-t border-zinc-100 bg-zinc-50/50 py-20">
-          <div className="mx-auto max-w-6xl px-4 md:px-6">
-            <div className="mb-12 text-center">
-              <h2 className="text-3xl font-bold text-zinc-900 md:text-4xl">
-                6 类产品，覆盖独立开发者全部场景
+        {/* HowItWorks —— 三步流程 */}
+        <section id="how-it-works" className="border-y border-border bg-muted/30 py-24 sm:py-32">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-widest text-lynx-500">
+                工作流程
+              </p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                三步即可上线
               </h2>
-              <p className="mt-3 text-zinc-600">
-                告诉我你想做什么，剩下交给我们
+              <p className="mt-4 text-lg text-muted-foreground">
+                从想法到上线，只需几分钟
               </p>
             </div>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {PRODUCT_TYPES.map((product) => (
-                <div
-                  key={product.id}
-                  className="group relative overflow-hidden rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
-                >
-                  <div
-                    className="absolute right-0 top-0 h-24 w-24 rounded-bl-full opacity-10 transition-opacity group-hover:opacity-20"
-                    style={{ backgroundColor: product.color }}
-                  />
-                  <span
-                    className="flex h-11 w-11 items-center justify-center rounded-xl text-white"
-                    style={{ backgroundColor: product.color }}
-                  >
-                    <Wrench className="h-5 w-5" />
-                  </span>
-                  <h3 className="mt-4 text-lg font-semibold text-zinc-900">
-                    {product.name}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">
-                    {product.description}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {product.techStack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600"
-                      >
-                        {tech}
+
+            <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+              {STEPS.map((s, idx) => (
+                <div key={s.step} className="relative">
+                  <div className="flex h-full flex-col rounded-xl border border-border bg-card p-6">
+                    <div className="flex items-center justify-between">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-lynx-500/10 text-lynx-500">
+                        {s.icon}
                       </span>
-                    ))}
+                      <span className="text-3xl font-bold text-muted-foreground/20">
+                        {s.step}
+                      </span>
+                    </div>
+                    <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {s.desc}
+                    </p>
                   </div>
+                  {/* 连接箭头 */}
+                  {idx < STEPS.length - 1 ? (
+                    <div
+                      aria-hidden
+                      className="absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center text-lynx-500 md:flex"
+                    >
+                      →
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>
           </div>
         </section>
-      </main>
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-100 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-lynx-500 text-white">
-              <Boxes className="h-4 w-4" />
-            </span>
-            <span className="text-sm font-semibold text-zinc-900">
-              {APP_CONFIG.name}
-            </span>
-            <span className="text-sm text-zinc-400">· {APP_CONFIG.tagline}</span>
-          </div>
-          <p className="text-xs text-zinc-400">
-            © {new Date().getFullYear()} {APP_CONFIG.name}. All rights reserved.
-          </p>
-        </div>
-      </footer>
+        <Pricing />
+        <Testimonials />
+        <CTA />
+      </main>
+      <Footer />
     </div>
   );
 }

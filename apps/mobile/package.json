@@ -1,0 +1,49 @@
+{
+  "name": "@lynxkit/mobile",
+  "version": "0.1.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lynxkit/api-client": "workspace:*",
+    "@lynxkit/shared": "workspace:*",
+    "@lynxkit/store": "workspace:*",
+    "@lynxkit/ui-mobile": "workspace:*",
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "@tanstack/react-query": "^5.59.0",
+    "expo": "~52.0.0",
+    "expo-constants": "~16.0.0",
+    "expo-device": "~6.0.0",
+    "expo-haptics": "~13.0.0",
+    "expo-image": "~1.13.0",
+    "expo-linking": "~6.0.0",
+    "expo-notifications": "~0.28.0",
+    "expo-router": "~4.0.0",
+    "expo-secure-store": "~13.0.0",
+    "expo-splash-screen": "~0.29.0",
+    "expo-status-bar": "~2.0.0",
+    "lucide-react-native": "^0.439.0",
+    "nativewind": "^4.1.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.75.4",
+    "react-native-gesture-handler": "~2.20.2",
+    "react-native-reanimated": "~3.15.0",
+    "react-native-safe-area-context": "4.11.1",
+    "react-native-screens": "3.34.0",
+    "react-native-web": "~0.19.13",
+    "tailwindcss": "^3.4.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~18.3.0",
+    "typescript": "^5.6.0",
+    "tailwindcss": "^3.4.0"
+  }
+}

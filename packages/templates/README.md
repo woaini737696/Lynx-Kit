@@ -24,7 +24,8 @@ packages/templates/
 ├── content-publish/         # 内容发布（仅 template.json + 占位）
 ├── light-commerce/          # 电商交易（仅 template.json + 占位）
 ├── event-manage/            # 活动管理（仅 template.json + 占位）
-└── admin-dashboard/         # 管理后台（仅 template.json + 占位）
+├── admin-dashboard/         # 管理后台（仅 template.json + 占位）
+└── social/                  # AI 社交（W1 首发，AI-native，含完整 scaffold）
 ```
 
 ## 6 大预设架构模板
@@ -37,6 +38,16 @@ packages/templates/
 | `light-commerce` | 电商交易 | Next.js 15 + PostgreSQL + Stripe | 手作商城、知识付费、会员订阅、虚拟商品 |
 | `event-manage` | 活动管理 | Next.js 15 + PostgreSQL + PWA | 活动报名、会议签到、课程管理、聚会组织 |
 | `admin-dashboard` | 管理后台 | Next.js 15 + PostgreSQL + shadcn/ui | 内部工具、客户管理、数据看板、CRM |
+
+## AI-native 模板（Week 1 首发）
+
+> 在 6 大预设架构之外，新增 AI-native 产品类型，`social` 为首发。
+
+| 模板 ID | 名称 | 类型 | 技术栈 | 适用场景 |
+|---------|------|------|--------|----------|
+| `social` | AI 社交产品 | SOCIAL / W1 | Next.js 15 + Hono + PostgreSQL/pgvector + WebSocket + DeepSeek-V3 | 智能匹配、AI 破冰、情感分析、实时聊天 |
+
+`social` 模板含完整 `scaffold/`（前端 + 后端 + Drizzle schema），9 层 Agent 在生成用户产品时基于此模板填充业务逻辑。
 
 ## _base 共享层使用方式
 

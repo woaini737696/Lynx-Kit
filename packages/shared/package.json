@@ -2,42 +2,25 @@
   "name": "@lynxkit/shared",
   "version": "0.1.0",
   "private": true,
-  "description": "LynxKit 跨端共享类型、常量、工具函数",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
-    },
-    "./types": {
-      "types": "./src/types/index.ts",
-      "default": "./src/types/index.ts"
-    },
-    "./constants": {
-      "types": "./src/constants/index.ts",
-      "default": "./src/constants/index.ts"
-    },
-    "./utils": {
-      "types": "./src/utils/index.ts",
-      "default": "./src/utils/index.ts"
-    },
-    "./crypto": {
-      "types": "./src/crypto/index.ts",
-      "default": "./src/crypto/index.ts"
-    }
+    ".": "./src/index.ts",
+    "./*": "./src/*"
   },
   "scripts": {
+    "build": "tsc -b",
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf dist .turbo"
+    "lint": "eslint src --max-warnings 0"
   },
   "dependencies": {
-    "zod": "^3.23.0"
+    "zod": "^3.23.8",
+    "nanoid": "^5.0.7"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
-    "rimraf": "^5.0.0",
-    "typescript": "^5.5.0"
+    "typescript": "^5.6.0",
+    "@types/node": "^22.5.0",
+    "eslint": "^9.10.0"
   }
 }

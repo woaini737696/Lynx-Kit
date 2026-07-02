@@ -1,61 +1,72 @@
 import Link from "next/link";
-import { Boxes } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
-import { APP_CONFIG } from "@lynxkit/shared";
-
+/**
+ * 认证页布局
+ *
+ * 简洁的左右双栏：左侧品牌区，右侧表单区。
+ * 移动端只显示表单区。
+ */
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
-      {/* 左侧品牌展示（移动端隐藏） */}
-      <aside className="relative hidden w-1/2 flex-col justify-between bg-gradient-to-br from-lynx-500 via-lynx-600 to-lynx-700 p-12 text-white lg:flex">
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage:
-            "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.3) 0, transparent 40%)",
-        }} />
+    <div className="grid min-h-screen lg:grid-cols-2">
+      {/* 品牌区（仅大屏可见） */}
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-lynx-500 via-lynx-600 to-lynx-700 p-10 text-white lg:flex">
+        <div
+          aria-hidden
+          className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-white/10 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-black/10 blur-3xl"
+        />
+
         <Link href="/" className="relative flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 backdrop-blur">
-            <Boxes className="h-5 w-5" />
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 backdrop-blur">
+            <Sparkles className="h-5 w-5" />
           </span>
-          <span className="text-xl font-bold">{APP_CONFIG.name}</span>
+          <span className="text-xl font-bold tracking-tight">LynxKit</span>
         </Link>
 
         <div className="relative">
-          <h2 className="text-4xl font-extrabold leading-tight">
-            {APP_CONFIG.tagline}
-          </h2>
-          <p className="mt-4 max-w-md text-lg text-white/80">
-            不会代码，也能独立做产品。从想法到上线，一切交给 LynxKit。
+          <h1 className="text-3xl font-bold leading-tight">
+            AI 时代，
+            <br />
+            人人都是造物主
+          </h1>
+          <p className="mt-4 max-w-sm text-white/80">
+            加入 LynxKit，开始你的造物之旅。一句话描述你的想法，
+            AI 帮你从架构到代码再到部署一站完成。
           </p>
-          <div className="mt-8 flex items-center gap-6 text-sm text-white/70">
-            <div>
-              <div className="text-2xl font-bold text-white">6+</div>
-              产品模板
-            </div>
-            <div className="h-8 w-px bg-white/20" />
-            <div>
-              <div className="text-2xl font-bold text-white">0</div>
-              运维成本
-            </div>
-            <div className="h-8 w-px bg-white/20" />
-            <div>
-              <div className="text-2xl font-bold text-white">100%</div>
-              源码拥有
-            </div>
-          </div>
+
+          <ul className="mt-8 space-y-2 text-sm text-white/90">
+            <li className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-white" />
+              9 层 Agent 流水线
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-white" />
+              8 类产品类型支持
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-white" />
+              永久免费档，无需信用卡
+            </li>
+          </ul>
         </div>
 
-        <p className="relative text-sm text-white/60">
-          © {new Date().getFullYear()} {APP_CONFIG.name}
+        <p className="relative text-xs text-white/60">
+          © {new Date().getFullYear()} LynxKit. 保留所有权利。
         </p>
       </aside>
 
-      {/* 右侧表单卡片 */}
-      <main className="flex w-full items-center justify-center bg-zinc-50 px-4 py-12 lg:w-1/2">
-        <div className="w-full max-w-md animate-slide-up">{children}</div>
+      {/* 表单区 */}
+      <main className="flex items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-md">{children}</div>
       </main>
     </div>
   );

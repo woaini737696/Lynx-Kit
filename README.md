@@ -1,169 +1,158 @@
+<div align="center">
+
 # LynxKit
 
-> **人人都是超级个体** —— 不会代码，也能独立做产品。
->
-> 用户只管说需求，平台自动选架构、选模板、生成代码、一键部署。
+<!-- logo 占位：替换为实际 logo 路径 -->
+<!-- <img src="docs/assets/logo.png" width="200" alt="LynxKit Logo" /> -->
 
-基于产品规格 v0.2，采用 **原生桌面端 + 原生移动端（iOS/Android）+ Web 备用入口** 的双端互补架构：一套 Flutter 代码编译为原生桌面 + 原生移动端，功能互补而非完全一致；Node.js + Fastify 单一后端服务三端。
+**AI 时代，人人都是造物主。**
 
----
+基于自然语言描述，9 层 Agent 协作开发完整 AI 产品，一键部署上架 AI 应用商店。
 
-## 一、技术架构
+[![CI](https://github.com/lynxkit/lynxkit/actions/workflows/ci.yml/badge.svg)](https://github.com/lynxkit/lynxkit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-### 1.1 三端互补分工
-
-| 能力 | 桌面端（Win/Mac/Linux） | 移动端（iOS/Android） | Web |
-|------|------------------------|----------------------|-----|
-| 项目创建向导 | ✅ 完整 | ❌ | ❌ |
-| 代码编辑预览 | ✅ 分屏 | ❌ | ❌ |
-| 服务器管理 | ✅ SSH+Docker | 🔍 只读 | ❌ |
-| 部署日志 | ✅ 完整流 | 📋 卡片 | ❌ |
-| 状态总览 | ✅ 仪表盘 | ✅ 卡片+下拉 | 简化 |
-| 推送通知 | ✅ 系统通知 | ✅ FCM/APNs | Web Push |
-| 项目快速编辑 | ✅ 编辑器 | 💬 对话式 AI | ❌ |
-| 生物识别 | — | ✅ 指纹/Face ID | ❌ |
-| 相机扫码 | — | ✅ 扫码部署 | ❌ |
-| 系统托盘 / 全局快捷键 | ✅ | — | — |
-| 深度链接 | — | ✅ lynxkit:// | URL |
-
-### 1.2 技术栈
-
-- **桌面 + 移动**：Flutter 3（Dart 3）→ 原生编译为 ARM/x64 机器码，共享 85%+ 代码
-  - 桌面：Riverpod 2 + go_router + window_manager + tray_manager + hotkey_manager + re_editor
-  - 移动：Riverpod 2 + go_router + firebase_messaging + local_auth + mobile_scanner
-- **后端 API**：Node.js 20 + Fastify 5 + tRPC 11（OpenAPI 自动生成）+ Prisma 5 + PostgreSQL 16 + BullMQ 5 + Redis 7 + pino
-- **鉴权**：NextAuth.js v5（JWT/HS256），桌面端本地续期、移动端 Keychain/Keystore + 生物识别、Web HTTP-only Cookie
-- **Web**：Next.js 15 App Router + React 19 + Tailwind 3 + Radix UI + Serwist 9（PWA）
-- **类型契约**：Zod schema → tRPC → OpenAPI → Dart codegen（端到端类型安全）
-- **加密**：LocalKMS（AES-256-GCM）抽象层，可替换为云 KMS
-- **部署**：NodeSSH + Docker Compose + Caddy（自动 SSL）
-
-### 1.3 Agent 七层编排引擎
-
-```
-用户输入需求
-  ↓
-① 意图识别（Claude Haiku，零成本规则匹配兜底）
-  ↓
-② 需求澄清（自研规则引擎，按 template.json 问题流推进）
-  ↓
-③ 模板选择（纯查表，零成本）
-  ↓
-④ 配置填充（Claude Sonnet，占位符替换 + 动态内容生成）
-  ↓
-⑤ 编译测试（Docker 沙箱，CPU 1核/内存 1G/超时 5min/无网络）
-  ↓ 失败
-⑥ 修复（L1 静默修复 → L2 引导选择题 → L3 安全回滚）
-  ↓ 成功
-⑦ 部署（SSH 上传 → docker compose up → Caddy 反代 → 健康检查）
-```
+</div>
 
 ---
 
-## 二、Monorepo 结构
+## 核心特性
+
+- 🧠 **9 层 Agent 编排引擎** —— 意图识别、架构设计、需求澄清、产品经理、设计师、前端、后端、AI 集成、测试修复、部署，全自动协作。
+- 🗣️ **自然语言驱动** —— 用户只描述需求，平台自动选模板、生成代码、编译验证、部署上线。
+- 🖥️ **跨端覆盖** —— Electron 桌面端 + Expo 移动端 + Next.js Web 端，一套类型契约贯穿。
+- 🤖 **国内 6 大模型接入** —— DeepSeek / Kimi / 豆包 / 通义千问 / GLM / MiMo，开箱即用。
+- 🔐 **企业级安全** —— Better Auth 鉴权 + LocalKMS（AES-256-GCM）加密 + Docker 沙箱构建隔离。
+- 🚀 **一键部署上架** —— SSH + Docker Compose + Caddy 自动 SSL，产物直达 AI 应用商店。
+
+## 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 桌面端 | Electron 30 + Next.js 15 + React 19 + shadcn/ui |
+| 移动端 | Expo（React Native） |
+| Web 端 | Next.js 15 App Router + React 19 + Tailwind + Serwist（PWA） |
+| 后端 API | Hono（Cloudflare Workers / Node.js）+ tRPC |
+| 数据层 | Drizzle ORM + PostgreSQL 16（pgvector）+ Redis 7 |
+| AI 编排 | Vercel AI SDK 5.0 + 9 层 Agent + 工具调用 |
+| 鉴权 | Better Auth（JWT / OAuth / 邮箱魔法链接） |
+| AI 模型 | DeepSeek · Kimi · 豆包 · 通义千问 · GLM · MiMo（国内 6 大模型） |
+| 加密 | LocalKMS（AES-256-GCM），可替换云 KMS |
+| 部署 | NodeSSH + Docker Compose + Caddy（自动 SSL） |
+| Monorepo | pnpm workspace + Turborepo |
+
+## 快速开始
+
+### 环境要求
+
+- Node.js ≥ 20.14
+- pnpm ≥ 9.12
+- Docker Desktop（用于本地数据库与构建沙箱）
+
+### 1. 安装依赖
+
+```bash
+pnpm install
+```
+
+### 2. 启动本地基础设施
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+# 包含 PostgreSQL 16 (pgvector) + Redis 7 + MinIO
+```
+
+### 3. 配置环境变量
+
+```bash
+cp .env.example .env
+# 填入 AI 模型 Key、数据库连接、加密密钥等
+```
+
+### 4. 初始化数据库
+
+```bash
+pnpm db:push      # 推送 schema
+# 或 pnpm db:migrate
+```
+
+### 5. 启动开发服务
+
+```bash
+pnpm dev          # 通过 Turborepo 并行启动所有应用
+```
+
+亦可按需单独启动：
+
+```bash
+pnpm --filter @lynxkit/api dev       # 后端 API
+pnpm --filter @lynxkit/web dev       # Web 端
+pnpm --filter @lynxkit/desktop dev   # 桌面端
+```
+
+## 项目结构
 
 ```
 LynxKit/
 ├── apps/
-│   ├── api/              # 后端 API（Fastify + tRPC + Prisma）
-│   ├── web/              # Web 备用入口 + 落地页 + PWA（Next.js 15）
-│   ├── desktop/          # Flutter 原生桌面端（Win/Mac/Linux）
-│   └── mobile/           # Flutter 原生移动端（iOS/Android）
+│   ├── api/          # 后端 API（Hono + tRPC + Drizzle）
+│   ├── web/          # Web 端 + 落地页 + PWA（Next.js 15）
+│   ├── desktop/      # 桌面端（Electron + Next.js）
+│   └── mobile/       # 移动端（Expo）
 ├── packages/
-│   ├── shared/           # TypeScript 共享类型 + Zod schema + 工具 + KMS 抽象
-│   ├── agent-core/       # 七层 Agent 编排引擎（LLM Provider + 7 个 Agent + 编排器）
-│   ├── deployer/         # 部署执行模块（SSH / Docker / Caddy / 沙箱 / 健康检查）
-│   ├── flutter_core/     # Flutter 共享库（models / services / state / theme / widgets）
-│   └── templates/        # 6 类模板基座 + _base 通用层
-├── docker-compose.dev.yml # 本地 PG + Redis
-├── turbo.json            # Turborepo 任务编排
-├── pnpm-workspace.yaml   # pnpm workspace 配置
-└── tsconfig.base.json    # TS 基础配置
+│   ├── shared/       # 共享类型 + Zod schema + KMS 加密
+│   ├── agent-core/   # 9 层 Agent 编排引擎 + LLM Provider
+│   ├── db/           # Drizzle ORM schema 与数据库客户端
+│   ├── deployer/     # 部署模块（SSH / Docker / Caddy / 沙箱）
+│   ├── api-client/   # 端到端类型安全 API 客户端
+│   ├── store/        # Zustand 状态管理
+│   ├── ui-web/       # shadcn/ui 组件库
+│   └── templates/    # 6 类产品模板基座
+├── docker-compose.dev.yml
+├── turbo.json
+├── pnpm-workspace.yaml
+└── .env.example
 ```
 
----
-
-## 三、快速开始
-
-### 3.1 环境要求
-
-- Node.js ≥ 20.14
-- pnpm ≥ 9.12
-- Flutter 3.x（含 desktop / iOS / Android 工具链）
-- Docker Desktop（用于本地数据库 + ⑤ 沙箱构建）
-- PostgreSQL 16 / Redis 7（通过 `docker-compose.dev.yml` 启动）
-
-### 3.2 安装依赖
+## 开发指南
 
 ```bash
-pnpm install
-cd apps/desktop && flutter pub get && cd ../..
-cd apps/mobile && flutter pub get && cd ../..
+pnpm dev          # 启动所有应用开发服务
+pnpm build        # 构建所有包
+pnpm lint         # 代码检查
+pnpm typecheck    # 类型检查
+pnpm test         # 运行测试
+pnpm clean        # 清理构建产物
+pnpm db:studio    # Drizzle Studio 可视化数据库
 ```
 
-### 3.3 启动本地数据库
+CI 流水线（`.github/workflows/ci.yml`）会依次执行 `lint → typecheck → test → build`，提交前请确保本地通过。
 
-```bash
-docker compose -f docker-compose.dev.yml up -d
-```
+## 环境变量
 
-### 3.4 配置环境变量
+完整变量清单见 [.env.example](./.env.example)，主要包含：
 
-```bash
-cp .env.example .env
-# 填入 ANTHROPIC_API_KEY、NEXTAUTH_SECRET、JWT_SECRET、KMS_MASTER_KEY 等
-```
+- `DATABASE_URL` / `REDIS_URL` —— 数据库与缓存连接
+- `BETTER_AUTH_SECRET` / `BETTER_AUTH_URL` —— 鉴权密钥与回调地址
+- `KMS_MASTER_KEY` —— AES-256-GCM 加密主密钥（32 字节 hex）
+- 各 AI 模型 API Key 与 Base URL
+- `S3_*` / `STRIPE_*` / `SENTRY_DSN` 等可选项
 
-### 3.5 初始化数据库
+## 国内模型配置说明
 
-```bash
-pnpm --filter @lynxkit/api prisma migrate dev
-pnpm --filter @lynxkit/api prisma db seed
-```
+LynxKit 内置国内 6 大模型适配，在 `.env` 中按需填入 Key 即可启用：
 
-### 3.6 启动各端
+| 模型 | 环境变量 | 默认 Base URL |
+|------|---------|---------------|
+| DeepSeek | `DEEPSEEK_API_KEY` | `https://api.deepseek.com/v1` |
+| Kimi（月之暗面） | `KIMI_API_KEY` | `https://api.moonshot.cn/v1` |
+| 豆包（字节） | `DOUBAO_API_KEY` | `https://ark.cn-beijing.volces.com/api/v3` |
+| 通义千问（阿里） | `QWEN_API_KEY` | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| GLM（智谱） | `GLM_API_KEY` | `https://open.bigmodel.cn/api/paas/v4` |
+| MiMo（小米） | `MIMO_API_KEY` | `http://localhost:11434/v1` |
 
-```bash
-pnpm --filter @lynxkit/api dev          # 后端 API（端口 4000）
-pnpm --filter @lynxkit/web dev          # Web 端（端口 3000）
-cd apps/desktop && flutter run -d windows   # 桌面端（macos/linux/windows）
-cd apps/mobile && flutter run -d <device>   # 移动端
-```
+桌面端「设置 → AI 模型」中可可视化配置与测试连通性，支持多模型并行路由。
 
----
+## License
 
-## 四、6 类产品模板
-
-| 产品类型 | 模板 | 适用场景 |
-|---------|------|---------|
-| 品牌展示 | static-site | 官网 / 作品集 / 落地页 |
-| 服务预约 | service-booking | 教练 / 美容 / 咨询预约 |
-| 内容发布 | content-publish | 博客 / 知识库 / newsletter |
-| 电商交易 | light-commerce | 手作商城 / 知识付费 |
-| 活动管理 | event-manage | 报名 / 签到 / 课程 |
-| 管理后台 | admin-dashboard | CRM / 数据看板 / 内部工具 |
-
-每个模板由 `template.json`（问题 + 配置映射）+ `_base/` 通用层（UI / layout / auth / prisma / Docker / Caddy）组成，AI 仅改配置不动骨架。
-
----
-
-## 五、安全约束
-
-- **SSH 沙箱**：命令白名单 + 路径遍历检测 + 黑名单目录
-- **Docker 沙箱**：构建容器只读 rootfs + 无网络 + seccomp + 资源限制
-- **KMS 加密**：SSH 凭证 AES-256-GCM 加密存储，绝不落盘明文
-- **跨端 JWT**：HS256，桌面端本地续期、移动端 Keychain/Keystore 保护、Web HTTP-only Cookie
-- **路径隔离**：每个项目独立目录 `/opt/lynxkit-projects/<projectId>/`
-
----
-
-## 六、迭代路线
-
-| 阶段 | 目标 |
-|------|------|
-| Week 1 | 架构骨架 + 类型契约 + 模板基座（本仓库当前状态） |
-| Week 2 | 配置填充 Agent 接入 LLM + 模板问题动态联动 |
-| Week 3 | 编译沙箱 + 错误解析 + L1/L2 修复策略 |
-| Week 4 | 部署执行 + 健康检查 + 端到端联调 |
-
-完整方案见 [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)，产品规格见 [lynx_kit_product_spec_v0.2.md](./lynx_kit_product_spec_v0.2.md)。
+[MIT](LICENSE) © LynxKit Contributors

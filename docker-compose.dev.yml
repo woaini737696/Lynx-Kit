@@ -1,11 +1,16 @@
-# 本地开发环境依赖（PostgreSQL + Redis）
+# =================================================================
+# LynxKit 本地开发环境依赖
+# 包含: PostgreSQL 16 (pgvector) + Redis 7 + MinIO
+#
 # 启动: docker compose -f docker-compose.dev.yml up -d
 # 停止: docker compose -f docker-compose.dev.yml down
 # 清空数据: docker compose -f docker-compose.dev.yml down -v
+# =================================================================
 
 services:
+  # PostgreSQL 16 with pgvector extension (向量检索)
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: lynxkit-postgres
     restart: unless-stopped
     ports:
@@ -14,32 +19,57 @@ services:
       POSTGRES_USER: lynxkit
       POSTGRES_PASSWORD: lynxkit_dev
       POSTGRES_DB: lynxkit
-      TZ: Asia/Shanghai
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - lynxkit-dev
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U lynxkit -d lynxkit"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  # Redis 7 (BullMQ 队列 + 缓存)
   redis:
     image: redis:7-alpine
     container_name: lynxkit-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
-    command: redis-server --appendonly yes --requirepass lynxkit_redis
     volumes:
-      - redis_data:/data
+      - redisdata:/data
+    networks:
+      - lynxkit-dev
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "lynxkit_redis", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  # MinIO (S3 兼容对象存储)
+  # 控制台: http://localhost:9001 (lynxkit / lynxkit_dev)
+  minio:
+    image: minio/minio:latest
+    container_name: lynxkit-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: lynxkit
+      MINIO_ROOT_PASSWORD: lynxkit_dev
+    command: server /data --console-address ":9001"
+    volumes:
+      - miniodata:/data
+    networks:
+      - lynxkit-dev
+
 volumes:
-  postgres_data:
-    name: lynxkit_postgres_data
-  redis_data:
-    name: lynxkit_redis_data
+  pgdata:
+  redisdata:
+  miniodata:
+
+networks:
+  lynxkit-dev:
+    name: lynxkit-dev
+    driver: bridge

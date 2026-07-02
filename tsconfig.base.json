@@ -1,31 +1,21 @@
 {
+  "extends": "./packages/config/tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "jsx": "preserve",
-    "noEmit": true,
-    "incremental": true
-  },
-  "exclude": ["node_modules", "dist", "build", ".next", ".turbo"]
+    "baseUrl": ".",
+    "paths": {
+      "@lynxkit/shared": ["./packages/shared/src/index.ts"],
+      "@lynxkit/shared/*": ["./packages/shared/src/*"],
+      "@lynxkit/db": ["./packages/db/src/index.ts"],
+      "@lynxkit/db/*": ["./packages/db/src/*"],
+      "@lynxkit/config": ["./packages/config/index.ts"],
+      "@lynxkit/store": ["./packages/store/src/index.ts"],
+      "@lynxkit/store/*": ["./packages/store/src/*"],
+      "@lynxkit/api-client": ["./packages/api-client/src/index.ts"],
+      "@lynxkit/agent-core": ["./packages/agent-core/src/index.ts"],
+      "@lynxkit/ui-web": ["./packages/ui-web/src/index.ts"],
+      "@lynxkit/ui-web/*": ["./packages/ui-web/src/*"],
+      "@lynxkit/ui-mobile": ["./packages/ui-mobile/src/index.ts"],
+      "@lynxkit/ui-mobile/*": ["./packages/ui-mobile/src/*"]
+    }
+  }
 }

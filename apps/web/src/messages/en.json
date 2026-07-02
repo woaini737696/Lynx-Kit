@@ -1,0 +1,171 @@
+{
+  "common": {
+    "brand": "LynxKit",
+    "tagline": "In the AI era, everyone is a creator",
+    "description": "Describe your idea, AI takes you from architecture to code to deployment.",
+    "getStarted": "Start building for free",
+    "viewExamples": "View examples",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "loading": "Loading…",
+    "search": "Search",
+    "pricing": "Pricing",
+    "features": "Features",
+    "blog": "Blog",
+    "about": "About",
+    "store": "Store",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "products": "Products",
+    "orders": "Orders",
+    "monitoring": "Monitoring",
+    "allRightsReserved": "All rights reserved"
+  },
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "store": "Store",
+    "blog": "Blog",
+    "about": "About",
+    "docs": "Docs"
+  },
+  "hero": {
+    "title": "In the AI era, everyone is a creator",
+    "subtitle": "Describe your idea in one sentence. A 9-layer Agent pipeline handles architecture, design, code and deployment — from idea to launch over a cup of coffee.",
+    "primaryCta": "Start building for free",
+    "secondaryCta": "View examples",
+    "badge": "9-layer Agent pipeline · from prompt to production"
+  },
+  "features": {
+    "title": "Three core capabilities",
+    "subtitle": "AI collaboration across the entire flow, from intent to deployment",
+    "intent": {
+      "title": "Intent recognition",
+      "desc": "AI parses your description and matches the best product type and tech stack"
+    },
+    "architect": {
+      "title": "Architecture generation",
+      "desc": "10 layers of Agents collaborate on database, API, UI and deployment"
+    },
+    "deploy": {
+      "title": "One-click deploy",
+      "desc": "Docker + Caddy auto-deploys to the cloud, live in minutes"
+    }
+  },
+  "productTypes": {
+    "title": "8 product types",
+    "subtitle": "Covering the vast majority of AI app scenarios",
+    "social": "AI Social",
+    "system": "AI Systems",
+    "workstation": "AI Workstation",
+    "data": "AI Data Analytics",
+    "admin": "AI Admin Dashboard",
+    "app": "AI Mobile App",
+    "marketing": "AI Marketing",
+    "hardware": "AI Hardware"
+  },
+  "howItWorks": {
+    "title": "Go live in three steps",
+    "step1": {
+      "title": "Describe your idea",
+      "desc": "Tell AI what you want to build in natural language"
+    },
+    "step2": {
+      "title": "AI generates",
+      "desc": "9 layers of Agents produce complete code and deployment plans"
+    },
+    "step3": {
+      "title": "Deploy & publish",
+      "desc": "One click to the cloud, then publish to the LynxKit store"
+    }
+  },
+  "pricing": {
+    "title": "Simple, transparent pricing",
+    "subtitle": "From solo to team, pick what fits",
+    "free": {
+      "name": "Free",
+      "price": "¥0",
+      "period": "forever",
+      "desc": "For individuals exploring local builds"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "¥99",
+      "period": "/ mo",
+      "desc": "For indie developers and small teams"
+    },
+    "team": {
+      "name": "Team",
+      "price": "¥399",
+      "period": "/ mo",
+      "desc": "For growing teams that collaborate"
+    }
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "subtitle": "What super individuals say"
+  },
+  "cta": {
+    "title": "Ready to start creating?",
+    "subtitle": "Spin up your first AI product now",
+    "primary": "Start for free",
+    "secondary": "Talk to sales"
+  },
+  "footer": {
+    "product": "Product",
+    "resources": "Resources",
+    "company": "Company",
+    "legal": "Legal",
+    "follow": "Follow us"
+  },
+  "store": {
+    "title": "LynxKit Store",
+    "subtitle": "AI apps built by super individuals",
+    "search": "Search apps…",
+    "allCategories": "All categories",
+    "featured": "Featured",
+    "purchase": "Buy now",
+    "tryout": "Try demo",
+    "creator": "Creator",
+    "reviews": "Reviews"
+  },
+  "auth": {
+    "loginTitle": "Log in to LynxKit",
+    "registerTitle": "Create a LynxKit account",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone",
+    "code": "Code",
+    "sendCode": "Send code",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "Enter your password",
+    "phonePlaceholder": "Enter your phone number",
+    "codePlaceholder": "6-digit code",
+    "loginButton": "Log in",
+    "registerButton": "Sign up",
+    "loginSubtitle": "Continue your creator journey",
+    "registerSubtitle": "Join the league of super individuals",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "forgotPassword": "Forgot password?",
+    "agreeTerms": "I have read and agree to the Terms and Privacy Policy",
+    "or": "or"
+  },
+  "admin": {
+    "title": "Admin",
+    "stats": {
+      "users": "Users",
+      "products": "Products",
+      "revenue": "Revenue",
+      "builds": "Builds"
+    },
+    "recentUsers": "Recent signups",
+    "recentOrders": "Recent transactions",
+    "systemHealth": "System health",
+    "uptime": "Uptime",
+    "latency": "Latency",
+    "errorRate": "Error rate"
+  }
+}

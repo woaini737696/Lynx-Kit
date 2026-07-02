@@ -1,40 +1,52 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Noto_Sans_SC } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 import "./globals.css";
-import { Providers } from "@/components/providers";
+import { Providers } from "./providers";
+import { rootMetadata } from "@/lib/seo";
+import { defaultLocale } from "@/i18n";
 
-export const metadata: Metadata = {
-  title: "LynxKit - 人人都是超级个体",
-  description:
-    "LynxKit 是原生双端 AI 产品构建平台。不会代码，也能独立做产品——架构透明、模板优先、零运维。",
-  manifest: "/manifest.webmanifest",
-  applicationName: "LynxKit",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "LynxKit",
-  },
-  icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/icon-192.png",
-  },
-};
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const notoSansSC = Noto_Sans_SC({
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
+  variable: "--font-noto-sans-sc",
+  display: "swap",
+});
+
+export const metadata: Metadata = rootMetadata;
 
 export const viewport: Viewport = {
-  themeColor: "#FF6B35",
   width: "device-width",
   initialScale: 1,
+  themeColor: "#FF6B35",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // 无 i18n 路由：服务端读取默认 locale 的 messages 注入
+  const messages = await getMessages();
+
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
-      <body className="min-h-screen bg-white text-zinc-900 antialiased">
-        <Providers>{children}</Providers>
+    <html
+      lang={defaultLocale}
+      suppressHydrationWarning
+      className={`${inter.variable} ${notoSansSC.variable}`}
+    >
+      <body className="min-h-screen bg-background text-foreground antialiased">
+        <NextIntlClientProvider locale={defaultLocale} messages={messages}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

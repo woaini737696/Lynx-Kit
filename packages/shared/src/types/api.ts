@@ -1,55 +1,61 @@
-import { z } from "zod";
+/**
+ * 统一 API 响应与分页类型 - LynxKit v1.0
+ */
 
 /**
- * 通用 API 响应包装
+ * 错误对象
  */
-export const ApiResponseSchema = z.object({
-  success: z.boolean(),
-  message: z.string().optional(),
-  data: z.unknown().optional(),
-  error: z
-    .object({
-      code: z.string(),
-      message: z.string(),
-      details: z.unknown().optional(),
-    })
-    .optional(),
-});
-
-export type ApiResponse = z.infer<typeof ApiResponseSchema>;
+export interface ApiError {
+  /** 错误码（业务语义稳定 ID） */
+  code: string;
+  /** 用户可读消息 */
+  message: string;
+  /** 附加详情（字段错误、堆栈等） */
+  details?: unknown;
+}
 
 /**
- * 分页请求
+ * 统一 API 响应包装
  */
-export const PaginationInputSchema = z.object({
-  page: z.number().int().min(1).default(1),
-  pageSize: z.number().int().min(1).max(100).default(20),
-});
+export interface ApiResponse<T = unknown> {
+  /** 是否成功 */
+  success: boolean;
+  /** 提示消息 */
+  message?: string;
+  /** 业务数据 */
+  data?: T;
+  /** 错误信息（success=false 时存在） */
+  error?: ApiError;
+}
 
-export type PaginationInput = z.infer<typeof PaginationInputSchema>;
+/**
+ * 分页请求参数
+ */
+export interface PaginationInput {
+  /** 页码，从 1 开始 */
+  page: number;
+  /** 每页大小，1~100 */
+  pageSize: number;
+}
 
 /**
  * 分页响应
  */
-export const PaginatedResponseSchema = <T extends z.ZodTypeAny>(item: T) =>
-  z.object({
-    items: z.array(item),
-    total: z.number().int(),
-    page: z.number().int(),
-    pageSize: z.number().int(),
-    totalPages: z.number().int(),
-  });
-
-export type PaginatedResponse<T> = {
+export interface PaginatedResponse<T> {
+  /** 数据项列表 */
   items: T[];
+  /** 总条数 */
   total: number;
+  /** 当前页码 */
   page: number;
+  /** 每页大小 */
   pageSize: number;
+  /** 总页数 */
   totalPages: number;
-};
+}
 
 /**
- * 错误码常量
+ * 平台错误码常量
  */
 export const ERROR_CODES = {
   // 认证相关
@@ -60,18 +66,27 @@ export const ERROR_CODES = {
   // 用户相关
   USER_NOT_FOUND: "USER_NOT_FOUND",
   USER_ALREADY_EXISTS: "USER_ALREADY_EXISTS",
-  // 服务器相关
-  SERVER_NOT_FOUND: "SERVER_NOT_FOUND",
-  SSH_CONNECTION_FAILED: "SSH_CONNECTION_FAILED",
-  // 项目相关
-  PROJECT_NOT_FOUND: "PROJECT_NOT_FOUND",
-  PROJECT_TYPE_INVALID: "PROJECT_TYPE_INVALID",
+  USER_SUSPENDED: "USER_SUSPENDED",
+  // 构建相关
+  BUILD_NOT_FOUND: "BUILD_NOT_FOUND",
+  BUILD_SESSION_EXPIRED: "BUILD_SESSION_EXPIRED",
+  BUILD_CONFLICT: "BUILD_CONFLICT",
+  PRODUCT_TYPE_INVALID: "PRODUCT_TYPE_INVALID",
+  AGENT_FAILED: "AGENT_FAILED",
+  // 商店相关
+  STORE_PRODUCT_NOT_FOUND: "STORE_PRODUCT_NOT_FOUND",
+  TRANSACTION_FAILED: "TRANSACTION_FAILED",
+  INSUFFICIENT_BALANCE: "INSUFFICIENT_BALANCE",
+  // AI 相关
+  AI_PROVIDER_NOT_CONFIGURED: "AI_PROVIDER_NOT_CONFIGURED",
+  AI_REQUEST_FAILED: "AI_REQUEST_FAILED",
+  AI_RATE_LIMITED: "AI_RATE_LIMITED",
   // 部署相关
   DEPLOY_FAILED: "DEPLOY_FAILED",
-  BUILD_FAILED: "BUILD_FAILED",
   // 系统
   INTERNAL_ERROR: "INTERNAL_ERROR",
   RATE_LIMITED: "RATE_LIMITED",
+  VALIDATION_FAILED: "VALIDATION_FAILED",
 } as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];

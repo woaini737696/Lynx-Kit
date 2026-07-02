@@ -8,12 +8,8 @@
     "resolveJsonModule": true,
     "declaration": false,
     "sourceMap": true,
-    "noEmit": false,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "noEmit": false
   },
-  "include": ["src/**/*", "prisma/**/*.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", ".turbo"]
 }

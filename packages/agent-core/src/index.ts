@@ -1,31 +1,35 @@
 /**
- * LynxKit 七层 Agent 编排引擎
+ * @lynxkit/agent-core - LynxKit 9 层 Agent 编排引擎
  *
- * 流程（与产品文档 §8.1 对应）：
- *   用户输入需求
- *     ↓
- *   ① 意图识别 Agent（Haiku，成本极低）
- *     ↓
- *   ② 需求澄清 Agent（自研规则引擎，零成本）
- *     ↓
- *   ③ 模板选择 Agent（自研查表，零成本）
- *     ↓
- *   ④ 配置填充 Agent（Sonnet，中等成本）
- *     ↓
- *   ⑤ 编译测试 Agent（Docker 沙箱，零成本）
- *     ↓ 失败
- *   ⑥ 修复 Agent（L1/L2/L3 三级修复策略）
- *     ↓
- *   ⑦ 部署 Agent（NodeSSH + Docker Compose）
+ * 基于 Vercel AI SDK 5.0 + 国内 6 大模型 Provider（DeepSeek / Kimi / Doubao / Qwen / GLM / Mimo）
+ * + BullMQ 异步队列，完成从"用户需求"到"线上部署"的完整链路。
+ *
+ * 流水线：
+ *   ① 意图识别 → ② 架构师 → ③ 需求澄清
+ *   → ④ 产品经理 ∥ ⑤ 设计师（并行）
+ *   → ⑥ 前端开发 → ⑦ 后端开发 → ⑧ AI 集成（串行）
+ *   → ⑨ 测试修复（循环，最多 3 轮）→ ⑩ 部署发布
+ *
+ * 用法：
+ *   import { Orchestrator } from "@lynxkit/agent-core";
+ *   const orch = new Orchestrator({ sessionId, userId, inspiration, modelConfig, onLog, onProgress, onStream });
+ *   const result = await orch.run();
  */
 
-export * from "./agents/intent.js";
-export * from "./agents/clarify.js";
-export * from "./agents/select.js";
-export * from "./agents/fill.js";
-export * from "./agents/build.js";
-export * from "./agents/fix.js";
-export * from "./agents/deploy.js";
+// 编排引擎核心
+export * from "./orchestrator.js";
+
+// 引擎内部类型与基类
+export * from "./types.js";
+
+// Provider 模型工厂
 export * from "./providers/index.js";
 
-export * from "./orchestrator.js";
+// 10 个 Agent
+export * from "./agents/index.js";
+
+// 工具集（写文件 / Drizzle schema 生成 / 组件查找 / 沙箱 Bash）
+export * from "./tools/index.js";
+
+// 中文 system prompts
+export * from "./prompts/index.js";

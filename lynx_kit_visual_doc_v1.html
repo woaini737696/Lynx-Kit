@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lynx Kit 产品方案 v1.0 — 可视化文档</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', 'Noto Sans SC', sans-serif; background: #030816; color: #e2e8f0; }
+.glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
+.glass-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+.accent { color: #FF6B35; }
+.accent-bg { background: #FF6B35; }
+.phone-mockup { width: 320px; height: 640px; border-radius: 40px; border: 8px solid #1e293b; background: #000; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+.phone-screen { width: 100%; height: 100%; background: #0f172a; overflow-y: auto; position: relative; }
+.phone-notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 24px; background: #000; border-radius: 0 0 16px 16px; z-index: 10; }
+.web-mockup { width: 100%; max-width: 900px; height: 560px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: #0f172a; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+.scroll-hide::-webkit-scrollbar { display: none; }
+.scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.mermaid { background: transparent !important; }
+.mermaid svg { max-width: 100%; height: auto; }
+.tag { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+.tag-p0 { background: rgba(255,107,53,0.15); color: #FF6B35; border: 1px solid rgba(255,107,53,0.3); }
+.tag-p1 { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+.tag-p2 { background: rgba(168,162,158,0.1); color: #a8a29e; border: 1px solid rgba(168,162,158,0.2); }
+.tag-green { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+.tag-purple { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+.step-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; background: #FF6B35; color: white; }
+.agent-card { transition: all 0.3s; }
+.agent-card:hover { transform: translateY(-4px); }
+.nav-item { padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.nav-item:hover { background: rgba(255,255,255,0.05); }
+.nav-item.active { background: rgba(255,107,53,0.15); color: #FF6B35; }
+.toc { position: fixed; left: 20px; top: 50%; transform: translateY(-50%); width: 200px; background: rgba(17,24,39,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; z-index: 100; font-size: 13px; backdrop-filter: blur(10px); }
+.toc a { color: #94a3b8; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.toc a:hover { color: #FF6B35; }
+.toc .section { color: #e2e8f0; font-weight: 600; margin-top: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+@media (max-width: 1400px) { .toc { display: none; } }
+</style>
+</head>
+<body class="min-h-screen">
+
+<div class="toc">
+<div style="font-weight:700;margin-bottom:12px;color:#fff;font-size:14px;">Lynx Kit v1.0</div>
+<div class="section">导航</div>
+<a href="#overview">产品概述</a>
+<a href="#prototype">高保真原型</a>
+<a href="#journey">用户旅程</a>
+<a href="#architecture">产品架构</a>
+<a href="#agent">Agent编排</a>
+<a href="#requirements">需求说明</a>
+<a href="#ai">AI功能</a>
+<a href="#plan">开发计划</a>
+</div>
+
+<!-- Hero -->
+<section class="relative overflow-hidden px-6 py-20 text-center">
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-900/20 via-transparent to-transparent"></div>
+<div class="relative max-w-4xl mx-auto">
+<div class="text-sm font-medium tracking-widest text-orange-400 mb-4">AI 时代 · 人人都是造物主</div>
+<h1 class="text-6xl font-extrabold tracking-tight mb-4">Lynx <span class="text-orange-500">Kit</span></h1>
+<p class="text-xl text-slate-400 mb-2">AI 全栈开发平台 & AI 应用商店</p>
+<p class="text-sm text-slate-500">产品方案 v1.0 · 可视化文档</p>
+<div class="mt-8 flex justify-center gap-3 flex-wrap">
+<span class="tag tag-p0">架构定稿</span>
+<span class="tag tag-green">AI 原生</span>
+<span class="tag tag-purple">多 Agent 协作</span>
+</div>
+</div>
+</section>
+
+<!-- Overview -->
+<section id="overview" class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>产品概述</h2>
+<div class="grid md:grid-cols-3 gap-6 mb-6">
+<div class="p-5 rounded-xl bg-white/5 border border-white/10">
+<div class="text-2xl mb-3">🎯</div>
+<div class="font-bold text-lg mb-2">定位</div>
+<div class="text-sm text-slate-400">AI 时代全栈开发平台，让不懂代码的人也能开发出完整的 AI 产品</div>
+</div>
+<div class="p-5 rounded-xl bg-white/5 border border-white/10">
+<div class="text-2xl mb-3">🛠️</div>
+<div class="font-bold text-lg mb-2">能力</div>
+<div class="text-sm text-slate-400">自然语言输入 → 多 Agent 协作开发 → 一键部署 → 上架 AI 应用商店</div>
+</div>
+<div class="p-5 rounded-xl bg-white/5 border border-white/10">
+<div class="text-2xl mb-3">🏪</div>
+<div class="font-bold text-lg mb-2">生态</div>
+<div class="text-sm text-slate-400">AI 应用商店 — 产品可收费、开源、交换，形成灵感激发飞轮</div>
+</div>
+</div>
+<div class="p-5 rounded-xl border border-orange-500/30 bg-orange-500/5">
+<div class="font-bold text-orange-400 mb-3">核心洞察</div>
+<div class="text-sm text-slate-300 leading-relaxed">
+AI 时代的创造力不应该被代码能力限制。一个人可以开发出 AI 社交产品、AI 数据分析平台、AI 管理系统——只要他能描述清楚需求。Lynx Kit 让"想法"直接变成"产品"，让"产品"进入"商店"产生价值。灵感不是凭空来的，有了 AI 应用商店，看到别人的创意，自己的灵感才会爆发，推动整个 AI 行业发展。
+</div>
+</div>
+</div>
+</section>
+
+<!-- Prototypes -->
+<section id="prototype" class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-8 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>高保真原型图</h2>
+
+<!-- Screen 1: Inspiration Input -->
+<div class="mb-12">
+<div class="text-sm text-slate-500 mb-4 font-medium">01 · 灵感输入 — 构建器首页</div>
+<div class="flex justify-center">
+<div class="web-mockup" style="max-width:900px;height:auto;">
+<div class="h-12 border-b border-white/10 flex items-center px-6 justify-between bg-slate-900/50">
+<div class="flex items-center gap-2">
+<div class="text-orange-400 font-bold text-lg">🐱 Lynx Kit</div>
+</div>
+<div class="flex gap-6 text-sm text-slate-400">
+<span class="text-white font-medium">构建</span>
+<span>商店</span>
+<span>我的</span>
+</div>
+<div class="w-20"></div>
+</div>
+<div class="p-8 text-center">
+<div class="text-3xl font-bold mb-2">构建你的 AI 产品</div>
+<div class="text-slate-400 mb-2">描述你的想法，AI 帮你实现</div>
+<div class="text-xs text-slate-500 mb-8">支持 AI 社交、AI 系统、AI 工作站、AI 数据分析、AI 管理后台、AI 应用 App</div>
+<div class="max-w-2xl mx-auto">
+<div class="relative">
+<textarea class="w-full h-36 bg-slate-800 rounded-xl border border-white/10 p-4 text-white resize-none focus:border-orange-500 outline-none text-sm" placeholder="描述你的 AI 产品想法...">我想做一个 AI 社交平台，能帮用户根据兴趣和性格智能匹配志同道合的朋友。平台要有 AI 聊天助手帮用户破冰，还要有情感分析功能判断聊天氛围。</textarea>
+<div class="absolute bottom-3 right-3 flex gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-slate-700 text-xs text-slate-300">📎 附件</button>
+<button class="px-4 py-1.5 rounded-lg bg-orange-500 text-xs font-medium">开始构建</button>
+</div>
+</div>
+</div>
+<div class="mt-6 flex justify-center gap-3">
+<div class="px-4 py-2 rounded-lg border border-white/10 bg-white/5 text-sm cursor-pointer hover:border-orange-500/50">🚀 AI 社交匹配系统</div>
+<div class="px-4 py-2 rounded-lg border border-white/10 bg-white/5 text-sm cursor-pointer hover:border-orange-500/50">📊 AI 数据分析平台</div>
+<div class="px-4 py-2 rounded-lg border border-white/10 bg-white/5 text-sm cursor-pointer hover:border-orange-500/50">🤖 AI 客服助手</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Screen 2: Architecture Match -->
+<div class="mb-12">
+<div class="text-sm text-slate-500 mb-4 font-medium">02 · AI 架构匹配</div>
+<div class="flex justify-center">
+<div class="web-mockup" style="max-width:700px;height:auto;">
+<div class="p-6">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-sm font-bold">L</div>
+<div>
+<div class="font-medium text-sm">Lynx 架构师</div>
+<div class="text-xs text-slate-400">正在分析你的需求</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">L</div>
+<div class="bg-slate-800 rounded-2xl rounded-tl-sm p-4 text-sm leading-relaxed">
+分析完成！你的需求最匹配 <strong>AI 社交架构</strong>。
+<div class="mt-2 text-slate-400">这是一个需要实时通信、智能匹配算法、情感分析能力的社交产品。</div>
+</div>
+</div>
+<div class="ml-11 p-4 rounded-xl border border-orange-500/30 bg-orange-500/5">
+<div class="flex items-center justify-between mb-3">
+<div class="font-medium text-orange-400">推荐架构：AI 社交产品</div>
+<span class="tag tag-p0">置信度 96%</span>
+</div>
+<div class="space-y-2 text-sm">
+<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span><span>前端：Next.js 15 + Tailwind + shadcn/ui</span></div>
+<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span><span>后端：Next.js API + WebSocket + Redis</span></div>
+<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span><span>数据库：PostgreSQL + pgvector</span></div>
+<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span><span>AI：Claude Sonnet + Embedding + 情感分析</span></div>
+<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span><span>部署：Docker Compose + Caddy</span></div>
+<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span><span>多端：Web + PWA + 小程序</span></div>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">L</div>
+<div class="bg-slate-800 rounded-2xl rounded-tl-sm p-4 text-sm leading-relaxed">
+我还为你匹配了可选的增强能力：
+<div class="mt-2 space-y-1 text-slate-400 text-xs">
+<div>• AI 破冰助手（自动推荐开场白）</div>
+<div>• 情感分析（实时判断聊天氛围）</div>
+<div>• 兴趣图谱（可视化用户兴趣关联）</div>
+<div>• 语音聊天（AI 语音合成）</div>
+</div>
+</div>
+</div>
+<div class="ml-11 flex gap-2">
+<button class="flex-1 py-2.5 rounded-xl bg-orange-500 text-sm font-medium">确认，开始配置</button>
+<button class="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-slate-300 hover:bg-white/5">换一个架构</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Screen 3: Capability Orchestration -->
+<div class="mb-12">
+<div class="text-sm text-slate-500 mb-4 font-medium">03 · 能力编排 — 多 Agent 协作控制台</div>
+<div class="flex justify-center">
+<div class="web-mockup" style="max-width:900px;">
+<div class="h-10 border-b border-white/10 flex items-center px-4 bg-slate-900/50 text-xs text-slate-400 gap-4">
+<span class="text-orange-400 font-medium">构建控制台</span>
+<span>配置</span>
+<span>预览</span>
+<span>测试</span>
+<div class="ml-auto flex gap-2">
+<span class="tag tag-green">构建中</span>
+<span class="text-xs text-slate-500">进度 65%</span>
+</div>
+</div>
+<div class="flex h-[520px]">
+<div class="w-64 border-r border-white/10 p-4 bg-slate-900/30">
+<div class="text-xs font-medium text-slate-400 mb-3">Agent 执行状态</div>
+<div class="space-y-2">
+<div class="p-2 rounded-lg border border-green-500/30 bg-green-500/10">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-400"></div><div class="text-xs font-medium">意图识别</div></div>
+<div class="text-xs text-green-400 mt-1">✓ 完成</div>
+</div>
+<div class="p-2 rounded-lg border border-green-500/30 bg-green-500/10">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-400"></div><div class="text-xs font-medium">架构师</div></div>
+<div class="text-xs text-green-400 mt-1">✓ 完成</div>
+</div>
+<div class="p-2 rounded-lg border border-green-500/30 bg-green-500/10">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-400"></div><div class="text-xs font-medium">产品经理</div></div>
+<div class="text-xs text-green-400 mt-1">✓ 完成</div>
+</div>
+<div class="p-2 rounded-lg border border-green-500/30 bg-green-500/10">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-400"></div><div class="text-xs font-medium">设计师</div></div>
+<div class="text-xs text-green-400 mt-1">✓ 完成</div>
+</div>
+<div class="p-2 rounded-lg border border-orange-500/30 bg-orange-500/10">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></div><div class="text-xs font-medium">前端开发</div></div>
+<div class="text-xs text-orange-400 mt-1">⟳ 进行中</div>
+</div>
+<div class="p-2 rounded-lg border border-white/10 bg-white/5 opacity-50">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-500"></div><div class="text-xs font-medium">后端开发</div></div>
+<div class="text-xs text-slate-500 mt-1">○ 等待</div>
+</div>
+<div class="p-2 rounded-lg border border-white/10 bg-white/5 opacity-50">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-500"></div><div class="text-xs font-medium">AI 集成</div></div>
+<div class="text-xs text-slate-500 mt-1">○ 等待</div>
+</div>
+<div class="p-2 rounded-lg border border-white/10 bg-white/5 opacity-50">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-500"></div><div class="text-xs font-medium">测试修复</div></div>
+<div class="text-xs text-slate-500 mt-1">○ 等待</div>
+</div>
+</div>
+</div>
+<div class="flex-1 p-6 overflow-y-auto scroll-hide">
+<div class="text-lg font-bold mb-4">构建日志</div>
+<div class="space-y-3 text-sm font-mono">
+<div class="flex gap-2"><span class="text-green-400">[10:23:01]</span><span class="text-slate-400">意图识别 Agent:</span><span>识别为 AI 社交产品，置信度 96%</span></div>
+<div class="flex gap-2"><span class="text-green-400">[10:23:15]</span><span class="text-slate-400">架构师 Agent:</span><span>选择 Next.js + PostgreSQL + WebSocket 架构</span></div>
+<div class="flex gap-2"><span class="text-green-400">[10:23:45]</span><span class="text-slate-400">产品经理 Agent:</span><span>拆解 6 个功能模块：用户系统、匹配算法、聊天、破冰助手、情感分析、兴趣图谱</span></div>
+<div class="flex gap-2"><span class="text-green-400">[10:24:30]</span><span class="text-slate-400">设计师 Agent:</span><span>生成 UI 方案：主色 #FF6B35，卡片式布局，底部导航</span></div>
+<div class="flex gap-2"><span class="text-orange-400">[10:25:01]</span><span class="text-slate-400">前端开发 Agent:</span><span>正在生成页面组件... 已完成 12/18 个文件</span></div>
+<div class="flex gap-2"><span class="text-slate-500">[10:25:15]</span><span class="text-slate-400">前端开发 Agent:</span><span>生成 ChatRoom.tsx 组件...</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Screen 4: Live Preview + Chat Debug -->
+<div class="mb-12">
+<div class="text-sm text-slate-500 mb-4 font-medium">04 · 实时预览 + 对话调试</div>
+<div class="flex justify-center">
+<div class="web-mockup" style="max-width:900px;">
+<div class="h-10 border-b border-white/10 flex items-center px-4 bg-slate-900/50 text-xs text-slate-400 gap-4">
+<span class="text-orange-400 font-medium">预览</span>
+<span>代码</span>
+<span>API</span>
+<div class="ml-auto flex gap-2">
+<button class="px-3 py-1 rounded bg-orange-500 text-white text-xs font-medium">发布</button>
+</div>
+</div>
+<div class="flex h-[520px]">
+<div class="w-72 border-r border-white/10 p-4 bg-slate-900/30">
+<div class="text-xs font-medium text-slate-400 mb-3">与 AI 对话调试</div>
+<div class="space-y-3 h-[380px] overflow-y-auto scroll-hide">
+<div class="flex gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs shrink-0">你</div>
+<div class="bg-slate-800 rounded-xl rounded-tl-sm p-2 text-xs">把匹配卡片改成圆角大一点的</div>
+</div>
+<div class="flex gap-2">
+<div class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">L</div>
+<div class="bg-slate-800 rounded-xl rounded-tl-sm p-2 text-xs">已修改，圆角从 8px 改为 16px，预览已更新。</div>
+</div>
+<div class="flex gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs shrink-0">你</div>
+<div class="bg-slate-800 rounded-xl rounded-tl-sm p-2 text-xs">加一个 AI 破冰助手按钮</div>
+</div>
+<div class="flex gap-2">
+<div class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">L</div>
+<div class="bg-slate-800 rounded-xl rounded-tl-sm p-2 text-xs">已添加破冰助手组件，在聊天界面右下角，点击后 AI 推荐 3 条开场白。</div>
+</div>
+<div class="flex gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs shrink-0">你</div>
+<div class="bg-slate-800 rounded-xl rounded-tl-sm p-2 text-xs">情感分析功能有问题，一直显示"中立"</div>
+</div>
+<div class="flex gap-2">
+<div class="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">L</div>
+<div class="bg-slate-800 rounded-xl rounded-tl-sm p-2 text-xs">检测到 Prompt 中情感阈值设置过高，已调整为 0.5，现在可以正确识别积极/消极情感。</div>
+</div>
+</div>
+<div class="mt-3 pt-3 border-t border-white/10">
+<input type="text" placeholder="输入修改指令..." class="w-full bg-slate-800 rounded-lg px-3 py-2 text-xs border border-white/10 focus:border-orange-500 outline-none">
+</div>
+</div>
+<div class="flex-1 bg-white p-0 overflow-hidden relative">
+<iframe srcdoc="&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;style&gt;body{margin:0;font-family:sans-serif;background:#fafafa;}header{background:linear-gradient(135deg,#FF6B35,#ff8f5a);color:white;padding:40px 20px;text-align:center;}h1{margin:0;font-size:20px;}p{opacity:0.9;margin-top:8px;font-size:12px;}.card{background:white;border-radius:16px;padding:16px;margin:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08);}.avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;}.match-btn{background:#FF6B35;color:white;padding:10px 24px;border-radius:24px;border:none;font-weight:bold;margin-top:12px;}.tab-bar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #eee;display:flex;justify-content:space-around;padding:8px 0;}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;header&gt;&lt;h1&gt;AI 社交匹配&lt;/h1&gt;&lt;p&gt;找到志同道合的朋友&lt;/p&gt;&lt;/header&gt;&lt;div class=card&gt;&lt;div style=display:flex;align-items:center;gap:12px;&gt;&lt;div class=avatar&gt;S&lt;/div&gt;&lt;div&gt;&lt;div style=font-weight:bold;&gt;Sarah&lt;/div&gt;&lt;div style=font-size:12px;color:#666;&gt;摄影 · 旅行 · 咖啡&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div style=margin-top:12px;font-size:13px;color:#555;&gt;匹配度 92%&lt;/div&gt;&lt;button class=match-btn&gt;开始聊天&lt;/button&gt;&lt;/div&gt;&lt;div class=card&gt;&lt;div style=display:flex;align-items:center;gap:12px;&gt;&lt;div class=avatar style=background:linear-gradient(135deg,#f093fb,#f5576c);&gt;M&lt;/div&gt;&lt;div&gt;&lt;div style=font-weight:bold;&gt;Mike&lt;/div&gt;&lt;div style=font-size:12px;color:#666;&gt;编程 · 健身 · 音乐&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div style=margin-top:12px;font-size:13px;color:#555;&gt;匹配度 88%&lt;/div&gt;&lt;button class=match-btn&gt;开始聊天&lt;/button&gt;&lt;/div&gt;&lt;div class=tab-bar&gt;&lt;div&gt;🏠&lt;/div&gt;&lt;div&gt;💬&lt;/div&gt;&lt;div&gt;👤&lt;/div&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;" class="w-full h-full border-0"></iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Screen 5: AI App Store -->
+<div class="mb-12">
+<div class="text-sm text-slate-500 mb-4 font-medium">05 · AI 应用商店</div>
+<div class="flex justify-center gap-8 flex-wrap">
+<div class="phone-mockup">
+<div class="phone-notch"></div>
+<div class="phone-screen scroll-hide p-4 pt-10">
+<div class="text-lg font-bold mb-1">AI 应用商店</div>
+<div class="text-xs text-slate-400 mb-4">发现好用的 AI 产品</div>
+<div class="flex gap-2 mb-4 overflow-x-auto scroll-hide">
+<span class="tag tag-p0 shrink-0">全部</span>
+<span class="tag tag-p2 shrink-0">社交</span>
+<span class="tag tag-p2 shrink-0">数据</span>
+<span class="tag tag-p2 shrink-0">管理</span>
+<span class="tag tag-p2 shrink-0">营销</span>
+</div>
+<div class="space-y-3">
+<div class="p-3 rounded-xl border border-white/10 bg-white/5">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center text-lg">💬</div>
+<div class="flex-1">
+<div class="font-medium text-sm">AI 社交匹配系统</div>
+<div class="text-xs text-slate-400">by LynxTeam</div>
+</div>
+<div class="text-xs text-orange-400 font-medium">¥29/月</div>
+</div>
+<div class="text-xs text-slate-400 mb-2">智能兴趣匹配 + AI 破冰助手 + 情感分析</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span>⭐ 4.9</span>
+<span>👤 2.3k 使用</span>
+</div>
+</div>
+<div class="p-3 rounded-xl border border-white/10 bg-white/5">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-lg">📊</div>
+<div class="flex-1">
+<div class="font-medium text-sm">AI 数据洞察平台</div>
+<div class="text-xs text-slate-400">by DataMaster</div>
+</div>
+<div class="text-xs text-green-400 font-medium">免费</div>
+</div>
+<div class="text-xs text-slate-400 mb-2">自动报表生成 + AI 洞察 + 可视化</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span>⭐ 4.7</span>
+<span>👤 5.1k 使用</span>
+</div>
+</div>
+<div class="p-3 rounded-xl border border-white/10 bg-white/5">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-lg">🤖</div>
+<div class="flex-1">
+<div class="font-medium text-sm">AI 客服助手</div>
+<div class="text-xs text-slate-400">by BotLab</div>
+</div>
+<div class="text-xs text-orange-400 font-medium">¥0.1/次</div>
+</div>
+<div class="text-xs text-slate-400 mb-2">7x24 智能客服 + 知识库 + 多轮对话</div>
+<div class="flex items-center gap-3 text-xs text-slate-500">
+<span>⭐ 4.8</span>
+<span>👤 12k 使用</span>
+</div>
+</div>
+<div class="p-3 rounded-xl border border-purple-500/30 bg-purple-500/5">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-lg">🔄</div>
+<div class="flex-1">
+<div class="font-medium text-sm">技能交换</div>
+<div class="text-xs text-slate-400">用你的 AI 产品换别人的</div>
+</div>
+</div>
+<div class="text-xs text-purple-400">发现 24 个可交换的产品 →</div>
+</div>
+</div>
+</div>
+</div>
+<div class="phone-mockup">
+<div class="phone-notch"></div>
+<div class="phone-screen scroll-hide p-4 pt-10">
+<div class="text-lg font-bold mb-1">创作者中心</div>
+<div class="text-xs text-slate-400 mb-4">管理你的 AI 产品</div>
+<div class="space-y-4">
+<div class="p-4 rounded-xl border border-orange-500/30 bg-orange-500/5">
+<div class="text-xs text-slate-400 mb-1">本月收益</div>
+<div class="text-2xl font-bold text-orange-400">¥3,456</div>
+<div class="text-xs text-slate-500 mt-1">较上月 +23%</div>
+</div>
+<div class="space-y-3">
+<div class="p-3 rounded-xl border border-white/10 bg-white/5">
+<div class="flex items-center justify-between mb-2">
+<div class="font-medium text-sm">AI 社交匹配系统</div>
+<span class="tag tag-green text-xs">已上架</span>
+</div>
+<div class="flex items-center gap-4 text-xs text-slate-500">
+<span>👤 2.3k 用户</span>
+<span>⭐ 4.9</span>
+<span>💰 ¥2,890</span>
+</div>
+</div>
+<div class="p-3 rounded-xl border border-white/10 bg-white/5">
+<div class="flex items-center justify-between mb-2">
+<div class="font-medium text-sm">AI 文案助手</div>
+<span class="tag tag-p1 text-xs">审核中</span>
+</div>
+<div class="text-xs text-slate-500">提交时间：2026-07-01</div>
+</div>
+<div class="p-3 rounded-xl border border-dashed border-white/10 bg-white/5 text-center cursor-pointer">
+<div class="text-xs text-slate-400">+ 上架新产品</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- User Journey -->
+<section id="journey" class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-8 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>用户旅程</h2>
+
+<div class="mermaid mb-8">
+flowchart LR
+    A[用户输入灵感
+"我想做一个AI社交平台"] --> B[AI 意图识别
+识别为 AI 社交产品]
+    B --> C[架构自动匹配
+Next.js + PostgreSQL + WebSocket]
+    C --> D[需求澄清问答
+5-8 个结构化问题]
+    D --> E[多 Agent 协作开发
+9 个 Agent 并行/串行]
+    E --> F[实时预览调试
+Web/App/桌面端]
+    F --> G[一键发布
+部署到云端]
+    G --> H[上架 AI 商店
+收费/开源/交换]
+    H --> I[其他用户使用
+产生收益]
+    I --> J[灵感激发
+推动生态发展]
+    style A fill:#1e293b,stroke:#FF6B35,color:#fff
+    style E fill:#1e293b,stroke:#3b82f6,color:#fff
+    style H fill:#1e293b,stroke:#8b5cf6,color:#fff
+    style J fill:#1e293b,stroke:#10b981,color:#fff
+</div>
+
+<h3 class="text-lg font-semibold mb-4">旅程详解</h3>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="step-num">1</div>
+<div class="flex-1">
+<div class="font-bold">灵感输入</div>
+<div class="text-sm text-slate-400">用户用自然语言描述想做什么产品，可以上传参考链接、截图、竞品分析</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="step-num">2</div>
+<div class="flex-1">
+<div class="font-bold">AI 理解 & 架构匹配</div>
+<div class="text-sm text-slate-400">平台理解需求，自动选择最优技术架构，展示方案供确认</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="step-num">3</div>
+<div class="flex-1">
+<div class="font-bold">需求澄清</div>
+<div class="text-sm text-slate-400">动态生成结构化问题，收集功能需求、用户画像、业务流程</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="step-num">4</div>
+<div class="flex-1">
+<div class="font-bold">多 Agent 协作开发</div>
+<div class="text-sm text-slate-400">9 个 Agent 并行/串行工作，生成完整产品代码（前端 + 后端 + AI）</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="step-num">5</div>
+<div class="flex-1">
+<div class="font-bold">实时预览 & 测试</div>
+<div class="text-sm text-slate-400">多端口实时预览（Web/App/桌面），对话式调试，即时修复</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="step-num">6</div>
+<div class="flex-1">
+<div class="font-bold">一键发布</div>
+<div class="text-sm text-slate-400">自动部署到云端，配置域名、SSL、数据库、AI 模型</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="step-num">7</div>
+<div class="flex-1">
+<div class="font-bold">上架 AI 应用商店</div>
+<div class="text-sm text-slate-400">配置产品信息、定价、标签，发布到商店，可被全世界发现和使用</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="step-num">8</div>
+<div class="flex-1">
+<div class="font-bold">生态循环</div>
+<div class="text-sm text-slate-400">其他用户看到产品产生灵感 → 开发新产品 → 上架 → 激发更多灵感</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Architecture -->
+<section id="architecture" class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-8 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>产品架构</h2>
+
+<div class="mermaid mb-8">
+flowchart TB
+    subgraph User["用户层（多端）"]
+        U1["Web 浏览器"]
+        U2["移动端 PWA"]
+        U3["桌面端 Tauri"]
+    end
+
+    subgraph Platform["Lynx Kit 平台层"]
+        P1["Next.js 前端
+构建器 + 商店 + 创作者中心"]
+        P2["tRPC API
+业务逻辑"]
+        P3["Agent 编排引擎
+9 层 Agent 协作"]
+        P4["模板基座库
+8 大 AI 产品架构"]
+        P5["PostgreSQL
+平台数据"]
+        P6["Redis
+队列/缓存"]
+    end
+
+    subgraph AI["AI 能力层"]
+        A1["Claude Sonnet 4.6
+代码/配置生成"]
+        A2["Claude Haiku 4.5
+快速分类/意图识别"]
+        A3["DeepSeek-V3
+高并发降级"]
+        A4["Embedding
+RAG/知识库"]
+    end
+
+    subgraph Deploy["部署层"]
+        D1["Vercel
+Serverless"]
+        D2["用户服务器
+Docker Compose"]
+        D3["Cloudflare
+Workers/Edge"]
+    end
+
+    subgraph Store["AI 应用商店"]
+        S1["产品目录
+搜索/推荐"]
+        S2["支付系统
+按次/订阅"]
+        S3["评价系统
+星级/反馈"]
+        S4["创作者中心
+收益/数据"]
+    end
+
+    U1 --> P1
+    U2 --> P1
+    U3 --> P1
+    P1 --> P2
+    P2 --> P3
+    P3 --> P4
+    P3 --> A1
+    P3 --> A2
+    P3 --> A4
+    P2 --> P5
+    P2 --> P6
+    P3 --> D1
+    P3 --> D2
+    P3 --> D3
+    P2 --> S1
+    S1 --> S2
+    S2 --> S3
+    S2 --> S4
+
+    style Platform fill:#1e293b,stroke:#FF6B35,color:#fff
+    style AI fill:#0f172a,stroke:#3b82f6,color:#fff
+    style Store fill:#0f172a,stroke:#8b5cf6,color:#fff
+    style Deploy fill:#0f172a,stroke:#10b981,color:#fff
+</div>
+
+<h3 class="text-lg font-semibold mb-4">8 大 AI 产品架构</h3>
+<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="p-4 rounded-xl border border-pink-500/30 bg-pink-500/5">
+<div class="font-bold text-pink-400 mb-2">AI 社交</div>
+<div class="text-xs text-slate-300">Next.js + PostgreSQL + WebSocket + Redis + AI 匹配</div>
+</div>
+<div class="p-4 rounded-xl border border-blue-500/30 bg-blue-500/5">
+<div class="font-bold text-blue-400 mb-2">AI 系统</div>
+<div class="text-xs text-slate-300">Next.js + PostgreSQL + BullMQ + 多 Agent 编排</div>
+</div>
+<div class="p-4 rounded-xl border border-purple-500/30 bg-purple-500/5">
+<div class="font-bold text-purple-400 mb-2">AI 工作站</div>
+<div class="text-xs text-slate-300">Next.js + Tauri + 本地 AI + 云端同步</div>
+</div>
+<div class="p-4 rounded-xl border border-green-500/30 bg-green-500/5">
+<div class="font-bold text-green-400 mb-2">AI 数据分析</div>
+<div class="text-xs text-slate-300">Next.js + ClickHouse + ECharts + AI 洞察</div>
+</div>
+<div class="p-4 rounded-xl border border-orange-500/30 bg-orange-500/5">
+<div class="font-bold text-orange-400 mb-2">AI 管理后台</div>
+<div class="text-xs text-slate-300">Next.js + PostgreSQL + RBAC + 数据看板</div>
+</div>
+<div class="p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5">
+<div class="font-bold text-yellow-400 mb-2">AI 应用 App</div>
+<div class="text-xs text-slate-300">React Native + Next.js API + 推送 + 支付</div>
+</div>
+<div class="p-4 rounded-xl border border-cyan-500/30 bg-cyan-500/5">
+<div class="font-bold text-cyan-400 mb-2">AI 广告营销</div>
+<div class="text-xs text-slate-300">Next.js + PostgreSQL + 投放 API + 分析</div>
+</div>
+<div class="p-4 rounded-xl border border-red-500/30 bg-red-500/5">
+<div class="font-bold text-red-400 mb-2">AI 硬件集成</div>
+<div class="text-xs text-slate-300">物联网协议 + 边缘计算 + 控制端</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Agent Orchestration -->
+<section id="agent" class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-8 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>Agent 编排引擎</h2>
+
+<div class="mermaid mb-8">
+flowchart LR
+    User["用户输入
+"我想做AI社交平台""] --> A1["① 意图识别
+Haiku 4.5"]
+    A1 --> A2["② 架构师
+选择技术架构"]
+    A2 --> A3["③ 产品经理
+拆解功能模块"]
+    A3 --> A4["④ 设计师
+生成 UI 方案"]
+    A4 --> A5["⑤ 前端开发
+生成界面代码"]
+    A5 --> A6["⑥ 后端开发
+生成 API/数据库"]
+    A6 --> A7["⑦ AI 集成
+集成 LLM/RAG/工具"]
+    A7 --> A8["⑧ 测试修复
+验证/修复 Bug"]
+    A8 --> A9["⑨ 部署发布
+上线/上架商店"]
+
+    A8 -.->|Bug 反馈| A5
+    A8 -.->|Bug 反馈| A6
+    A8 -.->|Bug 反馈| A7
+
+    style A1 fill:#0f172a,stroke:#3b82f6,color:#fff
+    style A5 fill:#0f172a,stroke:#FF6B35,color:#fff
+    style A6 fill:#0f172a,stroke:#FF6B35,color:#fff
+    style A7 fill:#0f172a,stroke:#FF6B35,color:#fff
+    style A8 fill:#0f172a,stroke:#ef4444,color:#fff
+    style A9 fill:#0f172a,stroke:#10b981,color:#fff
+</div>
+
+<h3 class="text-lg font-semibold mb-4">九层 Agent 详解</h3>
+<div class="grid md:grid-cols-3 gap-4">
+<div class="agent-card p-4 rounded-xl border border-blue-500/30 bg-blue-500/5">
+<div class="font-bold text-blue-400 mb-2">① 意图识别</div>
+<div class="text-xs text-slate-300 mb-2">Claude Haiku 4.5 快速语义理解</div>
+<div class="text-xs text-slate-500">输入：自然语言描述 → 输出：产品类型 + 置信度 + 核心功能</div>
+</div>
+<div class="agent-card p-4 rounded-xl border border-cyan-500/30 bg-cyan-500/5">
+<div class="font-bold text-cyan-400 mb-2">② 架构师</div>
+<div class="text-xs text-slate-300 mb-2">选择最优技术架构</div>
+<div class="text-xs text-slate-500">输入：产品类型 + 复杂度 → 输出：技术栈 + 依赖 + 成本预估</div>
+</div>
+<div class="agent-card p-4 rounded-xl border border-green-500/30 bg-green-500/5">
+<div class="font-bold text-green-400 mb-2">③ 产品经理</div>
+<div class="text-xs text-slate-300 mb-2">拆解功能模块</div>
+<div class="text-xs text-slate-500">输入：需求 + 架构 → 输出：模块列表 + 用户流程 + 数据模型</div>
+</div>
+<div class="agent-card p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5">
+<div class="font-bold text-yellow-400 mb-2">④ 设计师</div>
+<div class="text-xs text-slate-300 mb-2">生成 UI 方案</div>
+<div class="text-xs text-slate-500">输入：产品需求 + 品牌偏好 → 输出：设计系统 + 布局方案</div>
+</div>
+<div class="agent-card p-4 rounded-xl border border-orange-500/30 bg-orange-500/5">
+<div class="font-bold text-orange-400 mb-2">⑤ 前端开发</div>
+<div class="text-xs text-slate-300 mb-2">生成界面代码</div>
+<div class="text-xs text-slate-500">输入：设计稿 + API 规范 → 输出：React/Next.js 代码</div>
+</div>
+<div class="agent-card p-4 rounded-xl border border-red-500/30 bg-red-500/5">
+<div class="font-bold text-red-400 mb-2">⑥ 后端开发</div>
+<div class="text-xs text-slate-300 mb-2">生成 API/数据库</div>
+<div class="text-xs text-slate-500">输入：数据模型 + 业务逻辑 → 输出：tRPC API + Prisma Schema</div>
+</div>
+<div class="agent-card p-4 rounded-xl border border-pink-500/30 bg-pink-500/5">
+<div class="font-bold text-pink-400 mb-2">⑦ AI 集成</div>
+<div class="text-xs text-slate-300 mb-2">集成 LLM/RAG/工具</div>
+<div class="text-xs text-slate-500">输入：AI 功能需求 → 输出：模型配置 + Prompt + 工具调用</div>
+</div>
+<div class="agent-card p-4 rounded-xl border border-purple-500/30 bg-purple-500/5">
+<div class="font-bold text-purple-400 mb-2">⑧ 测试修复</div>
+<div class="text-xs text-slate-300 mb-2">验证/修复 Bug</div>
+<div class="text-xs text-slate-500">输入：代码包 → 输出：测试结果 + 修复补丁（L1/L2/L3）</div>
+</div>
+<div class="agent-card p-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5">
+<div class="font-bold text-indigo-400 mb-2">⑨ 部署发布</div>
+<div class="text-xs text-slate-300 mb-2">上线/上架商店</div>
+<div class="text-xs text-slate-500">输入：代码包 + 部署目标 → 输出：URL + 商店上架</div>
+</div>
+</div>
+
+<div class="mt-8 p-4 rounded-xl border border-orange-500/30 bg-orange-500/5">
+<div class="font-bold text-orange-400 mb-2">修复策略（三层）</div>
+<div class="grid md:grid-cols-3 gap-4 text-sm">
+<div>
+<div class="font-medium text-green-400 mb-1">L1 静默修复</div>
+<div class="text-slate-400">编译错误、类型错误、导入错误 → AI 自动修复，不打扰用户</div>
+</div>
+<div>
+<div class="font-medium text-yellow-400 mb-1">L2 引导修复</div>
+<div class="text-slate-400">逻辑错误、功能不符 → 向用户展示 A/B/C 选择题</div>
+</div>
+<div>
+<div class="font-medium text-red-400 mb-1">L3 安全回滚</div>
+<div class="text-slate-400">致命错误、多次失败 → 自动回滚到上一可用版本</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Requirements -->
+<section id="requirements" class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-8 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>需求说明（P0 功能清单）</h2>
+
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead>
+<tr class="border-b border-white/10 text-slate-400 text-left">
+<th class="pb-3 font-medium">模块</th>
+<th class="pb-3 font-medium">功能点</th>
+<th class="pb-3 font-medium">优先级</th>
+<th class="pb-3 font-medium">需求描述</th>
+</tr>
+</thead>
+<tbody class="text-slate-300">
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">灵感输入</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">自然语言输入框，支持上传参考文件、竞品链接</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">意图识别</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">AI 理解需求，识别产品类型（8 大类型），置信度 > 90%</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">架构自动选择</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">根据产品类型自动选择最优技术架构，展示方案供确认</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">需求澄清</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">动态生成结构化问题（文本/单选/多选/颜色/时间）</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">多 Agent 编排</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">9 个 Agent 协作生成完整代码（前端+后端+AI+数据库）</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">实时预览</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">多端口实时预览（Web/App/桌面），支持设备切换</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">对话式调试</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">自然语言描述修改，AI 自动改代码，即时生效</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">智能修复</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">L1 静默修复 / L2 引导选择 / L3 安全回滚</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">构建器</td><td class="py-3">一键发布</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">自动部署到云端，配置域名/SSL/数据库/AI 模型</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">商店</td><td class="py-3">产品目录</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">分类浏览、搜索、排行榜、推荐算法</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">商店</td><td class="py-3">产品详情</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">简介、截图、演示、评分、使用次数、创作者</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">商店</td><td class="py-3">在线试用</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">无需购买即可体验产品核心功能</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">商店</td><td class="py-3">付费模式</td><td class="py-3"><span class="tag tag-p1">P1</span></td><td class="py-3">按次付费、订阅制、开源免费、技能交换</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">商店</td><td class="py-3">创作者中心</td><td class="py-3"><span class="tag tag-p1">P1</span></td><td class="py-3">收益统计、使用数据、用户评价、产品管理</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">通用</td><td class="py-3">用户系统</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">注册/登录/找回密码，与 LynxAI 账号打通</td></tr>
+<tr class="border-b border-white/5"><td class="py-3 font-medium">通用</td><td class="py-3">部署管理</td><td class="py-3"><span class="tag tag-p0">P0</span></td><td class="py-3">部署状态、域名管理、版本控制、一键回滚</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- AI Features -->
+<section id="ai" class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-8 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>AI 功能说明</h2>
+
+<div class="grid md:grid-cols-2 gap-8">
+<div>
+<h3 class="text-lg font-semibold mb-4 text-blue-400">AI 模型选型</h3>
+<div class="space-y-3 text-sm">
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">Claude Sonnet 4.6（主力）</div>
+<div class="text-slate-400">代码生成最强，上下文 200K，适合复杂产品开发</div>
+<div class="text-xs text-slate-500 mt-1">$3/1M input, $15/1M output</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">Claude Haiku 4.5（快速）</div>
+<div class="text-slate-400">速度快成本低，适合意图识别、分类、简单任务</div>
+<div class="text-xs text-slate-500 mt-1">$0.8/1M input, $4/1M output</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">DeepSeek-V3（降级）</div>
+<div class="text-slate-400">中文场景优秀，成本极低，高并发时降级使用</div>
+<div class="text-xs text-slate-500 mt-1">~$0.3/1M input</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">Embedding（RAG）</div>
+<div class="text-slate-400">text-embedding-3-large，向量检索，知识库支持</div>
+<div class="text-xs text-slate-500 mt-1">$0.13/1M tokens</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-lg font-semibold mb-4 text-green-400">AI 功能清单</h3>
+<div class="space-y-3 text-sm">
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">意图识别</div>
+<div class="text-slate-400">理解用户自然语言需求，识别产品类型和核心功能</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">架构推荐</div>
+<div class="text-slate-400">自动选择最优技术架构，确定技术栈和部署方案</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">代码生成</div>
+<div class="text-slate-400">生成完整前后端代码（React/Next.js/Prisma/tRPC）</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">UI 生成</div>
+<div class="text-slate-400">生成界面设计代码（shadcn/ui + Tailwind）</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">AI 集成</div>
+<div class="text-slate-400">集成 LLM、RAG、工具调用、多模态能力</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">智能修复</div>
+<div class="text-slate-400">自动修复编译错误、逻辑错误，支持版本回滚</div>
+</div>
+<div class="p-3 rounded-lg bg-white/5 border border-white/10">
+<div class="font-medium mb-1">文档生成</div>
+<div class="text-slate-400">自动生成 API 文档、使用说明、部署指南</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mt-8 p-4 rounded-xl border border-purple-500/30 bg-purple-500/5">
+<div class="font-bold text-purple-400 mb-2">RAG 知识库</div>
+<div class="text-sm text-slate-300">
+用户上传文档（PDF/Word/Markdown/网页）→ 自动分块 → Embedding → 存入向量数据库（pgvector）→ AI 产品运行时自动检索相关知识 → 增强回答质量。支持实时更新和增量索引。
+</div>
+</div>
+</div>
+</section>
+
+<!-- Development Plan -->
+<section id="plan" class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-8 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>四周开发计划</h2>
+
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 font-bold text-lg shrink-0">W1</div>
+<div class="flex-1">
+<div class="font-bold text-lg mb-1">脚手架 + 意图识别 + AI 社交架构</div>
+<div class="text-sm text-slate-400 mb-3">搭建项目骨架，实现第一个完整架构</div>
+<div class="flex flex-wrap gap-2">
+<span class="tag tag-p0">Next.js + tRPC + Prisma</span>
+<span class="tag tag-p0">灵感输入框</span>
+<span class="tag tag-p0">Haiku 意图识别</span>
+<span class="tag tag-p0">AI 社交架构模板</span>
+<span class="tag tag-p0">需求澄清问答</span>
+</div>
+<div class="text-xs text-slate-500 mt-2">验收：输入"AI 交友平台"→自动识别为社交产品→进入配置流程</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-lg shrink-0">W2</div>
+<div class="flex-1">
+<div class="font-bold text-lg mb-1">多 Agent 编排 + 实时预览 + 发布</div>
+<div class="text-sm text-slate-400 mb-3">实现 9 个 Agent 协作，跑通完整开发链路</div>
+<div class="flex flex-wrap gap-2">
+<span class="tag tag-p0">9 层 Agent 编排</span>
+<span class="tag tag-p0">代码生成</span>
+<span class="tag tag-p0">实时预览</span>
+<span class="tag tag-p0">对话调试</span>
+<span class="tag tag-p0">一键部署</span>
+</div>
+<div class="text-xs text-slate-500 mt-2">验收：配置完成后能预览完整社交产品，一键发布获得域名</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-lg shrink-0">W3</div>
+<div class="flex-1">
+<div class="font-bold text-lg mb-1">AI 应用商店 MVP</div>
+<div class="text-sm text-slate-400 mb-3">实现商店目录、详情、搜索、试用</div>
+<div class="flex flex-wrap gap-2">
+<span class="tag tag-p0">商店首页</span>
+<span class="tag tag-p0">产品分类</span>
+<span class="tag tag-p0">搜索功能</span>
+<span class="tag tag-p0">产品详情</span>
+<span class="tag tag-p0">在线试用</span>
+</div>
+<div class="text-xs text-slate-500 mt-2">验收：能浏览商店，查看产品详情，在线试用</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 font-bold text-lg shrink-0">W4</div>
+<div class="flex-1">
+<div class="font-bold text-lg mb-1">端到端验证 + 第二个架构</div>
+<div class="text-sm text-slate-400 mb-3">找真实用户测试，上线 AI 数据分析架构</div>
+<div class="flex flex-wrap gap-2">
+<span class="tag tag-p0">3个用户测试</span>
+<span class="tag tag-p0">AI 数据分析模板</span>
+<span class="tag tag-p0">图表组件</span>
+<span class="tag tag-p0">修复体验问题</span>
+</div>
+<div class="text-xs text-slate-500 mt-2">验收：用户能独立完成从灵感到上架的全流程</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Metrics -->
+<section class="px-6 py-12 max-w-6xl mx-auto">
+<div class="glass-card p-8">
+<h2 class="text-2xl font-bold mb-6 flex items-center gap-2"><span class="w-1 h-6 bg-orange-500 rounded-full"></span>北极星指标</h2>
+<div class="grid md:grid-cols-4 gap-4">
+<div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+<div class="text-3xl font-bold text-orange-400 mb-1">80%</div>
+<div class="text-sm text-slate-400">构建成功率</div>
+<div class="text-xs text-slate-500 mt-1">从灵感到可运行产品</div>
+</div>
+<div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+<div class="text-3xl font-bold text-purple-400 mb-1">30%</div>
+<div class="text-sm text-slate-400">端到端转化率</div>
+<div class="text-xs text-slate-500 mt-1">注册 → 成功构建并部署</div>
+</div>
+<div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+<div class="text-3xl font-bold text-green-400 mb-1">1000+</div>
+<div class="text-sm text-slate-400">MVP 产品数</div>
+<div class="text-xs text-slate-500 mt-1">3 个月内目标</div>
+</div>
+<div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+<div class="text-3xl font-bold text-blue-400 mb-1">NPS 50</div>
+<div class="text-sm text-slate-400">用户满意度</div>
+<div class="text-xs text-slate-500 mt-1">愿意推荐给朋友</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Footer -->
+<section class="px-6 py-12 text-center text-slate-500 text-sm">
+<div class="max-w-2xl mx-auto">
+<p class="mb-2">Lynx Kit · AI 全栈开发平台 & AI 应用商店</p>
+<p class="text-xs">产品愿景：AI 时代，人人都是造物主</p>
+</div>
+</section>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    primaryColor: '#1e293b',
+    primaryTextColor: '#e2e8f0',
+    primaryBorderColor: '#FF6B35',
+    lineColor: '#475569',
+    secondaryColor: '#0f172a',
+    tertiaryColor: '#0f172a',
+    fontFamily: 'Inter, Noto Sans SC, sans-serif'
+  }
+});
+</script>
+</body>
+</html>

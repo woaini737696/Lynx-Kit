@@ -4,76 +4,51 @@ node_modules/
 
 # Build outputs
 dist/
-build/
 .next/
 out/
+build/
+dist-electron/
 *.tsbuildinfo
 .turbo/
-
-# Flutter / Dart
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-build/
-**/build/
-ios/Pods/
-android/.gradle/
-android/local.properties
-**/GeneratedPluginRegistrant.*
 
 # Environment
 .env
 .env.local
 .env.*.local
-!.env.example
 
 # IDE
-.vscode/
 .idea/
+.vscode/
 *.swp
 *.swo
-*~
+
+# OS
 .DS_Store
 Thumbs.db
 
 # Logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
 # Testing
 coverage/
-.nyc_output/
 
-# Prisma
-prisma/migrations/dev.db*
+# Drizzle
+drizzle/
 
-# OS
-.DS_Store
-*.pid
-*.seed
-*.pid.lock
+# Electron
+release/
 
-# Lockfiles (keep pnpm-lock.yaml, ignore others)
-package-lock.json
-yarn.lock
+# Expo
+.expo/
 
-# Credentials / Secrets
-*.pem
-*.key
-credentials.json
-service-account.json
+# Vercel
+.ver/
+
+# Sentry
+.sentryclirc
 
 # Temporary
 tmp/
 temp/
-*.tmp
-
-# Editor
-.editorconfig

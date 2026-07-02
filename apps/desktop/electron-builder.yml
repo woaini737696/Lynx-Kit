@@ -1,0 +1,57 @@
+# LynxKit Desktop 打包配置（electron-builder）
+# https://www.electron.build/configuration
+
+appId: com.lynxkit.desktop
+productName: LynxKit
+copyright: Copyright © 2026 LynxKit
+
+directories:
+  output: release
+  buildResources: build
+
+# 打包产物包含的文件：编译后的主进程 + Next.js 静态导出
+files:
+  - dist-electron/**/*
+  - out/**/*
+  - package.json
+  - "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}"
+  - "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}"
+  - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
+
+extraMetadata:
+  main: dist-electron/main.js
+
+# macOS / Windows / Linux 平台配置
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - dmg
+    - zip
+  hardenedRuntime: true
+  gatekeeperAssess: false
+
+win:
+  target:
+    - nsis
+    - portable
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Development
+  maintainer: LynxKit
+
+# 自动更新发布渠道（GitHub Releases）
+publish:
+  provider: github
+  owner: lynxkit
+  repo: lynxkit-desktop

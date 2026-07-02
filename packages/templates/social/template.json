@@ -1,0 +1,112 @@
+{
+  "id": "social",
+  "name": "AI 社交产品",
+  "description": "AI 驱动的社交平台：智能匹配、AI 破冰助手、情感分析、兴趣图谱",
+  "productType": "social",
+  "week": "W1",
+  "architecture": "social",
+  "version": "1.0.0",
+  "icon": "heart",
+  "color": "#FF6B35",
+  "techStack": {
+    "frontend": ["Next.js 15", "Tailwind CSS", "shadcn/ui"],
+    "backend": ["Hono.js", "Node.js"],
+    "database": ["PostgreSQL", "pgvector"],
+    "realtime": ["WebSocket"],
+    "ai": ["DeepSeek-V3", "text-embedding-3-large"],
+    "deploy": ["Vercel", "Docker Compose"]
+  },
+  "features": [
+    "用户注册登录 + 手机验证码",
+    "智能匹配（基于兴趣 + 性格 + pgvector）",
+    "实时聊天（WebSocket）",
+    "AI 破冰助手（推荐开场白）",
+    "情感分析（判断聊天氛围）",
+    "兴趣图谱（可视化）",
+    "个人资料 + 照片墙",
+    "发现页 + 推荐"
+  ],
+  "estimatedBuildTime": "5-10 分钟",
+  "estimatedCost": "免费（Vercel）或自部署",
+  "questions": [
+    {
+      "id": "match_algorithm",
+      "question": "匹配算法基于什么？",
+      "type": "select",
+      "required": true,
+      "default": "综合（兴趣+性格+位置）",
+      "options": [
+        "兴趣匹配",
+        "性格匹配",
+        "地理位置",
+        "综合（兴趣+性格+位置）"
+      ]
+    },
+    {
+      "id": "chat_features",
+      "question": "聊天功能需要哪些？",
+      "type": "multi-select",
+      "required": true,
+      "default": ["文字", "图片", "表情包"],
+      "options": ["文字", "图片", "语音", "视频", "表情包", "文件"]
+    },
+    {
+      "id": "ai_assistant",
+      "question": "需要哪些 AI 助手功能？",
+      "type": "multi-select",
+      "required": true,
+      "default": ["破冰开场白", "情感分析", "话题推荐"],
+      "options": ["破冰开场白", "情感分析", "话题推荐", "聊天翻译", "内容审核"]
+    },
+    {
+      "id": "user_identity",
+      "question": "用户身份验证方式？",
+      "type": "select",
+      "required": true,
+      "default": "手机号",
+      "options": ["手机号", "邮箱", "微信", "Apple ID", "匿名"]
+    },
+    {
+      "id": "target_audience",
+      "question": "目标用户群体？",
+      "type": "select",
+      "required": true,
+      "default": "年轻人（18-30）",
+      "options": ["年轻人（18-30）", "职场人士", "兴趣社群", "通用"]
+    },
+    {
+      "id": "monetization",
+      "question": "商业化模式？",
+      "type": "multi-select",
+      "required": false,
+      "default": ["免费"],
+      "options": ["免费", "会员订阅", "增值服务（VIP/打赏）", "广告"]
+    },
+    {
+      "id": "theme",
+      "question": "设计风格？",
+      "type": "select",
+      "required": true,
+      "default": "温暖粉红",
+      "options": ["温暖粉红", "科技蓝", "活力橙", "简约白"]
+    },
+    {
+      "id": "extra_features",
+      "question": "其他希望包含的功能？",
+      "type": "textarea",
+      "required": false,
+      "default": "",
+      "placeholder": "可以补充你想加的特殊功能..."
+    }
+  ],
+  "configMapping": {
+    "match_algorithm": "config.match.algorithm",
+    "chat_features": "config.chat.features",
+    "ai_assistant": "config.ai.features",
+    "user_identity": "config.auth.identity",
+    "target_audience": "config.audience",
+    "monetization": "config.monetization",
+    "theme": "config.theme.style",
+    "extra_features": "config.extraFeatures"
+  }
+}

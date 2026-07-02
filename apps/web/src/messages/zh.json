@@ -1,0 +1,171 @@
+{
+  "common": {
+    "brand": "LynxKit",
+    "tagline": "AI 时代，人人都是造物主",
+    "description": "描述你的想法，AI 帮你从架构到代码再到部署一站完成。",
+    "getStarted": "免费开始构建",
+    "viewExamples": "查看示例",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出登录",
+    "loading": "加载中…",
+    "search": "搜索",
+    "pricing": "定价",
+    "features": "功能",
+    "blog": "博客",
+    "about": "关于我们",
+    "store": "商店",
+    "dashboard": "仪表盘",
+    "users": "用户",
+    "products": "产品",
+    "orders": "订单",
+    "monitoring": "监控",
+    "allRightsReserved": "保留所有权利"
+  },
+  "nav": {
+    "home": "首页",
+    "features": "功能",
+    "pricing": "定价",
+    "store": "商店",
+    "blog": "博客",
+    "about": "关于",
+    "docs": "文档"
+  },
+  "hero": {
+    "title": "AI 时代，人人都是造物主",
+    "subtitle": "一句话描述你的想法，9 层 Agent 流水线帮你完成架构、设计、代码、部署，从想法到上线只需一杯咖啡的时间。",
+    "primaryCta": "免费开始构建",
+    "secondaryCta": "查看示例",
+    "badge": "9 层 Agent 流水线 · 一句话到上线"
+  },
+  "features": {
+    "title": "三大核心能力",
+    "subtitle": "从意图识别到自动部署，全流程 AI 协作",
+    "intent": {
+      "title": "意图识别",
+      "desc": "AI 解析你的描述，匹配最适合的产品类型与技术栈"
+    },
+    "architect": {
+      "title": "架构生成",
+      "desc": "10 层 Agent 协同设计数据库、API、UI 与部署方案"
+    },
+    "deploy": {
+      "title": "一键部署",
+      "desc": "Docker + Caddy 自动部署到云端，分钟级上线"
+    }
+  },
+  "productTypes": {
+    "title": "8 类产品类型",
+    "subtitle": "覆盖绝大多数 AI 应用场景",
+    "social": "AI 社交",
+    "system": "AI 系统",
+    "workstation": "AI 工作站",
+    "data": "AI 数据分析",
+    "admin": "AI 管理后台",
+    "app": "AI 应用 App",
+    "marketing": "AI 营销",
+    "hardware": "AI 硬件"
+  },
+  "howItWorks": {
+    "title": "三步即可上线",
+    "step1": {
+      "title": "描述你的想法",
+      "desc": "用自然语言告诉 AI 你想构建什么"
+    },
+    "step2": {
+      "title": "AI 自动生成",
+      "desc": "9 层 Agent 协同产出完整代码与部署方案"
+    },
+    "step3": {
+      "title": "部署上架",
+      "desc": "一键部署到云端，并可发布到 LynxKit 商店"
+    }
+  },
+  "pricing": {
+    "title": "简单透明的定价",
+    "subtitle": "从个人到团队，按需选择",
+    "free": {
+      "name": "免费版",
+      "price": "¥0",
+      "period": "永久免费",
+      "desc": "适合个人尝鲜与本地构建"
+    },
+    "pro": {
+      "name": "专业版",
+      "price": "¥99",
+      "period": "/ 月",
+      "desc": "适合独立开发者与小型团队"
+    },
+    "team": {
+      "name": "团队版",
+      "price": "¥399",
+      "period": "/ 月",
+      "desc": "适合成长期团队协作"
+    }
+  },
+  "testimonials": {
+    "title": "用户评价",
+    "subtitle": "看看超级个体们怎么说"
+  },
+  "cta": {
+    "title": "准备好开始造物了吗？",
+    "subtitle": "立即创建你的第一个 AI 产品",
+    "primary": "免费开始",
+    "secondary": "联系销售"
+  },
+  "footer": {
+    "product": "产品",
+    "resources": "资源",
+    "company": "公司",
+    "legal": "法律",
+    "follow": "关注我们"
+  },
+  "store": {
+    "title": "LynxKit 商店",
+    "subtitle": "由超级个体创造的 AI 应用",
+    "search": "搜索应用…",
+    "allCategories": "全部分类",
+    "featured": "推荐商品",
+    "purchase": "立即购买",
+    "tryout": "试用",
+    "creator": "创作者",
+    "reviews": "评价"
+  },
+  "auth": {
+    "loginTitle": "登录到 LynxKit",
+    "registerTitle": "创建 LynxKit 账号",
+    "email": "邮箱",
+    "password": "密码",
+    "phone": "手机号",
+    "code": "验证码",
+    "sendCode": "发送验证码",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "请输入密码",
+    "phonePlaceholder": "请输入手机号",
+    "codePlaceholder": "6 位验证码",
+    "loginButton": "登录",
+    "registerButton": "注册",
+    "loginSubtitle": "继续你的造物之旅",
+    "registerSubtitle": "加入超级个体的行列",
+    "noAccount": "还没有账号？",
+    "hasAccount": "已有账号？",
+    "forgotPassword": "忘记密码？",
+    "agreeTerms": "我已阅读并同意《用户协议》与《隐私政策》",
+    "or": "或"
+  },
+  "admin": {
+    "title": "管理后台",
+    "stats": {
+      "users": "用户数",
+      "products": "商品数",
+      "revenue": "交易额",
+      "builds": "构建次数"
+    },
+    "recentUsers": "最近注册用户",
+    "recentOrders": "最近交易",
+    "systemHealth": "系统健康",
+    "uptime": "在线率",
+    "latency": "响应延迟",
+    "errorRate": "错误率"
+  }
+}

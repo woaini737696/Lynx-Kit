@@ -1,0 +1,41 @@
+{
+  "name": "@lynxkit/ui-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LynxKit Mobile 基础组件库（基于 React Native · NativeWind · class-variance-authority）",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.4"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.74.0",
+    "expo-image": ">=1.12.0",
+    "lucide-react-native": ">=0.400.0",
+    "nativewind": "^4.1.0"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": false },
+    "react-native": { "optional": false },
+    "expo-image": { "optional": false },
+    "lucide-react-native": { "optional": false },
+    "nativewind": { "optional": false }
+  },
+  "devDependencies": {
+    "@lynxkit/config": "workspace:*",
+    "@types/react": "^18.3.0",
+    "typescript": "^5.6.0"
+  }
+}

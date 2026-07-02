@@ -2,7 +2,7 @@
   "name": "@lynxkit/agent-core",
   "version": "0.1.0",
   "private": true,
-  "description": "LynxKit 七层 Agent 编排引擎",
+  "description": "LynxKit 9 层 Agent 编排引擎（Vercel AI SDK 5.0 + 国内 6 大模型 Provider + BullMQ）",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -10,20 +10,25 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist .turbo"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.30.0",
+    "@ai-sdk/openai-compatible": "^1.0.42",
     "@lynxkit/shared": "workspace:*",
-    "zod": "^3.23.0"
+    "ai": "^5.0.0",
+    "bullmq": "^5.13.0",
+    "ioredis": "^5.4.0",
+    "pino": "^9.4.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
+    "@types/node": "^22.5.0",
     "rimraf": "^5.0.0",
-    "typescript": "^5.5.0"
+    "typescript": "^5.6.0"
   }
 }

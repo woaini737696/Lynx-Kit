@@ -2,32 +2,162 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --lynx-50: #fff4ed;
-  --lynx-100: #ffe6d4;
-  --lynx-200: #ffc8a8;
-  --lynx-300: #ffa371;
-  --lynx-400: #ff8757;
-  --lynx-500: #ff6b35;
-  --lynx-600: #f04e0e;
-  --lynx-700: #c73c0b;
-  --lynx-800: #9e2f0e;
-  --lynx-900: #7f2810;
-  --lynx-950: #451006;
-  --background: #ffffff;
-  --foreground: #18181b;
+/* ============ LynxKit 主题变量（shadcn/ui 语义色，HSL 字符串） ============ */
+@layer base {
+  :root {
+    /* lynx 品牌色（暖橙） */
+    --lynx-50: #fff4ed;
+    --lynx-100: #ffe6d4;
+    --lynx-200: #ffc8a8;
+    --lynx-300: #ffa371;
+    --lynx-400: #ff8757;
+    --lynx-500: #ff6b35;
+    --lynx-600: #f04e0e;
+    --lynx-700: #c73c0b;
+    --lynx-800: #9e2f0e;
+    --lynx-900: #7f2810;
+    --lynx-950: #451006;
+
+    /* 亮色：白底深字 */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 16 100% 60%; /* lynx-500 #FF6B35 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 16 100% 95%;
+    --accent-foreground: 16 100% 30%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 16 100% 60%;
+    --radius: 0.6rem;
+  }
+
+  .dark {
+    /* 暗色：深底浅字 */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 8% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 5%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 16 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 16 40% 14%;
+    --accent-foreground: 16 100% 85%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 16 100% 60%;
+  }
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family:
+      var(--font-inter), var(--font-noto-sans-sc), system-ui, -apple-system,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+/* ============ 营销页装饰：渐变光晕 / 网格底 / 粒子 ============ */
+@layer components {
+  /* 营销 Hero 顶部光晕 */
+  .hero-glow {
+    background:
+      radial-gradient(
+        ellipse 80% 50% at 50% -10%,
+        hsl(16 100% 60% / 0.18),
+        transparent
+      ),
+      radial-gradient(
+        ellipse 60% 40% at 80% 20%,
+        hsl(280 80% 60% / 0.08),
+        transparent
+      );
   }
 
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, sans-serif;
+  /* 网格底纹 */
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.5) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.5) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(
+      ellipse 70% 60% at 50% 0%,
+      black 40%,
+      transparent 80%
+    );
   }
+
+  /* 渐变文字 */
+  .text-gradient {
+    @apply bg-gradient-to-r from-lynx-500 via-lynx-400 to-lynx-600 bg-clip-text text-transparent;
+  }
+
+  /* 卡片光晕悬浮 */
+  .glow-card {
+    @apply relative overflow-hidden rounded-xl border border-border bg-card/60 backdrop-blur transition-all hover:border-lynx-500/50 hover:bg-card hover:shadow-lg hover:shadow-lynx-500/10;
+  }
+}
+
+/* ============ 浮动粒子动画 ============ */
+@keyframes particle-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate3d(20px, -40px, 0);
+  }
+}
+.particle {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  animation: particle-float 8s ease-in-out infinite;
 }

@@ -1,88 +1,119 @@
 /**
- * JWT 工具
+ * JWT 工具（基于 jose）- LynxKit API
  *
- * 用于 tRPC context 鉴权：从 Fastify request 提取 Bearer token，
- * 验证后注入 user 信息到 ctx。
+ * LynxKit 不使用 better-auth 的内置 session（cookie + 数据库会话），
+ * 而是统一签发无状态 JWT，便于：
+ *   - 跨端鉴权（Web / 桌面端 / 移动端共用同一 token）
+ *   - SSE / WebSocket 长连接鉴权
+ *   - 微服务间调用
  *
- * 跨端鉴权由 NextAuth.js v5（JWT 模式）统一处理；
- * 本模块签发的 token 与 NextAuth token 共享 secret，
- * 但 LynxKit 桌面端 / 移动端可绕过 NextAuth 直接走 JWT 流程。
+ * 配合 Redis 黑名单实现登出立即失效（refresh 时校验黑名单）。
+ *
+ * Token 类型：
+ *   - access token：短期（15 分钟），放入 Authorization header
+ *   - refresh token：长期（30 天），仅用于换取新 access token
  */
-import jwt from "jsonwebtoken";
+import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 
-import { JWT_CONFIG } from "@lynxkit/shared/constants";
-
-import { logger } from "./logger.js";
+import { env } from "../env.js";
 
 /** JWT payload 结构 */
-export interface JwtPayload {
+export interface JwtPayload extends JWTPayload {
   /** 用户 ID */
-  userId: string;
+  sub: string;
   /** 用户邮箱 */
   email: string;
   /** 用户角色 */
   role: string;
-  /** 签发时间（秒） */
-  iat?: number;
-  /** 过期时间（秒） */
-  exp?: number;
+  /** token 类型：access | refresh */
+  type: "access" | "refresh";
 }
 
+/** access token 有效期（秒） */
+export const ACCESS_TOKEN_TTL_SEC = 60 * 15; // 15 分钟
+/** refresh token 有效期（秒） */
+export const REFRESH_TOKEN_TTL_SEC = 60 * 60 * 24 * 30; // 30 天
+
+const encoder = new TextEncoder();
+
 /**
- * 获取 JWT secret（从环境变量读取）
+ * 获取签名密钥（SecretKey 实例）
  */
-function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    logger.error("JWT_SECRET 环境变量未配置");
-    throw new Error("JWT_SECRET 环境变量未配置，请检查 .env");
-  }
-  return secret;
+function getSecretKey(): Uint8Array {
+  return encoder.encode(env.BETTER_AUTH_SECRET);
 }
 
 /**
- * 签发 JWT token
+ * 签发 access token
  *
- * @param user 用户信息（包含 id / email / role）
- * @returns JWT token 字符串
+ * @param user 用户信息（id / email / role）
+ * @returns JWT access token 字符串
  */
-export function signToken(user: {
+export async function signAccessToken(user: {
   id: string;
   email: string;
   role: string;
-}): string {
-  const secret = getJwtSecret();
-  const expiresIn = process.env.JWT_EXPIRES_IN ?? JWT_CONFIG.expiresIn;
-
-  const payload: Omit<JwtPayload, "iat" | "exp"> = {
-    userId: user.id,
+}): Promise<string> {
+  return new SignJWT({
     email: user.email,
     role: user.role,
-  };
+    type: "access",
+  })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setSubject(user.id)
+    .setIssuedAt()
+    .setIssuer("lynxkit-api")
+    .setAudience("lynxkit-client")
+    .setExpirationTime(`${ACCESS_TOKEN_TTL_SEC}s`)
+    .sign(getSecretKey());
+}
 
-  return jwt.sign(payload, secret, {
-    algorithm: JWT_CONFIG.algorithm,
-    issuer: JWT_CONFIG.issuer,
-    audience: JWT_CONFIG.audience,
-    expiresIn,
-  } as jwt.SignOptions);
+/**
+ * 签发 refresh token
+ *
+ * @param user 用户信息
+ * @returns JWT refresh token 字符串
+ */
+export async function signRefreshToken(user: {
+  id: string;
+  email: string;
+  role: string;
+}): Promise<string> {
+  return new SignJWT({
+    email: user.email,
+    role: user.role,
+    type: "refresh",
+  })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setSubject(user.id)
+    .setIssuedAt()
+    .setIssuer("lynxkit-api")
+    .setAudience("lynxkit-client")
+    .setExpirationTime(`${REFRESH_TOKEN_TTL_SEC}s`)
+    .sign(getSecretKey());
 }
 
 /**
  * 验证 JWT token
  *
  * @param token JWT token 字符串
- * @returns payload（含 userId / email / role）
- * @throws token 无效或过期时抛出
+ * @param expectedType 期望的 token 类型（access / refresh），不传则不校验
+ * @returns 解析后的 payload
+ * @throws token 无效 / 过期 / 类型不符时抛出
  */
-export function verifyToken(token: string): JwtPayload {
-  const secret = getJwtSecret();
-  const payload = jwt.verify(token, secret, {
-    algorithms: [JWT_CONFIG.algorithm],
-    issuer: JWT_CONFIG.issuer,
-    audience: JWT_CONFIG.audience,
-  }) as JwtPayload;
-  return payload;
+export async function verifyToken(
+  token: string,
+  expectedType?: "access" | "refresh",
+): Promise<JwtPayload> {
+  const { payload } = await jwtVerify(token, getSecretKey(), {
+    issuer: "lynxkit-api",
+    audience: "lynxkit-client",
+  });
+  const typed = payload as JwtPayload;
+  if (expectedType && typed.type !== expectedType) {
+    throw new Error(`token 类型不符：期望 ${expectedType}，实际 ${typed.type}`);
+  }
+  return typed;
 }
 
 /**
@@ -96,4 +127,17 @@ export function extractBearerToken(header?: string): string | null {
   const trimmed = header.trim();
   if (!trimmed.toLowerCase().startsWith("bearer ")) return null;
   return trimmed.slice(7).trim();
+}
+
+/**
+ * 从 Refresh header 或自定义 header 中提取 refresh token
+ *
+ * @param header X-Refresh-Token header 值
+ * @returns token 或 null
+ */
+export function extractRefreshToken(header?: string): string | null {
+  if (!header) return null;
+  const trimmed = header.trim();
+  if (!trimmed) return null;
+  return trimmed;
 }

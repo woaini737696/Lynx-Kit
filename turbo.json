@@ -5,30 +5,52 @@
     "NODE_ENV",
     "DATABASE_URL",
     "REDIS_URL",
-    "NEXTAUTH_SECRET",
-    "NEXTAUTH_URL",
-    "JWT_SECRET",
-    "PORT",
-    "API_PORT"
+    "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_URL",
+    "KMS_MASTER_KEY",
+    "PORT"
   ],
   "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "out/**", "build/**"],
+      "env": [
+        "DATABASE_URL",
+        "REDIS_URL",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "KMS_MASTER_KEY",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_WEB_URL",
+        "EXPO_PUBLIC_API_URL"
+      ]
+    },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
-    },
     "lint": {
-      "outputs": []
+      "dependsOn": ["^build"]
     },
     "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": ["coverage/**"]
     },
     "clean": {
       "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

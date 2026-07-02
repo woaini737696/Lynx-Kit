@@ -1,18 +1,16 @@
-import withSerwistInit from "@serwist/next";
+import createNextIntlPlugin from "next-intl/plugin";
 import type { NextConfig } from "next";
 
-const withSerwist = withSerwistInit({
-  swSrc: "src/app/sw.ts",
-  swDest: "sw.js",
-  // 开发环境禁用 Service Worker，避免缓存干扰调试
-  disable: process.env.NODE_ENV === "development",
-  cacheOnNavigation: true,
-  reloadOnOnline: true,
-});
+const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 const nextConfig: NextConfig = {
   // 转译 workspace 内的源码包，使其可被 Next 直接消费
-  transpilePackages: ["@lynxkit/shared"],
+  transpilePackages: [
+    "@lynxkit/shared",
+    "@lynxkit/ui-web",
+    "@lynxkit/store",
+    "@lynxkit/api-client",
+  ],
   experimental: {
     serverActions: {
       allowedOrigins: ["localhost:3000"],
@@ -21,4 +19,4 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 };
 
-export default withSerwist(nextConfig);
+export default withNextIntl(nextConfig);
