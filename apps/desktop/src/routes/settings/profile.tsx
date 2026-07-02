@@ -57,7 +57,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
               <AvatarFallback className="bg-lynx-500/10 text-lg text-lynx-600">
-                {(name || user?.email ?? "U")[0]?.toUpperCase()}
+                {((name || user?.email) ?? "U")[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>

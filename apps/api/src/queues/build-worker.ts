@@ -1,7 +1,7 @@
 /**
  * 构建任务 Worker - LynxKit API
  *
- * 消费 BullMQ 构建队列，调用 @lynxkit/agent-core 的 orchestrator
+ * 消费 BullMQ 构建队列，调用 @lynxkit/agent-core 的 Orchestrator
  * 执行完整的 9 层 Agent 流水线。
  *
  * 启动：pnpm worker  （独立进程，与 API 服务解耦）
@@ -9,17 +9,17 @@
  * 流程：
  *   1. 从 BullMQ 队列消费 build 任务
  *   2. 加载构建会话与配置
- *   3. 调用 runOrchestrator 推进 Agent 流程
- *   4. 每个阶段写入 build_logs
+ *   3. 构造 OrchestratorContext 并执行 orch.run()
+ *   4. 通过 onLog 回调实时写入 build_logs
  *   5. 最终更新 build_sessions 状态（DEPLOYED / ERROR）
- *   6. 失败时自动重试（受 maxFixAttempts 限制）
  */
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 import type { ConnectionOptions } from "bullmq";
 
 import { buildSessions, buildLogs } from "@lynxkit/db";
-import { runOrchestrator } from "@lynxkit/agent-core";
+import { Orchestrator, type OrchestratorContext, type OrchestratorResult } from "@lynxkit/agent-core";
+import { type AgentLog, type AgentRole, LogLevel } from "@lynxkit/shared";
 
 import { env } from "../env.js";
 import { getDb } from "../lib/db.js";
@@ -41,7 +41,7 @@ const WORKER_CONCURRENCY = 1;
  */
 async function processBuildJob(data: BuildJobData): Promise<void> {
   const db = getDb();
-  const { sessionId, userId, userInput, answers, serverId, domain } = data;
+  const { sessionId, userId, userInput, answers } = data;
 
   logger.info({ sessionId, userId }, "开始处理构建任务");
 
@@ -69,93 +69,83 @@ async function processBuildJob(data: BuildJobData): Promise<void> {
     productType: session.productType,
   });
 
-  try {
-    // 调用 agent-core orchestrator
-    // 注意：当前 orchestrator 的模板加载逻辑由内部 selectTemplate 完成，
-    // 此处传入 undefined，由 orchestrator 自行选择模板。
-    const result = await runOrchestrator(
-      {
-        userInput,
-        answers,
-        serverId,
-        domain,
-        maxFixAttempts: 5,
-      },
-      undefined, // 模板由 orchestrator 内部加载
-      undefined, // LLM Provider 使用默认 mock（生产环境应注入真实 Provider）
-    );
+  // 收集日志，用于阶段批量写入
+  const logBuffer: AgentLog[] = [];
 
-    // 记录每个阶段的日志
-    for (const logEntry of result.context.logs) {
+  // 构造编排器上下文
+  const ctx: OrchestratorContext = {
+    sessionId,
+    userId,
+    inspiration: userInput,
+    answers,
+    onLog: (log: AgentLog) => {
+      logBuffer.push(log);
+    },
+    onProgress: (agent: AgentRole, progress: number) => {
+      logger.debug({ sessionId, agent, progress }, "Agent 进度更新");
+    },
+    onStream: (chunk: string) => {
+      // 流式输出仅日志，不存储（前端通过 SSE 实时接收）
+      logger.debug({ sessionId, chunkLen: chunk.length }, "流式输出");
+    },
+  };
+
+  const orchestrator = new Orchestrator(ctx);
+
+  try {
+    // 执行 9 层 Agent 流水线
+    const result: OrchestratorResult = await orchestrator.run();
+
+    // 批量写入收集的日志
+    for (const logEntry of logBuffer) {
       await writeLog(
         sessionId,
-        logEntry.stage,
-        logEntry.success ? "INFO" : "ERROR",
+        logEntry.agent,
+        logEntry.level === LogLevel.ERROR ? "ERROR" : logEntry.level === LogLevel.WARN ? "WARN" : "INFO",
         logEntry.message,
         {
-          stage: logEntry.stage,
-          durationMs: logEntry.durationMs,
-          timestamp: logEntry.timestamp,
+          stage: logEntry.agent,
+          timestamp: logEntry.createdAt,
+          ...logEntry.metadata,
         },
       );
     }
 
-    if (result.stage === "done") {
-      // 构建成功 → 更新状态为已部署
-      await db
-        .update(buildSessions)
-        .set({
-          status: "DEPLOYED",
-          deployUrl: result.finalUrl ?? null,
-          architecture: result.context.select as never,
-          generatedCode: result.context.fill as never,
-          updatedAt: new Date(),
-        })
-        .where(eq(buildSessions.id, sessionId));
+    // 构建成功 → 更新状态为已部署
+    await db
+      .update(buildSessions)
+      .set({
+        status: "DEPLOYED",
+        deployUrl: result.deployUrl ?? null,
+        architecture: result.architecture as never,
+        generatedCode: result.generatedFiles as never,
+        updatedAt: new Date(),
+      })
+      .where(eq(buildSessions.id, sessionId));
 
-      await writeLog(sessionId, "orchestrator", "INFO", "构建完成并部署成功", {
-        finalUrl: result.finalUrl,
-      });
+    await writeLog(sessionId, "orchestrator", "INFO", "构建完成并部署成功", {
+      deployUrl: result.deployUrl,
+      testPassed: result.testPassed,
+      fixLevel: result.fixLevel,
+      fileCount: result.generatedFiles.length,
+    });
 
-      logger.info({ sessionId, finalUrl: result.finalUrl }, "构建任务完成");
-    } else if (result.stage === "failed") {
-      // 构建失败 → 更新状态为错误
-      await db
-        .update(buildSessions)
-        .set({ status: "ERROR", updatedAt: new Date() })
-        .where(eq(buildSessions.id, sessionId));
-
-      await writeLog(sessionId, "orchestrator", "ERROR", result.error ?? "构建失败", {
-        stage: result.stage,
-      });
-
-      logger.error({ sessionId, error: result.error }, "构建任务失败");
-    } else {
-      // 需要用户介入（澄清或修复选择）
-      await db
-        .update(buildSessions)
-        .set({
-          status: result.stage === "clarify" ? "CLARIFYING" : "TESTING",
-          updatedAt: new Date(),
-        })
-        .where(eq(buildSessions.id, sessionId));
-
+    logger.info(
+      { sessionId, deployUrl: result.deployUrl, fileCount: result.generatedFiles.length },
+      "构建任务完成",
+    );
+  } catch (err) {
+    // 批量写入已收集的日志
+    for (const logEntry of logBuffer) {
       await writeLog(
         sessionId,
-        "orchestrator",
-        "INFO",
-        `构建暂停，需要用户介入（阶段：${result.stage}）`,
-        {
-          stage: result.stage,
-          needsUserInput: result.needsUserInput,
-          hasPendingQuestion: !!result.pendingQuestion,
-          hasPendingChoices: !!result.pendingChoices,
-        },
+        logEntry.agent,
+        logEntry.level === LogLevel.ERROR ? "ERROR" : "INFO",
+        logEntry.message,
+        { stage: logEntry.agent, timestamp: logEntry.createdAt, ...logEntry.metadata },
       );
-
-      logger.info({ sessionId, stage: result.stage }, "构建暂停等待用户介入");
     }
-  } catch (err) {
+
     // 未捕获异常 → 标记为错误
     const message = err instanceof Error ? err.message : String(err);
     await db

@@ -3,13 +3,20 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "jsx": "preserve",
     "noEmit": true,
     "incremental": true,
-    "moduleResolution": "Bundler"
+    "moduleResolution": "Bundler",
+    "allowJs": true
   },
   "include": [
     "next-env.d.ts",
@@ -17,5 +24,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next", ".turbo"]
+  "exclude": [
+    "node_modules",
+    ".next",
+    ".turbo"
+  ]
 }

@@ -1,5 +1,7 @@
-import { autoUpdater } from "electron-updater";
+import electronUpdater from "electron-updater";
 import type { BrowserWindow } from "electron";
+
+const { autoUpdater } = electronUpdater;
 
 /**
  * 自动更新服务（基于 electron-updater + GitHub Releases）

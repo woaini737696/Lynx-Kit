@@ -22,8 +22,8 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = process.env.NODE_ENV === "development";
 
-// electron-vite 产物：main 在 out/main/，preload 在 out/preload/index.js
-const PRELOAD_PATH = path.join(__dirname, "..", "preload", "index.js");
+// electron-vite 产物：main 在 out/main/，preload 在 out/preload/index.mjs
+const PRELOAD_PATH = path.join(__dirname, "..", "preload", "index.mjs");
 
 let win: BrowserWindow | null = null;
 let tray: Tray | null = null;

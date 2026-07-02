@@ -175,4 +175,4 @@ function useToast() {
   };
 }
 
-export { toast, dismiss, useToast, toastVariants };
+export { toast, dismiss, useToast, toastVariants, Toast, ToastTitle, ToastDescription, ToastClose, type ToastProps, type ToastOptions };
