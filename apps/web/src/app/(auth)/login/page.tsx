@@ -38,8 +38,8 @@ export default function LoginPage() {
         });
         return;
       }
-      // 登录成功跳转到桌面端下载页（或构建器）
-      router.push("/download");
+      // 登录成功跳转到商店页
+      router.push("/store");
     } catch (err) {
       toast({
         title: "登录失败",

@@ -95,7 +95,35 @@
 - 遗留问题与后续计划（如有）
 - 提交哈希与分支名
 
-## 6. 附则
+## 6. 阿里云服务器部署约束
+
+**触发时机**：任何涉及部署到阿里云服务器的任务。
+
+- **服务器规格**：2 核 2G（资源极其有限，禁止超限使用）。
+- **强制规则**：必须在本地构建好产物再部署，**绝不允许在服务器上执行任何构建、打包、安装依赖、编译操作**。
+  - 允许上传的产物类型：已构建完成的二进制、已打包的 Docker 镜像 tar、已 `pnpm build` 后的 `dist/`、`out/` 静态资源
+  - 禁止在服务器执行：`pnpm install`、`pnpm build`、`npm install`、`cargo build`、`go build`、`docker build`、`mvn package`、`pip install`、`yarn install` 等任何会拉取依赖或编译的动作
+- 部署前必须本地完成完整自测，确认产物可运行后再上传。
+- 上传方式优先：本地 `docker build` → `docker save` → `scp` 到服务器 → `docker load` → `docker run`；或直接上传构建好的静态产物。
+- 服务器只承担"运行时"职责（运行已构建好的进程、反代、TLS 终止），不承担"构建时"职责。
+- 违反此约束导致服务器 OOM / 崩溃的，按严重事故处理。
+
+## 7. 文件清理约束
+
+**触发时机**：每次任务完成、提交代码前。
+
+- 提交前**必须**清理以下类型文件，禁止入库：
+  - 无关文件：与本次任务无关、误生成的文件
+  - 临时文件：`*.log`、`*.tmp`、`*.swp`、`*.bak`、`renderer-debug.log`、`electron-stdout.txt`、`electron-stderr.txt`
+  - 无用文件：构建中间产物（`out/`、`dist/`、`dist-electron/`、`.next/`、`build/`、`release/`、`installer/`、`.turbo/`、`coverage/`）
+  - 垃圾文件：`.DS_Store`、`Thumbs.db`、`*.tsbuildinfo`、IDE 缓存
+  - 重复代码：同一逻辑的多份拷贝、已废弃但未删除的旧实现
+- `.gitignore` 必须与上述清理规则保持一致；如发现新类型的临时产物，应同步补充到 `.gitignore`。
+- 提交前执行 `git status` 复核，确认无任何上述类型文件被跟踪。
+- **禁止使用 `git add -A` 或 `git add .`**，必须按文件名逐个添加，避免误入库。
+- 服务器部署目录同样遵守：只保留运行所需的产物，部署完成后立即清理上传过程产生的临时文件。
+
+## 8. 附则
 
 - 本规范自项目根目录生效，适用于所有 LynxKit 仓库的子项目（apps/、packages/、scripts/）。
 - 与 project_memory.md 中的硬约束冲突时，以 project_memory.md 为准。

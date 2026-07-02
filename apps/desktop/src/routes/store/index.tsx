@@ -8,7 +8,8 @@ import {
   toast,
 } from "@lynxkit/ui-web";
 import { storeApi } from "@/lib/api";
-import type { StoreProduct, StoreCategory } from "@lynxkit/shared";
+import { StoreCategory } from "@lynxkit/shared";
+import type { StoreProduct } from "@lynxkit/shared";
 
 const CATEGORIES: { value: StoreCategory | "all"; label: string }[] = [
   { value: "all", label: "全部" },
