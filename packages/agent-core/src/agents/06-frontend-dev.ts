@@ -7,12 +7,12 @@
 
 import { streamText } from "ai";
 import { AgentRole, LogLevel } from "@lynxkit/shared";
-import { BaseAgent, parseGeneratedFiles, type GeneratedFile } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { frontendPrompt } from "../prompts/frontend.js";
-import type { PMResult } from "./04-product-manager.js";
-import type { DesignerResult } from "./05-designer.js";
-import type { ArchitectResult } from "./02-architect.js";
+import { BaseAgent, parseGeneratedFiles, type GeneratedFile } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { frontendPrompt } from "../prompts/frontend";
+import type { PMResult } from "./04-product-manager";
+import type { DesignerResult } from "./05-designer";
+import type { ArchitectResult } from "./02-architect";
 
 export interface FrontendDevResult {
   files: GeneratedFile[];

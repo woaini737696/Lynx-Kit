@@ -177,7 +177,36 @@ export class ApiClient {
       throw error;
     }
 
-    const reader = res.body.getReader();
+    yield* this.consumeSse(res);
+  }
+
+  /**
+   * SSE 流式接口（GET 方式）
+   *
+   * 用于后端用 GET 建立 SSE 的场景（如 /agent/:sessionId/stream）。
+   */
+  async *getStream(path: string): AsyncGenerator<string> {
+    const url = `${this.opts.baseUrl}${path}`;
+    const headers: Record<string, string> = {
+      Accept: "text/event-stream",
+      ...this.opts.defaultHeaders,
+    };
+    const token = this.opts.getToken?.();
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const res = await fetch(url, { method: "GET", headers });
+
+    if (!res.ok || !res.body) {
+      const error = await this.buildError(res);
+      this.opts.onError?.(error);
+      throw error;
+    }
+
+    yield* this.consumeSse(res);
+  }
+
+  private async *consumeSse(res: Response): AsyncGenerator<string> {
+    const reader = res.body!.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
 
@@ -186,7 +215,6 @@ export class ApiClient {
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split("\n");
-      // 保留最后一个不完整行，下次拼接
       buffer = lines.pop() ?? "";
       for (const line of lines) {
         if (line.startsWith("data: ")) {
@@ -195,7 +223,6 @@ export class ApiClient {
       }
     }
 
-    // 处理缓冲区中剩余的最后一行
     if (buffer.startsWith("data: ")) {
       yield buffer.slice(6);
     }

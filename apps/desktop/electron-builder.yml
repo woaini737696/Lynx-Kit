@@ -6,7 +6,7 @@ productName: LynxKit
 copyright: Copyright © 2026 LynxKit
 
 directories:
-  output: release
+  output: installer
   buildResources: build
 
 # 打包产物包含的文件：electron-vite 构建产物（out/）+ package.json
@@ -17,20 +17,11 @@ files:
 extraMetadata:
   main: out/main/index.js
 
-# macOS / Windows / Linux 平台配置
-mac:
-  category: public.app-category.developer-tools
-  target:
-    - dmg
-    - zip
-  hardenedRuntime: true
-  gatekeeperAssess: false
-
+# Windows NSIS 安装包
 win:
   target:
     - nsis
-    - portable
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
 
 nsis:
   oneClick: false
@@ -38,16 +29,4 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-
-linux:
-  target:
-    - AppImage
-    - deb
-  category: Development
-  maintainer: LynxKit
-
-# 自动更新发布渠道（GitHub Releases）
-publish:
-  provider: github
-  owner: lynxkit
-  repo: lynxkit-desktop
+  shortcutName: LynxKit

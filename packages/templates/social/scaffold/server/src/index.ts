@@ -4,11 +4,11 @@ import { logger } from "hono/logger";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
 
-import { authRoutes } from "./routes/auth.js";
-import { matchRoutes } from "./routes/match.js";
-import { chatRoutes, attachWebSocket } from "./routes/chat.js";
-import { profileRoutes } from "./routes/profile.js";
-import { aiRoutes } from "./routes/ai.js";
+import { authRoutes } from "./routes/auth";
+import { matchRoutes } from "./routes/match";
+import { chatRoutes, attachWebSocket } from "./routes/chat";
+import { profileRoutes } from "./routes/profile";
+import { aiRoutes } from "./routes/ai";
 
 /**
  * Hono 入口

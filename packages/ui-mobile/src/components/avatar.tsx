@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Text, View } from 'react-native';
 import { Image } from 'expo-image';
 
-import { cn } from '../lib/utils.js';
+import { cn } from '../lib/utils';
 
 /**
  * Avatar —— 基于 expo-image 的头像组件。

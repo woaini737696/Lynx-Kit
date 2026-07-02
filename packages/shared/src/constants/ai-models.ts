@@ -5,7 +5,7 @@
  * + 桌面端本地模型（Ollama / llama.cpp）。
  */
 
-import { AIProvider, type ProviderMeta } from "../types/ai.js";
+import { AIProvider, type ProviderMeta } from "../types/ai";
 
 /**
  * 全量 AI Provider 元数据列表

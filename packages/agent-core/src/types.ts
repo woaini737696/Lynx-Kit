@@ -16,8 +16,8 @@ import {
   type AIModelConfig,
   type LogLevel,
 } from "@lynxkit/shared";
-import type { OrchestratorContext } from "./orchestrator.js";
-import { createModel, DEFAULT_MODEL_CONFIG, isLocalProvider } from "./providers/factory.js";
+import type { OrchestratorContext } from "./orchestrator";
+import { createModel, DEFAULT_MODEL_CONFIG, isLocalProvider } from "./providers/factory";
 
 /**
  * 生成代码文件（引擎内部统一表示）

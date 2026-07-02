@@ -5,9 +5,9 @@
  * 覆盖 8 类产品类型 + 国内 6 大模型生态。
  */
 
-export * from "./product.js";
-export * from "./build.js";
-export * from "./store.js";
-export * from "./user.js";
-export * from "./ai.js";
-export * from "./api.js";
+export * from "./product";
+export * from "./build";
+export * from "./store";
+export * from "./user";
+export * from "./ai";
+export * from "./api";

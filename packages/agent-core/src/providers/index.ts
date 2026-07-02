@@ -2,5 +2,5 @@
  * Provider 模块出口
  */
 
-export * from "./types.js";
-export * from "./factory.js";
+export * from "./types";
+export * from "./factory";

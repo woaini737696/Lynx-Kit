@@ -10,13 +10,13 @@
 
 import { generateText } from "ai";
 import { AgentRole, LogLevel } from "@lynxkit/shared";
-import { BaseAgent } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { pmPrompt } from "../prompts/pm.js";
-import type { DataModel } from "../tools/schema-generator.js";
-import type { IntentResult } from "./01-intent.js";
-import type { ArchitectResult } from "./02-architect.js";
-import type { ClarifyResult } from "./03-clarify.js";
+import { BaseAgent } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { pmPrompt } from "../prompts/pm";
+import type { DataModel } from "../tools/schema-generator";
+import type { IntentResult } from "./01-intent";
+import type { ArchitectResult } from "./02-architect";
+import type { ClarifyResult } from "./03-clarify";
 
 export interface PMModule {
   name: string;

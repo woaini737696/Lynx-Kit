@@ -7,17 +7,17 @@
  */
 
 // 工具
-export { cn } from './lib/utils.js';
+export { cn } from './lib/utils';
 
 // 基础组件
 export {
   Button,
   buttonVariants,
   type ButtonProps,
-} from './components/button.js';
-export { Input, type InputProps } from './components/input.js';
-export { Textarea, type TextareaProps } from './components/textarea.js';
-export { Label } from './components/label.js';
+} from './components/button';
+export { Input, type InputProps } from './components/input';
+export { Textarea, type TextareaProps } from './components/textarea';
+export { Label } from './components/label';
 export {
   Card,
   CardHeader,
@@ -25,7 +25,7 @@ export {
   CardDescription,
   CardContent,
   CardFooter,
-} from './components/card.js';
+} from './components/card';
 export {
   Dialog,
   DialogTrigger,
@@ -37,7 +37,7 @@ export {
   DialogClose,
   DialogOverlay,
   DialogPortal,
-} from './components/dialog.js';
+} from './components/dialog';
 export {
   Sheet,
   SheetTrigger,
@@ -49,7 +49,7 @@ export {
   SheetClose,
   SheetOverlay,
   SheetPortal,
-} from './components/sheet.js';
+} from './components/sheet';
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -66,7 +66,7 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
-} from './components/dropdown-menu.js';
+} from './components/dropdown-menu';
 export {
   Select,
   SelectGroup,
@@ -78,30 +78,30 @@ export {
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
-} from './components/select.js';
+} from './components/select';
 export {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from './components/tabs.js';
-export { Badge, badgeVariants, type BadgeProps } from './components/badge.js';
+} from './components/tabs';
+export { Badge, badgeVariants, type BadgeProps } from './components/badge';
 export {
   Avatar,
   AvatarImage,
   AvatarFallback,
-} from './components/avatar.js';
-export { Separator } from './components/separator.js';
-export { ScrollArea, ScrollBar } from './components/scroll-area.js';
+} from './components/avatar';
+export { Separator } from './components/separator';
+export { ScrollArea, ScrollBar } from './components/scroll-area';
 export {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-} from './components/tooltip.js';
-export { Progress } from './components/progress.js';
-export { Skeleton } from './components/skeleton.js';
-export { Spinner, type SpinnerProps } from './components/spinner.js';
+} from './components/tooltip';
+export { Progress } from './components/progress';
+export { Skeleton } from './components/skeleton';
+export { Spinner, type SpinnerProps } from './components/spinner';
 
 // Toast 系统（自定义实现，不依赖 sonner / @radix-ui/react-toast）
 export {
@@ -115,5 +115,5 @@ export {
   toastVariants,
   type ToastProps,
   type ToastOptions,
-} from './components/toast.js';
-export { Toaster } from './components/toaster.js';
+} from './components/toast';
+export { Toaster } from './components/toaster';

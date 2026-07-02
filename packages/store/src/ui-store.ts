@@ -35,7 +35,7 @@ interface UIState {
 export const useUIStore = create<UIState>()(
   persist(
     (set) => ({
-      theme: "system",
+      theme: "light",
       sidebarOpen: true,
       drafts: {},
       setTheme: (theme) => set({ theme }),
@@ -50,6 +50,6 @@ export const useUIStore = create<UIState>()(
         }),
       clearDrafts: () => set({ drafts: {} }),
     }),
-    { name: "lynxkit-ui", storage: createJSONStorage(safeStorage) }
+    { name: "lynxkit-ui", version: 2, storage: createJSONStorage(safeStorage) }
   )
 );

@@ -34,6 +34,12 @@ interface ElectronApiShape {
     getVersion: () => Promise<string>;
     openExternal: (url: string) => Promise<boolean>;
   };
+  window: {
+    minimize: () => Promise<boolean>;
+    maximizeToggle: () => Promise<boolean>;
+    close: () => Promise<boolean>;
+    isMaximized: () => Promise<boolean>;
+  };
   updater: {
     check: () => Promise<boolean>;
     download: () => Promise<boolean>;

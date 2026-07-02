@@ -29,8 +29,8 @@
  */
 
 // 核心客户端
-export { ApiClient, ApiError, createApiClient } from "./client.js";
-export type { ApiClientOptions } from "./client.js";
+export { ApiClient, ApiError, createApiClient } from "./client";
+export type { ApiClientOptions } from "./client";
 
 // 客户端补充类型（实体类型请从 @lynxkit/shared 导入）
 export type {
@@ -56,18 +56,18 @@ export type {
   WithdrawInput,
   UpsertAiModelInput,
   TestAiModelResult,
-} from "./types.js";
+} from "./types";
 
 // API 模块
-export { AuthApi } from "./auth.js";
-export type { SendCodeScene } from "./auth.js";
+export { AuthApi } from "./auth";
+export type { SendCodeScene } from "./auth";
 
-export { BuildApi } from "./build.js";
+export { BuildApi } from "./build";
 
-export { AgentApi } from "./agent.js";
+export { AgentApi } from "./agent";
 
-export { StoreApi } from "./store.js";
+export { StoreApi } from "./store";
 
-export { CreatorApi } from "./creator.js";
+export { CreatorApi } from "./creator";
 
-export { AiApi } from "./ai.js";
+export { AiApi } from "./ai";

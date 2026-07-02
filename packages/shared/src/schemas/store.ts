@@ -3,14 +3,14 @@
  */
 
 import { z } from "zod";
-import { ProductType } from "../types/product.js";
+import { ProductType } from "../types/product";
 import {
   StoreCategory,
   PricingType,
   StoreStatus,
   TransactionType,
   TransactionStatus,
-} from "../types/store.js";
+} from "../types/store";
 
 /**
  * 商店分类 schema

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, type ViewProps } from 'react-native';
 
-import { cn } from '../lib/utils.js';
+import { cn } from '../lib/utils';
 
 /**
  * Separator —— React Native View 分隔线。

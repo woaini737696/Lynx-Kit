@@ -6,16 +6,16 @@
  */
 
 // ============ Types ============
-export * from "./types/index.js";
+export * from "./types/index";
 
 // ============ Constants ============
-export * from "./constants/index.js";
+export * from "./constants/index";
 
 // ============ Utils ============
-export * from "./utils/index.js";
+export * from "./utils/index";
 
-// ============ Crypto (KMS) ============
-export * from "./crypto/index.js";
+// NOTE: Crypto (KMS) 模块已从主入口移除，避免在客户端引入 node:crypto。
+// 服务端如需 KMS，请从 "@lynxkit/shared/crypto" 子路径导入（需配置 package.json exports）。
 
 // ============ Zod Schemas ============
-export * from "./schemas/index.js";
+export * from "./schemas/index";

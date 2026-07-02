@@ -96,25 +96,19 @@ authRoutes.post(
     // 哈希密码
     const passwordHash = await bcrypt.hash(input.password, 10);
 
-    // 创建用户
+    // 创建用户（密码哈希直接存数据库，MVP 阶段不依赖 Redis）
     const [user] = await db
       .insert(users)
       .values({
         email: input.email,
         name: input.name,
         phone: input.phone,
+        passwordHash,
       })
       .returning();
 
     if (!user) {
       throw new Error("用户创建失败");
-    }
-
-    // TODO: 将 passwordHash 存储到独立的 user_credentials 表（schema 暂未包含）
-    // 当前先存到 Redis（开发期临时方案）
-    const redis = getRedis();
-    if (redis) {
-      await redis.set(`lynxkit:user:pwd:${user.id}`, passwordHash);
     }
 
     // 签发 JWT
@@ -170,13 +164,8 @@ authRoutes.post(
       throw new UnauthorizedError("账号已被禁用，请联系管理员");
     }
 
-    // 校验密码
-    const redis = getRedis();
-    if (!redis) {
-      throw new Error("Redis 不可用，无法校验密码（暂不支持无 Redis 登录）");
-    }
-    const storedHash = await redis.get(`lynxkit:user:pwd:${user.id}`);
-    if (!storedHash || !(await bcrypt.compare(input.password, storedHash))) {
+    // 校验密码（直接从数据库读取，MVP 阶段不依赖 Redis）
+    if (!user.passwordHash || !(await bcrypt.compare(input.password, user.passwordHash))) {
       throw new UnauthorizedError("邮箱或密码错误");
     }
 

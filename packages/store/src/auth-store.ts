@@ -23,7 +23,10 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  /** 写入登录态（user + token） */
   setUser: (user: User, token: string) => void;
+  /** setUser 的别名，供 Web/桌面端统一调用 */
+  login: (token: string, user: User) => void;
   logout: () => void;
   updateProfile: (patch: Partial<User>) => void;
 }
@@ -35,10 +38,11 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       setUser: (user, token) => set({ user, token, isAuthenticated: true }),
+      login: (token, user) => set({ user, token, isAuthenticated: true }),
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
       updateProfile: (patch) =>
         set((s) => ({ user: s.user ? { ...s.user, ...patch } : null })),
     }),
-    { name: "lynxkit-auth", storage: createJSONStorage(safeStorage) }
+    { name: "lynxkit-auth", version: 3, storage: createJSONStorage(safeStorage) }
   )
 );

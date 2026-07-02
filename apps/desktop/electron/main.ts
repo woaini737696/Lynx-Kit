@@ -9,6 +9,7 @@ import {
 } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import fs from "node:fs";
 import { createTray, showNotification, setTrayLabel, destroyTray } from "./services/notification.js";
 import { saveFile, openFolder, showInFolder } from "./services/filesystem.js";
 import { detectOllama, listLocalModels } from "./services/local-ai.js";
@@ -20,23 +21,33 @@ import {
 } from "./services/auto-updater.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const isDev = process.env.NODE_ENV === "development";
+// electron-vite dev 会设置 ELECTRON_RENDERER_URL 环境变量
+const DEV_SERVER_URL = process.env.ELECTRON_RENDERER_URL ?? process.env.VITE_DEV_SERVER_URL;
+const isDev = !!DEV_SERVER_URL;
 
 // electron-vite 产物：main 在 out/main/，preload 在 out/preload/index.mjs
 const PRELOAD_PATH = path.join(__dirname, "..", "preload", "index.mjs");
+const LOG_FILE = path.join(__dirname, "..", "..", "renderer-debug.log");
+function logDebug(msg: string): void {
+  const line = `[${new Date().toISOString()}] ${msg}\n`;
+  try { fs.appendFileSync(LOG_FILE, line); } catch { /* ignore */ }
+  console.log(msg);
+}
 
 let win: BrowserWindow | null = null;
 let tray: Tray | null = null;
 
 function createWindow(): void {
   win = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 1280,
+    height: 840,
     minWidth: 1000,
     minHeight: 600,
     show: false,
-    backgroundColor: "#0a0a0b",
+    backgroundColor: "#ffffff",
     title: "LynxKit",
+    frame: false,
+    titleBarStyle: "hidden",
     autoHideMenuBar: true,
     webPreferences: {
       preload: PRELOAD_PATH,
@@ -52,9 +63,36 @@ function createWindow(): void {
     checkForUpdates();
   });
 
-  if (isDev) {
-    void win.loadURL("http://localhost:5173");
-    win.webContents.openDevTools({ mode: "detach" });
+  // 捕获渲染进程 console 消息（Electron 30+ 签名：details 对象）
+  win.webContents.on("console-message", (_e, details) => {
+    const level = (details as { level: number }).level;
+    const message = (details as { message: string }).message;
+    const line = (details as { lineNumber: number }).lineNumber;
+    const sourceId = (details as { sourceId: string }).sourceId;
+    const tag = ["LOG", "WARN", "ERROR", "DEBUG"][level] ?? "LOG";
+    logDebug(`[renderer:${tag}] ${message} (${sourceId}:${line})`);
+  });
+  // 捕获渲染进程未处理的异常
+  win.webContents.on("render-process-gone", (_e, details) => {
+    logDebug(`[renderer:CRASH] ${JSON.stringify(details)}`);
+  });
+  win.webContents.on("did-fail-load", (_e, code, desc, url) => {
+    logDebug(`[renderer:FAIL_LOAD] ${code} ${desc} url=${url}`);
+  });
+  // 页面加载完成后检查 #root 内容
+  win.webContents.on("did-finish-load", () => {
+    void win?.webContents.executeJavaScript(
+      `document.getElementById('root') ? document.getElementById('root').innerHTML.length : -1`
+    ).then((len) => {
+      logDebug(`[did-finish-load] root innerHTML length = ${len}`);
+    }).catch((err) => {
+      logDebug(`[did-finish-load] executeJavaScript error: ${String(err)}`);
+    });
+  });
+
+  if (isDev && DEV_SERVER_URL) {
+    void win.loadURL(DEV_SERVER_URL);
+    // DevTools 通过 F12 手动打开，开发时不再自动弹出
   } else {
     // electron-vite 构建产物在 out/renderer/index.html
     void win.loadFile(path.join(__dirname, "..", "renderer", "index.html"));
@@ -117,6 +155,26 @@ function registerIpcHandlers(): void {
     }
     return false;
   });
+
+  // 自定义窗口控制（无边框窗口）
+  ipcMain.handle("window:minimize", () => {
+    win?.minimize();
+    return true;
+  });
+  ipcMain.handle("window:maximize-toggle", () => {
+    if (!win) return false;
+    if (win.isMaximized()) {
+      win.unmaximize();
+      return false;
+    }
+    win.maximize();
+    return true;
+  });
+  ipcMain.handle("window:close", () => {
+    win?.close();
+    return true;
+  });
+  ipcMain.handle("window:is-maximized", () => !!win?.isMaximized());
 
   // 自动更新
   ipcMain.handle("updater:check", () => {

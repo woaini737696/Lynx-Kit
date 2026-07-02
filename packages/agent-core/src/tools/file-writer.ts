@@ -11,7 +11,7 @@ import { mkdir, writeFile as fsWriteFile } from "node:fs/promises";
 import { dirname, resolve, relative } from "node:path";
 import { tool } from "ai";
 import { z } from "zod";
-import type { GeneratedFile } from "../types.js";
+import type { GeneratedFile } from "../types";
 
 /**
  * 校验目标路径必须落在 workspace 内，防止路径穿越

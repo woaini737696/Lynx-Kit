@@ -25,7 +25,7 @@ export const systemConfigs = pgTable(
     /** 配置键唯一索引 */
     keyIdx: uniqueIndex("system_configs_key_idx").on(table.key),
   }),
-).enableRLS();
+);
 
 /**
  * 架构模板表（templates）
@@ -67,4 +67,4 @@ export const templates = pgTable(
     /** 模板类型唯一索引（每个 ProductType 仅一个模板） */
     typeIdx: uniqueIndex("templates_type_idx").on(table.type),
   }),
-).enableRLS();
+);

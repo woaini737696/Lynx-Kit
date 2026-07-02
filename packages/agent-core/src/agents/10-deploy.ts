@@ -9,9 +9,9 @@
 
 import { generateText } from "ai";
 import { AgentRole, LogLevel } from "@lynxkit/shared";
-import { BaseAgent, type GeneratedFile } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { deployPrompt } from "../prompts/deploy.js";
+import { BaseAgent, type GeneratedFile } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { deployPrompt } from "../prompts/deploy";
 
 export interface DeployManifest {
   buildCommand: string;

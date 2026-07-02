@@ -8,13 +8,13 @@
  *  → ⑨ 测试修复（循环，最多 3 轮）→ ⑩ 部署发布
  */
 
-export * from "./01-intent.js";
-export * from "./02-architect.js";
-export * from "./03-clarify.js";
-export * from "./04-product-manager.js";
-export * from "./05-designer.js";
-export * from "./06-frontend-dev.js";
-export * from "./07-backend-dev.js";
-export * from "./08-ai-integration.js";
-export * from "./09-test-fix.js";
-export * from "./10-deploy.js";
+export * from "./01-intent";
+export * from "./02-architect";
+export * from "./03-clarify";
+export * from "./04-product-manager";
+export * from "./05-designer";
+export * from "./06-frontend-dev";
+export * from "./07-backend-dev";
+export * from "./08-ai-integration";
+export * from "./09-test-fix";
+export * from "./10-deploy";

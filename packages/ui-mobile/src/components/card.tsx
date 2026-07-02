@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Text, View, type ViewProps } from 'react-native';
 
-import { cn } from '../lib/utils.js';
+import { cn } from '../lib/utils';
 
 /**
  * Card 系列组件 —— React Native View 封装。

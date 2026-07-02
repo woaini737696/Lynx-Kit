@@ -10,10 +10,10 @@
 
 import { generateText } from "ai";
 import { AgentRole, LogLevel } from "@lynxkit/shared";
-import { BaseAgent, parseGeneratedFiles, type GeneratedFile } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { aiIntegrationPrompt } from "../prompts/ai-integration.js";
-import type { PMResult } from "./04-product-manager.js";
+import { BaseAgent, parseGeneratedFiles, type GeneratedFile } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { aiIntegrationPrompt } from "../prompts/ai-integration";
+import type { PMResult } from "./04-product-manager";
 
 export interface AIIntegrationResult {
   files: GeneratedFile[];

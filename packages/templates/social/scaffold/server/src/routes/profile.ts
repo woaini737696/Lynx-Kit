@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { eq } from "drizzle-orm";
 import { getCookie } from "hono/cookie";
-import { db } from "../lib/db.js";
-import { users } from "../../schema.js";
+import { db } from "../lib/db";
+import { users } from "../../schema";
 
 /**
  * 资料路由 /profile

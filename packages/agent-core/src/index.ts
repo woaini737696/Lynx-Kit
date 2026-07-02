@@ -17,19 +17,19 @@
  */
 
 // 编排引擎核心
-export * from "./orchestrator.js";
+export * from "./orchestrator";
 
 // 引擎内部类型与基类
-export * from "./types.js";
+export * from "./types";
 
 // Provider 模型工厂
-export * from "./providers/index.js";
+export * from "./providers/index";
 
 // 10 个 Agent
-export * from "./agents/index.js";
+export * from "./agents/index";
 
 // 工具集（写文件 / Drizzle schema 生成 / 组件查找 / 沙箱 Bash）
-export * from "./tools/index.js";
+export * from "./tools/index";
 
 // 中文 system prompts
-export * from "./prompts/index.js";
+export * from "./prompts/index";

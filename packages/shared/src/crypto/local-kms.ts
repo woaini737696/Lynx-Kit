@@ -23,8 +23,8 @@ import {
   randomBytes,
   createHash,
 } from "node:crypto";
-import type { KMS } from "./kms.js";
-import { KMSError } from "./kms.js";
+import type { KMS } from "./kms";
+import { KMSError } from "./kms";
 
 const IV_LENGTH = 12; // GCM 推荐 96-bit IV
 const AUTH_TAG_LENGTH = 16;

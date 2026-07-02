@@ -147,6 +147,49 @@ storeRoutes.get(
 
 /**
  * @openapi
+ * GET /store/transactions
+ * @summary 我的购买记录（需 auth）
+ * @tags store
+ * @security BearerAuth
+ */
+storeRoutes.get(
+  "/transactions",
+  authMiddleware,
+  async (c) => {
+    const user = getCurrentUser(c);
+    const db = getDb();
+    const items = await db.query.transactions.findMany({
+      where: eq(transactions.buyerId, user.id),
+      orderBy: [desc(transactions.createdAt)],
+      limit: 50,
+    });
+    return c.json({ transactions: items });
+  },
+);
+
+/**
+ * @openapi
+ * GET /store/:productId/reviews
+ * @summary 产品的评价列表
+ * @tags store
+ */
+storeRoutes.get(
+  "/:productId/reviews",
+  zValidator("param", productIdParam),
+  async (c) => {
+    const { productId } = c.req.valid("param");
+    const db = getDb();
+    const items = await db.query.reviews.findMany({
+      where: eq(reviews.productId, productId),
+      orderBy: [desc(reviews.createdAt)],
+      limit: 50,
+    });
+    return c.json({ reviews: items });
+  },
+);
+
+/**
+ * @openapi
  * GET /store/:productId
  * @summary 产品详情
  * @tags store

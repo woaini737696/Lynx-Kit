@@ -44,6 +44,7 @@ import { servers } from "./servers";
 import { buildSessions, buildLogs, buildVersions } from "./build-sessions";
 import { storeProducts, transactions, reviews } from "./store";
 import { creatorProfiles } from "./creators";
+import { systemConfigs, templates } from "./system";
 
 /**
  * users 关系：一个用户拥有多个服务器 / 构建会话 / 商店产品 / 评价，

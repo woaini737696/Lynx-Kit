@@ -21,7 +21,7 @@ import { useAuthStore } from "@lynxkit/store";
  */
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787/api";
 
 let client: ApiClient | null = null;
 

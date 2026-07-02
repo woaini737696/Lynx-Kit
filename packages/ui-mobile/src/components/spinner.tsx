@@ -4,7 +4,7 @@ import {
   type ActivityIndicatorProps,
 } from 'react-native';
 
-import { cn } from '../lib/utils.js';
+import { cn } from '../lib/utils';
 
 /**
  * Spinner —— React Native ActivityIndicator 封装。

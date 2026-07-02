@@ -4,13 +4,13 @@
  * 每个 prompt 文件导出一个中文 system prompt 字符串常量。
  */
 
-export { intentPrompt } from "./intent.js";
-export { architectPrompt } from "./architect.js";
-export { clarifyPrompt } from "./clarify.js";
-export { pmPrompt } from "./pm.js";
-export { designerPrompt } from "./designer.js";
-export { frontendPrompt } from "./frontend.js";
-export { backendPrompt } from "./backend.js";
-export { aiIntegrationPrompt } from "./ai-integration.js";
-export { testFixPrompt } from "./test-fix.js";
-export { deployPrompt } from "./deploy.js";
+export { intentPrompt } from "./intent";
+export { architectPrompt } from "./architect";
+export { clarifyPrompt } from "./clarify";
+export { pmPrompt } from "./pm";
+export { designerPrompt } from "./designer";
+export { frontendPrompt } from "./frontend";
+export { backendPrompt } from "./backend";
+export { aiIntegrationPrompt } from "./ai-integration";
+export { testFixPrompt } from "./test-fix";
+export { deployPrompt } from "./deploy";

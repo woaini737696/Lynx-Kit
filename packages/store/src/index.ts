@@ -6,8 +6,8 @@
  * 在 RN 中通过文件顶部的 safeStorage 降级为内存存储，需由宿主 App 补齐 polyfill。
  */
 
-export * from "./auth-store.js";
-export * from "./build-store.js";
-export * from "./ui-store.js";
-export * from "./ai-config-store.js";
-export * from "./store-store.js";
+export * from "./auth-store";
+export * from "./build-store";
+export * from "./ui-store";
+export * from "./ai-config-store";
+export * from "./store-store";

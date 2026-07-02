@@ -15,13 +15,13 @@ import { useAuthStore } from "@lynxkit/store";
 /**
  * api-client 单例
  *
- * 桌面端通过 @lynxkit/api-client 调用 LynxKit Hono API（默认 http://localhost:4000）。
+ * 桌面端通过 @lynxkit/api-client 调用 LynxKit Hono API（默认 http://localhost:8787）。
  * JWT 从 @lynxkit/store 的 auth-store 读取并注入 Authorization 头。
- * 后端地址可通过 NEXT_PUBLIC_API_URL 环境变量覆盖。
+ * 后端地址可通过 VITE_API_URL 环境变量覆盖。
  */
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+  (import.meta as any).env?.VITE_API_URL ?? "http://localhost:8787/api";
 
 let client: ApiClient | null = null;
 

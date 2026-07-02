@@ -12,12 +12,12 @@ import type { StoreProduct, StoreCategory } from "@lynxkit/shared";
 
 const CATEGORIES: { value: StoreCategory | "all"; label: string }[] = [
   { value: "all", label: "全部" },
-  { value: "app", label: "应用" },
-  { value: "template", label: "模板" },
-  { value: "plugin", label: "插件" },
-  { value: "component", label: "组件" },
-  { value: "prompt", label: "提示词" },
-  { value: "workflow", label: "工作流" },
+  { value: StoreCategory.APP, label: "应用" },
+  { value: StoreCategory.TEMPLATE, label: "模板" },
+  { value: StoreCategory.PLUGIN, label: "插件" },
+  { value: StoreCategory.COMPONENT, label: "组件" },
+  { value: StoreCategory.PROMPT, label: "提示词" },
+  { value: StoreCategory.WORKFLOW, label: "工作流" },
 ];
 
 export default function StorePage() {

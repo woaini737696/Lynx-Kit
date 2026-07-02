@@ -39,6 +39,10 @@ drizzle/
 
 # Electron
 release/
+installer/
+electron-stdout.txt
+electron-stderr.txt
+renderer-debug.log
 
 # Expo
 .expo/

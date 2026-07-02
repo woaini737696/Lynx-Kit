@@ -4,10 +4,10 @@
  * 封装登录 / 注册 / 当前用户 / 验证码 / 登出等接口。
  * 输入校验 schema（loginSchema / registerSchema）来自 @lynxkit/shared。
  */
-import type { ApiClient } from "./client.js";
+import type { ApiClient } from "./client";
 import type { User } from "@lynxkit/shared";
 import { loginSchema, registerSchema } from "@lynxkit/shared";
-import type { LoginResponse, SendCodeResult, LogoutResult } from "./types.js";
+import type { LoginResponse, SendCodeResult, LogoutResult } from "./types";
 
 /** 发送验证码场景 */
 export type SendCodeScene = "register" | "login" | "reset";

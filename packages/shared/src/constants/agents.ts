@@ -13,8 +13,8 @@
  *  ⑩ 部署发布
  */
 
-import { AgentRole } from "../types/build.js";
-import { AIProvider } from "../types/ai.js";
+import { AgentRole } from "../types/build";
+import { AIProvider } from "../types/ai";
 
 /**
  * Agent 元数据

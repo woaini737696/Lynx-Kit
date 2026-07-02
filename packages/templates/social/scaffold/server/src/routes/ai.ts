@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
-import { db } from "../lib/db.js";
-import { icebreakers, users } from "../../schema.js";
+import { db } from "../lib/db";
+import { icebreakers, users } from "../../schema";
 import { eq } from "drizzle-orm";
-import { chat } from "../lib/ai.js";
+import { chat } from "../lib/ai";
 
 /**
  * AI 助手路由 /ai

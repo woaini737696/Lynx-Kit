@@ -2,9 +2,9 @@ import { Hono } from "hono";
 import { createNodeWebSocket } from "@hono/node-ws";
 import { eq, desc } from "drizzle-orm";
 import { getCookie } from "hono/cookie";
-import { db } from "../lib/db.js";
-import { conversations, messages } from "../../schema.js";
-import { sentiment } from "../lib/ai.js";
+import { db } from "../lib/db";
+import { conversations, messages } from "../../schema";
+import { sentiment } from "../lib/ai";
 
 /**
  * 聊天路由 /chat

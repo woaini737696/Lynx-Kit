@@ -133,7 +133,7 @@ export const buildSessions = pgTable(
       table.createdAt,
     ),
   }),
-).enableRLS();
+);
 
 /**
  * 构建日志表（build_logs）
@@ -167,7 +167,7 @@ export const buildLogs = pgTable(
     /** 会话 ID 索引（查询会话的所有日志） */
     sessionIdIdx: index("build_logs_session_id_idx").on(table.sessionId),
   }),
-).enableRLS();
+);
 
 /**
  * 构建版本表（build_versions）
@@ -206,4 +206,4 @@ export const buildVersions = pgTable(
       table.version,
     ),
   }),
-).enableRLS();
+);

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Text, View, type ViewProps } from 'react-native';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from '../lib/utils.js';
+import { cn } from '../lib/utils';
 
 /**
  * Badge —— View + Text 封装。

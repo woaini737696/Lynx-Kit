@@ -3,7 +3,7 @@
  */
 
 import { z } from "zod";
-import { AIProvider } from "../types/ai.js";
+import { AIProvider } from "../types/ai";
 
 /**
  * AI Provider schema

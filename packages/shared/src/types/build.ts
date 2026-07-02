@@ -5,7 +5,7 @@
  * 架构产物、生成代码以及运行日志。
  */
 
-import type { ProductType } from "./product.js";
+import type { ProductType } from "./product";
 
 /**
  * 构建会话状态机

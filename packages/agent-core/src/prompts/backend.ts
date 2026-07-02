@@ -34,8 +34,8 @@ export const backendPrompt = `你是 LynxKit 的「后端开发 Agent」，负�
 <<<FILE: src/index.ts>>>
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { userRoutes } from "./routes/user.js";
-import { authMiddleware } from "./middleware/auth.js";
+import { userRoutes } from "./routes/user";
+import { authMiddleware } from "./middleware/auth";
 
 const app = new Hono();
 app.use("*", logger());

@@ -12,9 +12,9 @@ import {
   ProductType,
   matchProductType,
 } from "@lynxkit/shared";
-import { BaseAgent } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { intentPrompt } from "../prompts/intent.js";
+import { BaseAgent } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { intentPrompt } from "../prompts/intent";
 
 export interface IntentResult {
   /** 识别出的产品类型 */

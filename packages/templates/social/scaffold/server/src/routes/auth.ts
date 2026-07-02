@@ -2,9 +2,9 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { setCookie } from "hono/cookie";
 import { randomUUID } from "node:crypto";
-import { db, schema } from "../lib/db.js";
-import { users } from "../../schema.js";
-import { embed } from "../lib/ai.js";
+import { db, schema } from "../lib/db";
+import { users } from "../../schema";
+import { embed } from "../lib/ai";
 
 /**
  * 认证路由 /auth

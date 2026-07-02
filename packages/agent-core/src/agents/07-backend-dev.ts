@@ -7,12 +7,12 @@
 
 import { streamText } from "ai";
 import { AgentRole, LogLevel } from "@lynxkit/shared";
-import { BaseAgent, parseGeneratedFiles, type GeneratedFile } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { backendPrompt } from "../prompts/backend.js";
-import type { PMResult } from "./04-product-manager.js";
-import type { ArchitectResult } from "./02-architect.js";
-import { generateDrizzleSchema } from "../tools/schema-generator.js";
+import { BaseAgent, parseGeneratedFiles, type GeneratedFile } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { backendPrompt } from "../prompts/backend";
+import type { PMResult } from "./04-product-manager";
+import type { ArchitectResult } from "./02-architect";
+import { generateDrizzleSchema } from "../tools/schema-generator";
 
 export interface BackendDevResult {
   files: GeneratedFile[];

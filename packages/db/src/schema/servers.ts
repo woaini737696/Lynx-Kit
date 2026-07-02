@@ -63,4 +63,4 @@ export const servers = pgTable(
     /** 用户 ID 索引（查询用户的所有服务器） */
     userIdIdx: index("servers_user_id_idx").on(table.userId),
   }),
-).enableRLS();
+);

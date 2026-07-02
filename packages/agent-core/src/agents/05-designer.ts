@@ -9,10 +9,10 @@
 
 import { generateText } from "ai";
 import { AgentRole, LogLevel } from "@lynxkit/shared";
-import { BaseAgent } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { designerPrompt } from "../prompts/designer.js";
-import type { IntentResult } from "./01-intent.js";
+import { BaseAgent } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { designerPrompt } from "../prompts/designer";
+import type { IntentResult } from "./01-intent";
 
 export interface DesignerResult {
   designSystem: {

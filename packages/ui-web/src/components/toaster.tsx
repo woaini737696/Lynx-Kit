@@ -8,7 +8,7 @@ import {
   ToastTitle,
   dismiss,
   useToast,
-} from './toast.js';
+} from './toast';
 
 /**
  * Toaster —— 全局 Toast 渲染器。

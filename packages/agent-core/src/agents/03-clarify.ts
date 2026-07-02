@@ -6,9 +6,9 @@
  */
 
 import { AgentRole, LogLevel, ProductType } from "@lynxkit/shared";
-import { BaseAgent } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import type { IntentResult } from "./01-intent.js";
+import { BaseAgent } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import type { IntentResult } from "./01-intent";
 
 export type ClarifyQuestionType = "single_choice" | "text" | "boolean";
 

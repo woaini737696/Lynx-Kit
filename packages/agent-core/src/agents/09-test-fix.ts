@@ -12,15 +12,15 @@
 
 import { generateText } from "ai";
 import { AgentRole, FixLevel, LogLevel } from "@lynxkit/shared";
-import { BaseAgent, parseGeneratedFiles, type GeneratedFile } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { testFixPrompt } from "../prompts/test-fix.js";
+import { BaseAgent, parseGeneratedFiles, type GeneratedFile } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { testFixPrompt } from "../prompts/test-fix";
 import {
   executeBash,
   writeGeneratedFiles,
-} from "../tools/index.js";
-import type { FrontendDevResult } from "./06-frontend-dev.js";
-import type { BackendDevResult } from "./07-backend-dev.js";
+} from "../tools/index";
+import type { FrontendDevResult } from "./06-frontend-dev";
+import type { BackendDevResult } from "./07-backend-dev";
 
 export interface TestFixResult {
   /** 修复后的文件全集 */

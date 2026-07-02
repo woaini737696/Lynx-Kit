@@ -43,4 +43,4 @@ export const creatorProfiles = pgTable(
     /** 用户 ID 唯一索引（一对一关系） */
     userIdIdx: uniqueIndex("creator_profiles_user_id_idx").on(table.userId),
   }),
-).enableRLS();
+);

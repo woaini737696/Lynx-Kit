@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Text, View } from 'react-native';
 
-import { cn } from '../lib/utils.js';
-import { Button } from './button.js';
+import { cn } from '../lib/utils';
+import { Button } from './button';
 
 /**
  * EmptyState —— 空状态展示组件。

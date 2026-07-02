@@ -79,16 +79,19 @@ const v1 = new Hono();
 v1.route("/auth", authRoutes);
 
 // 构建会话路由（全部需 auth）
-v1.route("/build", authMiddleware, buildRoutes);
+v1.use("/build/*", authMiddleware);
+v1.route("/build", buildRoutes);
 
 // Agent 流式接口（全部需 auth）
-v1.route("/agent", authMiddleware, agentRoutes);
+v1.use("/agent/*", authMiddleware);
+v1.route("/agent", agentRoutes);
 
 // 商店路由（公开 + 部分需 auth，auth 在路由内部按需挂载）
 v1.route("/store", storeRoutes);
 
 // 创作者中心（全部需 auth）
-v1.route("/creator", authMiddleware, creatorRoutes);
+v1.use("/creator/*", authMiddleware);
+v1.route("/creator", creatorRoutes);
 
 // 系统路由（公开）
 v1.route("/system", systemRoutes);

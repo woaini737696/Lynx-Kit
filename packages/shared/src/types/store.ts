@@ -4,7 +4,7 @@
  * 包含上架产品、交易、评价、创作者档案、分类、定价、状态等。
  */
 
-import type { ProductType } from "./product.js";
+import type { ProductType } from "./product";
 
 /**
  * 商店产品分类

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextInput, type TextInputProps } from 'react-native';
 
-import { cn } from '../lib/utils.js';
+import { cn } from '../lib/utils';
 
 /**
  * Input —— React Native TextInput 封装。

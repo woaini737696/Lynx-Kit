@@ -3,8 +3,8 @@
  */
 
 import { z } from "zod";
-import { ProductType } from "../types/product.js";
-import { BuildStatus, AgentRole, FixLevel, LogLevel } from "../types/build.js";
+import { ProductType } from "../types/product";
+import { BuildStatus, AgentRole, FixLevel, LogLevel } from "../types/build";
 
 /**
  * 产品类型 enum schema（与 ProductType 一致）

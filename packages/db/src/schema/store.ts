@@ -181,11 +181,11 @@ export const storeProducts = pgTable(
     /** 评价数量，默认 0 */
     reviewCount: integer("review_count").notNull().default(0),
     /**
-     * 产品语义向量（pgvector，用于商店语义搜索）
-     * 维度由 Embedding 模型决定（text-embedding-3-large 为 3072 维）。
+     * 产品语义向量（序列化字符串存储，用于商店语义搜索）
+     * MVP 阶段使用 text 存储，后续可迁移至 pgvector。
      * 可选字段，由后台异步生成。
      */
-    embeddings: vector("embeddings"),
+    embeddings: text("embeddings"),
     /** 创建时间（带时区） */
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     /** 更新时间（带时区，自动更新） */
@@ -204,7 +204,7 @@ export const storeProducts = pgTable(
       table.createdAt,
     ),
   }),
-).enableRLS();
+);
 
 /**
  * 交易表（transactions）
@@ -259,7 +259,7 @@ export const transactions = pgTable(
       table.createdAt,
     ),
   }),
-).enableRLS();
+);
 
 /**
  * 产品评价表（reviews）
@@ -297,4 +297,4 @@ export const reviews = pgTable(
     /** 产品 + 用户唯一索引（每个用户对每个产品仅能评价一次） */
     productUserIdx: uniqueIndex("reviews_product_user_idx").on(table.productId, table.userId),
   }),
-).enableRLS();
+);

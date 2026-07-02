@@ -61,6 +61,17 @@ const api = {
       ipcRenderer.invoke("app:open-external", url) as Promise<boolean>,
   },
 
+  window: {
+    /** 最小化窗口 */
+    minimize: () => ipcRenderer.invoke("window:minimize") as Promise<boolean>,
+    /** 最大化 / 还原（返回当前是否最大化） */
+    maximizeToggle: () => ipcRenderer.invoke("window:maximize-toggle") as Promise<boolean>,
+    /** 关闭窗口 */
+    close: () => ipcRenderer.invoke("window:close") as Promise<boolean>,
+    /** 查询当前是否最大化 */
+    isMaximized: () => ipcRenderer.invoke("window:is-maximized") as Promise<boolean>,
+  },
+
   updater: {
     check: () => ipcRenderer.invoke("updater:check") as Promise<boolean>,
     download: () => ipcRenderer.invoke("updater:download") as Promise<boolean>,

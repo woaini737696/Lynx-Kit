@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Providers } from './providers';
+import { ErrorBoundary } from './components/error-boundary';
 import { AppShell } from './components/layout/app-shell';
 // 导入所有页面组件
 import HomePage from './routes/home';
@@ -20,28 +21,30 @@ import ProfilePage from './routes/settings/profile';
 
 export default function App() {
   return (
-    <Providers>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AppShell />}>
-            <Route index element={<HomePage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="build" element={<BuildListPage />} />
-            <Route path="build/:sessionId" element={<BuildConsolePage />} />
-            <Route path="build/:sessionId/configure" element={<ConfigurePage />} />
-            <Route path="build/:sessionId/preview" element={<PreviewPage />} />
-            <Route path="build/:sessionId/deploy" element={<DeployPage />} />
-            <Route path="store" element={<StorePage />} />
-            <Route path="store/:productId" element={<ProductDetailPage />} />
-            <Route path="creator" element={<CreatorPage />} />
-            <Route path="creator/products" element={<CreatorProductsPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="settings/ai-models" element={<AiModelsPage />} />
-            <Route path="settings/profile" element={<ProfilePage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </Providers>
+    <ErrorBoundary>
+      <Providers>
+        <HashRouter>
+          <Routes>
+            <Route element={<AppShell />}>
+              <Route index element={<HomePage />} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="register" element={<RegisterPage />} />
+              <Route path="build" element={<BuildListPage />} />
+              <Route path="build/:sessionId" element={<BuildConsolePage />} />
+              <Route path="build/:sessionId/configure" element={<ConfigurePage />} />
+              <Route path="build/:sessionId/preview" element={<PreviewPage />} />
+              <Route path="build/:sessionId/deploy" element={<DeployPage />} />
+              <Route path="store" element={<StorePage />} />
+              <Route path="store/:productId" element={<ProductDetailPage />} />
+              <Route path="creator" element={<CreatorPage />} />
+              <Route path="creator/products" element={<CreatorProductsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings/ai-models" element={<AiModelsPage />} />
+              <Route path="settings/profile" element={<ProfilePage />} />
+            </Route>
+          </Routes>
+        </HashRouter>
+      </Providers>
+    </ErrorBoundary>
   );
 }

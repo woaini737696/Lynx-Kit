@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Loader2 } from 'lucide-react';
 
-import { cn } from '../lib/utils.js';
+import { cn } from '../lib/utils';
 
 export interface SpinnerProps extends React.SVGProps<SVGSVGElement> {
   size?: 'sm' | 'md' | 'lg';

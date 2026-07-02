@@ -7,13 +7,13 @@
   "main": "out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
-    "build": "electron-vite build && electron-builder",
+    "build": "electron-vite build && electron-builder --publish never",
     "build:renderer": "electron-vite build",
     "build:electron": "electron-vite build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist dist-electron .turbo out",
-    "dist": "electron-builder"
+    "dist": "electron-builder --publish never"
   },
   "dependencies": {
     "@lynxkit/api-client": "workspace:*",
@@ -23,7 +23,6 @@
     "@tanstack/react-query": "^5.59.16",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "electron-builder": "^24.13.0",
     "electron-updater": "^6.3.9",
     "lucide-react": "^0.439.0",
     "react": "^19.0.0",
@@ -46,6 +45,7 @@
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.1.0",
     "cross-env": "^7.0.3",
+    "electron-builder": "^24.13.0",
     "electron-vite": "^2.3.0",
     "postcss": "^8.4.47",
     "rimraf": "^5.0.0",

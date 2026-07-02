@@ -8,14 +8,14 @@
  */
 
 // 工具
-export { cn } from './lib/utils.js';
+export { cn } from './lib/utils';
 
 // 基础组件
 export {
   Button,
   buttonVariants,
   type ButtonProps,
-} from './components/button.js';
+} from './components/button';
 export {
   Card,
   CardHeader,
@@ -23,18 +23,18 @@ export {
   CardDescription,
   CardContent,
   CardFooter,
-} from './components/card.js';
-export { Input, type InputProps } from './components/input.js';
-export { Textarea, type TextareaProps } from './components/textarea.js';
-export { Badge, badgeVariants, type BadgeProps } from './components/badge.js';
+} from './components/card';
+export { Input, type InputProps } from './components/input';
+export { Textarea, type TextareaProps } from './components/textarea';
+export { Badge, badgeVariants, type BadgeProps } from './components/badge';
 export {
   Avatar,
   type AvatarProps,
   type AvatarSource,
-} from './components/avatar.js';
-export { Spinner, type SpinnerProps } from './components/spinner.js';
-export { Skeleton, type SkeletonProps } from './components/skeleton.js';
-export { Label, type LabelProps } from './components/label.js';
-export { Separator, type SeparatorProps } from './components/separator.js';
-export { Progress, type ProgressProps } from './components/progress.js';
-export { EmptyState, type EmptyStateProps } from './components/empty-state.js';
+} from './components/avatar';
+export { Spinner, type SpinnerProps } from './components/spinner';
+export { Skeleton, type SkeletonProps } from './components/skeleton';
+export { Label, type LabelProps } from './components/label';
+export { Separator, type SeparatorProps } from './components/separator';
+export { Progress, type ProgressProps } from './components/progress';
+export { EmptyState, type EmptyStateProps } from './components/empty-state';

@@ -51,6 +51,8 @@ export const users = pgTable(
     phone: text("phone"),
     /** 关联的 Lynx AI 账户 ID（可选，全局唯一） */
     lynxAiId: text("lynx_ai_id"),
+    /** 密码哈希（bcrypt，MVP 阶段直接存数据库，不依赖 Redis） */
+    passwordHash: text("password_hash"),
     /** 用户角色，默认 USER */
     role: userRoleEnum("role").notNull().default("USER"),
     /** 账号状态，默认 ACTIVE */
@@ -70,4 +72,4 @@ export const users = pgTable(
     /** 用户 ID 索引（被外键引用） */
     idIdx: index("users_id_idx").on(table.id),
   }),
-).enableRLS();
+);

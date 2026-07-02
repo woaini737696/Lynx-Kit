@@ -5,7 +5,7 @@
  * 用于意图识别 Agent 的关键词匹配、UI 卡片展示、技术栈预选。
  */
 
-import { ProductType } from "../types/product.js";
+import { ProductType } from "../types/product";
 
 /**
  * 产品类型元数据
@@ -39,7 +39,7 @@ export const PRODUCT_TYPES: ProductTypeMeta[] = [
     id: ProductType.SOCIAL,
     name: "AI 社交",
     description: "交友/匹配/陪伴/社群",
-    techStack: ["Next.js", "Hono", "PostgreSQL", "pgvector", "WebSocket"],
+    techStack: ["Next", "Hono", "PostgreSQL", "pgvector", "WebSocket"],
     applicableScenes: ["AI 交友", "AI 陪伴", "AI 社群", "AI 匹配"],
     keywords: ["社交", "交友", "匹配", "陪伴", "聊天", "社群", "社区", "social", "匹配", "相亲"],
     color: "#FF6B35",
@@ -50,7 +50,7 @@ export const PRODUCT_TYPES: ProductTypeMeta[] = [
     id: ProductType.SYSTEM,
     name: "AI 系统",
     description: "平台/中台/自动化",
-    techStack: ["Next.js", "Hono", "PostgreSQL", "Redis"],
+    techStack: ["Next", "Hono", "PostgreSQL", "Redis"],
     applicableScenes: ["AI 平台", "AI 中台", "AI 自动化"],
     keywords: ["系统", "平台", "中台", "自动化", "system"],
     color: "#3B82F6",
@@ -61,7 +61,7 @@ export const PRODUCT_TYPES: ProductTypeMeta[] = [
     id: ProductType.WORKSTATION,
     name: "AI 工作站",
     description: "工具/创作/知识管理",
-    techStack: ["Next.js", "Hono", "PostgreSQL", "Tauri"],
+    techStack: ["Next", "Hono", "PostgreSQL", "Tauri"],
     applicableScenes: ["AI 工具", "AI 创作", "AI 知识库"],
     keywords: ["工具", "工作站", "创作", "知识管理", "笔记", "workstation"],
     color: "#10B981",
@@ -72,7 +72,7 @@ export const PRODUCT_TYPES: ProductTypeMeta[] = [
     id: ProductType.DATA,
     name: "AI 数据分析",
     description: "BI/报表/可视化/洞察",
-    techStack: ["Next.js", "Hono", "PostgreSQL", "pgvector", "ECharts"],
+    techStack: ["Next", "Hono", "PostgreSQL", "pgvector", "ECharts"],
     applicableScenes: ["AI BI", "AI 报表", "AI 可视化", "AI 洞察"],
     keywords: ["数据", "分析", "报表", "可视化", "BI", "洞察", "data"],
     color: "#F59E0B",
@@ -83,7 +83,7 @@ export const PRODUCT_TYPES: ProductTypeMeta[] = [
     id: ProductType.ADMIN,
     name: "AI 管理后台",
     description: "CRM/ERP/OA/运营",
-    techStack: ["Next.js", "Hono", "PostgreSQL", "shadcn/ui"],
+    techStack: ["Next", "Hono", "PostgreSQL", "shadcn/ui"],
     applicableScenes: ["AI CRM", "AI ERP", "AI OA", "AI 运营"],
     keywords: ["管理", "后台", "CRM", "ERP", "OA", "运营", "admin"],
     color: "#06B6D4",
@@ -105,7 +105,7 @@ export const PRODUCT_TYPES: ProductTypeMeta[] = [
     id: ProductType.MARKETING,
     name: "AI 营销",
     description: "广告/投放/增长/获客",
-    techStack: ["Next.js", "Hono", "PostgreSQL", "Redis"],
+    techStack: ["Next", "Hono", "PostgreSQL", "Redis"],
     applicableScenes: ["AI 广告", "AI 投放", "AI 增长", "AI 获客"],
     keywords: ["营销", "广告", "投放", "增长", "获客", "marketing"],
     color: "#EF4444",

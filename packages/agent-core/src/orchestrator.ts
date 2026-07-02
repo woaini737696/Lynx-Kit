@@ -27,7 +27,7 @@ import {
   type AgentLog,
   type AIModelConfig,
 } from "@lynxkit/shared";
-import type { DeployerAdapter, GeneratedFile } from "./types.js";
+import type { DeployerAdapter, GeneratedFile } from "./types";
 import {
   AIIntegrationAgent,
   ArchitectAgent,
@@ -39,7 +39,7 @@ import {
   IntentAgent,
   ProductManagerAgent,
   TestFixAgent,
-} from "./agents/index.js";
+} from "./agents/index";
 
 /**
  * 编排器上下文

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Text, type TextProps } from 'react-native';
 
-import { cn } from '../lib/utils.js';
+import { cn } from '../lib/utils';
 
 /**
  * Label —— React Native Text 封装。

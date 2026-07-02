@@ -12,10 +12,10 @@ import {
   type Architecture,
   getProductTypeMeta,
 } from "@lynxkit/shared";
-import { BaseAgent } from "../types.js";
-import type { OrchestratorContext } from "../orchestrator.js";
-import { architectPrompt } from "../prompts/architect.js";
-import type { IntentResult } from "./01-intent.js";
+import { BaseAgent } from "../types";
+import type { OrchestratorContext } from "../orchestrator";
+import { architectPrompt } from "../prompts/architect";
+import type { IntentResult } from "./01-intent";
 
 export interface ArchitectResult extends Architecture {
   /** 前后端目录结构建议 */
@@ -38,7 +38,7 @@ export class ArchitectAgent extends BaseAgent<ArchitectResult> {
 
     const meta = getProductTypeMeta(this.intent.productType);
     const fallback: ArchitectResult = {
-      frontend: meta?.techStack.slice(0, 4) ?? ["Next.js"],
+      frontend: meta?.techStack.slice(0, 4) ?? ["Next"],
       backend: ["Hono", "Drizzle ORM", "JWT"],
       database: ["PostgreSQL"],
       ai: ["Vercel AI SDK 5.0"],

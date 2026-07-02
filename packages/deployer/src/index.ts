@@ -13,8 +13,8 @@
  *   - Health：部署后健康检查轮询
  */
 
-export * from "./ssh.js";
-export * from "./docker.js";
-export * from "./caddy.js";
-export * from "./sandbox.js";
-export * from "./health.js";
+export * from "./ssh";
+export * from "./docker";
+export * from "./caddy";
+export * from "./sandbox";
+export * from "./health";
