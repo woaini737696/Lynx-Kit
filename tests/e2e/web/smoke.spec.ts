@@ -11,11 +11,11 @@ test.describe("Web 冒烟测试 - 首页", () => {
   test("首页加载并显示页面标题", async ({ page }) => {
     await page.goto("/");
 
-    // 页面标题应包含 LynxKit
-    await expect(page).toHaveTitle(/LynxKit/i);
+    // 页面标题应包含品牌名「妙想」
+    await expect(page).toHaveTitle(/妙想/);
 
-    // Navbar 品牌名 LynxKit 可见
-    const brand = page.locator("header").getByText("LynxKit", { exact: true }).first();
+    // Navbar 品牌名「妙想」可见
+    const brand = page.locator("header").getByText("妙想", { exact: true }).first();
     await expect(brand).toBeVisible();
   });
 

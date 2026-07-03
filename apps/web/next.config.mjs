@@ -1,9 +1,9 @@
 import createNextIntlPlugin from "next-intl/plugin";
-import type { NextConfig } from "next";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
-const nextConfig: NextConfig = {
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   // 转译 workspace 内的源码包，使其可被 Next 直接消费
   transpilePackages: [
     "@lynxkit/shared",
@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   ],
   experimental: {
     serverActions: {
-      allowedOrigins: ["localhost:3000"],
+      allowedOrigins: ["localhost:3000", "miaox.lynxdo.com"],
     },
   },
   reactStrictMode: true,

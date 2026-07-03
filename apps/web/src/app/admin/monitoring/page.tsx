@@ -185,6 +185,7 @@ export default function AdminMonitoringPage() {
           ok={true}
           okText="142 ms"
           okHint="P95 · 最近 5 分钟"
+          failText="无数据"
         />
         <InfraCard
           label="错误率"
@@ -193,6 +194,7 @@ export default function AdminMonitoringPage() {
           ok={true}
           okText="0.3%"
           okHint="最近 1 小时"
+          failText="无数据"
         />
       </div>
 

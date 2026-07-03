@@ -36,6 +36,7 @@ coverage/
 playwright-report/
 test-results/
 playwright/.cache/
+node_modules/pw-browsers/
 
 # Electron
 release/

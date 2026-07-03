@@ -13,8 +13,8 @@ test.describe("Web 认证流程 - 登录页", () => {
   test("登录页可访问并显示标题", async ({ page }) => {
     await page.goto("/login");
 
-    // 页面 H1
-    await expect(page.getByRole("heading", { name: "登录到 LynxKit" })).toBeVisible();
+    // 页面 H1（实际文案为「登录」）
+    await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
 
     // 副标题
     await expect(page.getByText("继续你的造物之旅")).toBeVisible();

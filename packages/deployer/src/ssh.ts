@@ -129,7 +129,7 @@ export function validateCommand(command: string): void {
     throw new Error("命令不能为空");
   }
   const tokens = trimmed.split(/\s+/);
-  let cmd = tokens[0];
+  let cmd: string = tokens[0] ?? "";
   while (cmd === "sudo" || cmd === "nohup" || cmd.includes("=")) {
     tokens.shift();
     cmd = tokens[0] ?? "";

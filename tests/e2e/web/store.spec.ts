@@ -12,10 +12,10 @@ test.describe("Web 商店页", () => {
     await page.goto("/store");
 
     // 页面标题
-    await expect(page).toHaveTitle(/LynxKit 商店/);
+    await expect(page).toHaveTitle(/妙想 商店/);
 
     // 主标题 H1
-    await expect(page.getByRole("heading", { name: "LynxKit 商店" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "妙想 商店" })).toBeVisible();
   });
 
   test("产品列表加载（至少包含商品卡片）", async ({ page }) => {

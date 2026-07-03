@@ -18,10 +18,18 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({
   categories,
-  active,
+  active: activeProp,
   onChange,
   className,
 }: CategoryFilterProps) {
+  // 非受控模式：父组件未传 active 时，内部 state 管理选中态
+  const [internalActive, setInternalActive] = React.useState("all");
+  const active = activeProp ?? internalActive;
+  const handleChange = (slug: string) => {
+    setInternalActive(slug);
+    onChange?.(slug);
+  };
+
   return (
     <div
       className={cn(
@@ -31,14 +39,14 @@ export function CategoryFilter({
       role="tablist"
     >
       {categories.map((c) => {
-        const isActive = (active ?? "all") === c.slug;
+        const isActive = active === c.slug;
         return (
           <button
             key={c.slug}
             type="button"
             role="tab"
             aria-selected={isActive}
-            onClick={() => onChange?.(c.slug)}
+            onClick={() => handleChange(c.slug)}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
               isActive

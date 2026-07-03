@@ -39,8 +39,8 @@ test.describe("LynxKit 桌面端冒烟测试", () => {
 
     const win = await app.firstWindow();
 
-    // 窗口标题应为 LynxKit
-    await expect(win).toHaveTitle(/LynxKit/i);
+    // 窗口标题应为品牌名「妙想」
+    await expect(win).toHaveTitle(/妙想/);
 
     // root 容器存在且可见
     await expect(win.locator("#root")).toBeVisible();

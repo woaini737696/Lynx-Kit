@@ -39,7 +39,7 @@ function parseSignature(header: string): StripeSignature | null {
   for (const part of parts) {
     const [key, value] = part.split("=");
     if (key === "t") timestamp = Number(value);
-    if (key === "v1") v1 = value;
+    if (key === "v1") v1 = value ?? null;
   }
 
   if (timestamp === null || Number.isNaN(timestamp) || !v1) return null;

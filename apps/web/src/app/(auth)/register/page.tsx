@@ -32,7 +32,7 @@ export default function RegisterPage() {
       const res = await authApi.register({
         email,
         password,
-        name: name || email.split("@")[0],
+        name: name || email.split("@")[0] || email,
       });
       login(res.accessToken, res.user);
       toast({
