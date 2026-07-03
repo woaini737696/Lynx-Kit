@@ -272,8 +272,8 @@ describe("Orchestrator 9 层流水线集成测试", () => {
     await orchestrator.run();
 
     // ③ 澄清后 answers 应被回填到 ctx（由 ClarifyAgent 生成）
-    expect(ctx.answers).toBeDefined();
-    expect(Object.keys(ctx.answers).length).toBeGreaterThan(0);
+    expect((ctx as any).answers).toBeDefined();
+    expect(Object.keys((ctx as any).answers).length).toBeGreaterThan(0);
   });
 
   it("IT-004：无 deployer 时返回本地预览 URL", async () => {

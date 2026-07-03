@@ -2,7 +2,7 @@ import { drizzle as neonDrizzle, type NeonHttpDatabase } from "drizzle-orm/neon-
 import { neon } from "@neondatabase/serverless";
 import { drizzle as pgDrizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import * as schema from "./schema";
+import * as schema from "./schema/index.js";
 
 /**
  * 创建数据库连接的环境参数。

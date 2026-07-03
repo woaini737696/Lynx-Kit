@@ -1,20 +1,21 @@
 import { Alert, FlatList, Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import type { BuildSession, BuildStatus } from '@lynxkit/shared';
 import { buildApi } from '../../src/lib/api';
 import { EmptyState } from '../../src/components/empty-state';
 import { Hammer, Trash2 } from 'lucide-react-native';
 
-const STATUS_LABEL: Record<BuildStatus, string> = {
-  draft: '草稿',
-  clarifying: '澄清中',
-  architecting: '架构设计中',
-  developing: '开发中',
-  testing: '测试中',
-  deploying: '部署中',
-  deployed: '已部署',
-  error: '错误',
+const STATUS_LABEL_KEY: Record<BuildStatus, string> = {
+  draft: 'build.status.draft',
+  clarifying: 'build.status.clarifying',
+  architecting: 'build.status.architecting',
+  developing: 'build.status.developing',
+  testing: 'build.status.testing',
+  deploying: 'build.status.deploying',
+  deployed: 'build.status.deployed',
+  error: 'build.status.error',
 };
 
 const STATUS_COLOR: Record<BuildStatus, string> = {
@@ -29,6 +30,7 @@ const STATUS_COLOR: Record<BuildStatus, string> = {
 };
 
 export default function BuildListScreen() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data: sessions, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['builds', 'all'],
@@ -44,12 +46,12 @@ export default function BuildListScreen() {
 
   const handleDelete = (session: BuildSession) => {
     Alert.alert(
-      '删除构建',
+      t('build.deleteBuild'),
       `确定要删除「${String(session.config?.name ?? session.productType)}」吗？`,
       [
-        { text: '取消', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: '删除',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: () => deleteMutation.mutate(session.id),
         },
@@ -60,7 +62,7 @@ export default function BuildListScreen() {
   return (
     <View className="flex-1 bg-slate-950">
       <View className="px-4 pt-12 pb-3">
-        <Text className="text-2xl font-bold text-white">我的构建</Text>
+        <Text className="text-2xl font-bold text-white">{t('build.myBuilds')}</Text>
       </View>
       <FlatList
         data={sessions ?? []}
@@ -72,9 +74,9 @@ export default function BuildListScreen() {
           !isLoading ? (
             <EmptyState
               icon={<Hammer size={28} color="#64748B" />}
-              title="还没有构建"
-              subtitle="去首页输入灵感，开始构建你的产品"
-              actionLabel="去构建"
+              title={t('build.empty')}
+              subtitle={t('build.emptyHint')}
+              actionLabel={t('build.goBuild')}
               onAction={() => router.push('/(tabs)/home')}
             />
           ) : null
@@ -92,6 +94,7 @@ function BuildCard({
   session: BuildSession;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
   const color = STATUS_COLOR[session.status] ?? '#64748B';
   return (
     <Pressable
@@ -105,14 +108,14 @@ function BuildCard({
         <View className="flex-row items-center gap-1.5">
           <View className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
           <Text className="text-xs" style={{ color }}>
-            {STATUS_LABEL[session.status]}
+            {t(STATUS_LABEL_KEY[session.status])}
           </Text>
         </View>
       </View>
       <View className="flex-row items-center justify-between">
         <Text className="text-xs text-slate-500">
-          版本 v{session.version} · 更新于{' '}
-          {new Date(session.updatedAt).toLocaleString()}
+          {t('build.version', { version: session.version })} ·{' '}
+          {t('build.updatedAt', { time: new Date(session.updatedAt).toLocaleString() })}
         </Text>
         <Pressable
           onPress={onDelete}

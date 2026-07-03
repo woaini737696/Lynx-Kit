@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@lynxkit/store';
 import { matchProductType, type BuildSession } from '@lynxkit/shared';
 import { buildApi } from '../../src/lib/api';
@@ -17,6 +18,7 @@ import { EmptyState } from '../../src/components/empty-state';
 import { Hammer } from 'lucide-react-native';
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const { createAndStart } = useBuild();
   const [creating, setCreating] = useState(false);
@@ -50,9 +52,9 @@ export default function HomeScreen() {
         <View className="gap-6">
           <View className="flex-row items-center justify-between">
             <View className="gap-1">
-              <Text className="text-sm text-slate-400">你好，</Text>
+              <Text className="text-sm text-slate-400">{t('home.greeting')}</Text>
               <Text className="text-2xl font-bold text-white">
-                {user?.name ?? user?.email ?? '探索者'}
+                {user?.name ?? user?.email ?? t('home.defaultNickname')}
               </Text>
             </View>
             <Pressable
@@ -67,10 +69,10 @@ export default function HomeScreen() {
 
           <View className="gap-2">
             <Text className="text-base font-semibold text-slate-200">
-              描述你的想法 ✨
+              {t('home.inspirationPlaceholder')}
             </Text>
             <Text className="text-xs text-slate-400">
-              输入灵感，9 层 Agent 帮你构建完整产品
+              {t('home.inspirationHint')}
             </Text>
           </View>
 
@@ -79,10 +81,10 @@ export default function HomeScreen() {
           <View className="gap-3">
             <View className="flex-row items-center justify-between">
               <Text className="text-base font-semibold text-slate-200">
-                最近构建
+                {t('home.recentBuilds')}
               </Text>
               <Pressable onPress={() => router.push('/(tabs)/build')}>
-                <Text className="text-sm text-lynx-500">查看全部</Text>
+                <Text className="text-sm text-lynx-500">{t('home.viewAll')}</Text>
               </Pressable>
             </View>
             {isLoading ? (
@@ -96,8 +98,8 @@ export default function HomeScreen() {
         !isLoading ? (
           <EmptyState
             icon={<Hammer size={28} color="#64748B" />}
-            title="还没有构建记录"
-            subtitle="输入上方灵感，开始你的第一个 AI 构建"
+            title={t('home.emptyBuilds')}
+            subtitle={t('home.emptyBuildsHint')}
           />
         ) : null
       }

@@ -9,32 +9,34 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { StoreCategory, type StoreProduct } from '@lynxkit/shared';
 import { storeApi } from '../../src/lib/api';
 import { ProductCard } from '../../src/components/product-card';
 import { EmptyState } from '../../src/components/empty-state';
 import { Store, Search } from 'lucide-react-native';
 
-const CATEGORIES: { label: string; value: StoreCategory | null }[] = [
-  { label: '全部', value: null },
-  { label: '社交', value: StoreCategory.SOCIAL },
-  { label: '系统工具', value: StoreCategory.SYSTEM },
-  { label: '生产力', value: StoreCategory.WORKSTATION },
-  { label: '数据分析', value: StoreCategory.DATA },
-  { label: '后台管理', value: StoreCategory.ADMIN },
-  { label: '完整应用', value: StoreCategory.APP },
-  { label: '营销', value: StoreCategory.MARKETING },
-  { label: '硬件/IoT', value: StoreCategory.HARDWARE },
-  { label: 'AI Agent', value: StoreCategory.AGENT },
-  { label: '工作流', value: StoreCategory.WORKFLOW },
-];
-
 const PAGE_SIZE = 10;
 
 export default function StoreScreen() {
+  const { t } = useTranslation();
   const [category, setCategory] = useState<StoreCategory | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  const CATEGORIES: { label: string; value: StoreCategory | null }[] = [
+    { label: t('store.category.all'), value: null },
+    { label: t('store.category.social'), value: StoreCategory.SOCIAL },
+    { label: t('store.category.system'), value: StoreCategory.SYSTEM },
+    { label: t('store.category.workstation'), value: StoreCategory.WORKSTATION },
+    { label: t('store.category.data'), value: StoreCategory.DATA },
+    { label: t('store.category.admin'), value: StoreCategory.ADMIN },
+    { label: t('store.category.app'), value: StoreCategory.APP },
+    { label: t('store.category.marketing'), value: StoreCategory.MARKETING },
+    { label: t('store.category.hardware'), value: StoreCategory.HARDWARE },
+    { label: t('store.category.agent'), value: StoreCategory.AGENT },
+    { label: t('store.category.workflow'), value: StoreCategory.WORKFLOW },
+  ];
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
@@ -57,7 +59,7 @@ export default function StoreScreen() {
   return (
     <View className="flex-1 bg-slate-950">
       <View className="px-4 pt-12 pb-3">
-        <Text className="text-2xl font-bold text-white">AI 应用商店</Text>
+        <Text className="text-2xl font-bold text-white">{t('store.title')}</Text>
       </View>
 
       <View className="px-4 pb-3">
@@ -66,7 +68,7 @@ export default function StoreScreen() {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="搜索应用、标签…"
+            placeholder={t('store.searchPlaceholder')}
             placeholderTextColor="#64748B"
             className="flex-1 text-sm text-white"
             returnKeyType="search"
@@ -118,8 +120,8 @@ export default function StoreScreen() {
           !isLoading ? (
             <EmptyState
               icon={<Store size={28} color="#64748B" />}
-              title="暂无产品"
-              subtitle="换个分类或关键词试试"
+              title={t('store.noProducts')}
+              subtitle={t('store.noProductsHint')}
             />
           ) : null
         }

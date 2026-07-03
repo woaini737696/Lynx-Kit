@@ -10,19 +10,19 @@ const { autoUpdater } = electronUpdater;
  * 所有事件通过 webContents.send 转发到渲染进程，UI 可监听展示进度。
  *
  * 更新源：
- * - 默认：阿里云 ECS nginx 静态服务（http://47.119.185.135:8090/lynxkit/）
+ * - 默认：阿里云 ECS nginx HTTPS（https://miaox.lynxdo.com/lynxkit/）
  * - 覆盖：环境变量 LYNXKIT_UPDATE_SERVER_URL（用于测试 / 内部预览 / 切换 CDN）
  *
  * 服务器侧目录结构（generic provider）：
- *   /lynxkit/latest.yml             # 元数据（version + 文件名 + hash）
- *   /lynxkit/LynxKit-Setup-x.y.z-x64.exe
- *   /lynxkit/LynxKit-x.y.z-x64.exe.blockmap  # 增量更新用
+ *   /var/www/lynxkit-updates/lynxkit/latest.yml   # 元数据（version + 文件名 + hash）
+ *   /var/www/lynxkit-updates/lynxkit/LynxKit-Setup-x.y.z-x64.exe
+ *   /var/www/lynxkit-updates/lynxkit/LynxKit-Setup-x.y.z-x64.exe.blockmap
  *
  * 部署：本地构建安装包 → scp 上传到 /var/www/lynxkit-updates/lynxkit/ → 更新 latest.yml
  */
 
-/** 默认更新源（阿里云 ECS nginx，端口 8090，零构建约束） */
-const DEFAULT_FEED_URL = "http://47.119.185.135:8090/lynxkit/";
+/** 默认更新源（阿里云 ECS nginx HTTPS，miaox.lynxdo.com 域名） */
+const DEFAULT_FEED_URL = "https://miaox.lynxdo.com/lynxkit/";
 
 /** 运行时可通过环境变量覆盖更新源 URL */
 function resolveFeedUrl(): string {

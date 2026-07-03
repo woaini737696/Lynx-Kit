@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LynxKit - AI 全栈构建平台</title>
+  <meta name="description" content="LynxKit 是一个 AI 驱动的全栈应用构建平台，通过 9 层 Agent 流水线，将自然语言描述转化为可部署的完整产品。" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --lynx-500: #FF6B35;
+      --lynx-600: #E55A2B;
+      --bg: #0f0f12;
+      --bg-card: #1a1a20;
+      --border: #2a2a32;
+      --text: #f5f5f7;
+      --text-muted: #a1a1aa;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(15, 15, 18, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      height: 4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand-logo {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      background: linear-gradient(135deg, var(--lynx-500), var(--lynx-600));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    .brand-name { font-size: 1.25rem; font-weight: 700; }
+    .nav-actions { display: flex; align-items: center; gap: 0.5rem; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .btn-outline {
+      border-color: var(--border);
+      color: var(--text);
+      background: transparent;
+    }
+    .btn-outline:hover { border-color: var(--lynx-500); color: var(--lynx-500); }
+    .btn-primary {
+      background: var(--lynx-500);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--lynx-600); }
+    .btn-lg { padding: 0.75rem 1.75rem; font-size: 1rem; }
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 6rem 1.5rem 4rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero h1 .accent { color: var(--lynx-500); -webkit-text-fill-color: var(--lynx-500); }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 2.5rem;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .hero-meta {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+    .features {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.75rem;
+    }
+    .feature-card h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .feature-card p { color: var(--text-muted); font-size: 0.875rem; }
+    .feature-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--lynx-500);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .pipeline {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+    }
+    .pipeline-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    .pipeline-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    .pipeline-step .step-num {
+      color: var(--lynx-500);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .pipeline-step .step-name {
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    footer a { color: var(--lynx-500); text-decoration: none; }
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+      .hero { padding-top: 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="brand">
+        <span class="brand-logo">L</span>
+        <span class="brand-name">LynxKit</span>
+      </a>
+      <div class="nav-actions">
+        <a class="btn btn-outline" href="https://miaox.lynxdo.com/lynxkit/LynxKit-Setup-0.1.0-x64.exe" download>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载桌面版
+        </a>
+        <a class="btn btn-primary" href="/api/v1/auth/me">登录</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>用一句话，<span class="accent">构建完整产品</span></h1>
+    <p>LynxKit 是 AI 驱动的全栈应用构建平台，通过 9 层 Agent 流水线，将自然语言描述转化为可部署的完整产品。</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="https://miaox.lynxdo.com/lynxkit/LynxKit-Setup-0.1.0-x64.exe" download>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        下载桌面版 v0.1.0
+      </a>
+      <a class="btn btn-outline btn-lg" href="/api/v1">浏览 API</a>
+    </div>
+    <p class="hero-meta">Windows x64 · 81 MB · 自动更新已启用</p>
+  </section>
+
+  <section class="features">
+    <div class="feature-card">
+      <span class="feature-num">9</span>
+      <h3>9 层 Agent 流水线</h3>
+      <p>意图识别、架构师、需求澄清、产品经理、设计师、前后端开发、AI 集成、测试修复、部署发布，全自动化。</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-num">3</span>
+      <h3>三端覆盖</h3>
+      <p>Web 端、桌面端（Electron）、移动端（Expo），共享 API 与业务逻辑。</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-num">11</span>
+      <h3>11 张数据库表</h3>
+      <p>PostgreSQL 15 + pgvector 0.8.4，支持向量语义搜索，11 张核心表覆盖用户、构建、商店、订阅。</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-num">∞</span>
+      <h3>多模型支持</h3>
+      <p>接入智谱 GLM、通义千问、DeepSeek、月之暗面 Kimi、零一万物 Yi、本地模型，6 大 Provider。</p>
+    </div>
+  </section>
+
+  <section class="pipeline">
+    <h2 class="section-title">9 层 Agent 流水线</h2>
+    <p class="section-sub">从一句话到可部署产品，9 个 AI Agent 串行协作</p>
+    <div class="pipeline-steps">
+      <div class="pipeline-step"><div class="step-num">01</div><div class="step-name">意图识别</div></div>
+      <div class="pipeline-step"><div class="step-num">02</div><div class="step-name">架构师</div></div>
+      <div class="pipeline-step"><div class="step-num">03</div><div class="step-name">需求澄清</div></div>
+      <div class="pipeline-step"><div class="step-num">04</div><div class="step-name">产品经理</div></div>
+      <div class="pipeline-step"><div class="step-num">05</div><div class="step-name">设计师</div></div>
+      <div class="pipeline-step"><div class="step-num">06</div><div class="step-name">前端开发</div></div>
+      <div class="pipeline-step"><div class="step-num">07</div><div class="step-name">后端开发</div></div>
+      <div class="pipeline-step"><div class="step-num">08</div><div class="step-name">AI 集成</div></div>
+      <div class="pipeline-step"><div class="step-num">09</div><div class="step-name">测试部署</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 LynxKit · <a href="https://github.com/woaini737696/Lynx-Kit">GitHub</a> · <a href="https://miaox.lynxdo.com/api/v1">API</a></p>
+  </footer>
+</body>
+</html>

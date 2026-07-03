@@ -27,6 +27,7 @@ interface BuildState {
   startBuild: (session: BuildSession) => void;
   updateStatus: (status: BuildStatus, progress?: number) => void;
   appendLog: (log: AgentLog) => void;
+  setLogs: (logs: AgentLog[]) => void;
   setCurrentAgent: (agent: AgentRole | null) => void;
   setGeneratedFiles: (
     files: Array<{ path: string; content: string; language: string }>
@@ -60,6 +61,7 @@ export const useBuildStore = create<BuildState>()((set) => ({
       progress: progress ?? s.progress,
     })),
   appendLog: (log) => set((s) => ({ logs: [...s.logs, log] })),
+  setLogs: (logs) => set({ logs }),
   setCurrentAgent: (agent) => set({ currentAgent: agent }),
   setGeneratedFiles: (files) => set({ generatedFiles: files }),
   reset: () =>

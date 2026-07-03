@@ -11,7 +11,7 @@
  */
 
 // ===== Schema 导出（表、枚举、关系、vector 类型、schema 聚合对象） =====
-export * from "./schema";
+export * from "./schema/index.js";
 
 // ===== 客户端工厂导出 =====
 export { createDb, type Database, type CreateDbEnv } from "./client";

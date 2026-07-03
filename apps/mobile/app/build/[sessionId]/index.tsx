@@ -9,17 +9,18 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Settings2, Code2, Rocket, Eye } from 'lucide-react-native';
 import { AGENTS, BuildStatus } from '@lynxkit/shared';
 import { useBuildStore } from '@lynxkit/store';
-import { buildApi } from '../../src/lib/api';
-import { useBuild } from '../../src/hooks/use-build';
+import { buildApi } from '../../../src/lib/api';
+import { useBuild } from '../../../src/hooks/use-build';
 import {
   AgentProgress,
   type AgentStepStatus,
-} from '../../src/components/agent-progress';
-import { Eye, Rocket } from 'lucide-react-native';
+} from '../../../src/components/agent-progress';
 
 /**
  * 构建进度页
@@ -29,10 +30,12 @@ import { Eye, Rocket } from 'lucide-react-native';
  * - 进度条 + 9 层 Agent 进度卡片（复用 AgentProgress）
  * - 实时日志滚动（自动滚到底部）
  * - 完成时显示「预览 / 部署」按钮并发送本地推送通知
+ * - 顶部操作区：配置 / 代码 / 部署 入口（按状态显示）
  *
  * 顶部导航（返回按钮 + 标题）由 Stack 路由统一渲染（见 _layout.tsx）。
  */
 export default function BuildProgressScreen() {
+  const { t } = useTranslation();
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const id = Array.isArray(sessionId) ? sessionId[0] : sessionId;
 
@@ -106,6 +109,13 @@ export default function BuildProgressScreen() {
   const deployUrl = session?.deployUrl;
   const shortId = id && id.length > 16 ? `${id.slice(0, 16)}…` : (id ?? '');
 
+  // 导航入口可见性
+  const canConfigure =
+    status === BuildStatus.CLARIFYING || status === BuildStatus.DRAFT;
+  const hasGeneratedCode =
+    !!session?.generatedCode && (session.generatedCode.files?.length ?? 0) > 0;
+  const canDeploy = status === BuildStatus.DEPLOYED;
+
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-slate-950">
@@ -122,18 +132,57 @@ export default function BuildProgressScreen() {
       >
         {/* 会话标识：sessionId 标题 */}
         <View className="gap-1 pt-4">
-          <Text className="text-xs text-slate-500">构建会话</Text>
+          <Text className="text-xs text-slate-500">{t('build.sessionTitle')}</Text>
           <Text className="text-lg font-bold text-white" numberOfLines={1}>
             {sessionName ?? shortId}
           </Text>
           <Text className="text-xs text-slate-500">{shortId}</Text>
         </View>
 
+        {/* 导航入口：配置 / 代码 / 部署 */}
+        {(canConfigure || hasGeneratedCode || canDeploy) ? (
+          <View className="flex-row gap-3">
+            {canConfigure ? (
+              <Pressable
+                onPress={() => router.push(`/build/${id}/configure`)}
+                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3 active:opacity-80"
+              >
+                <Settings2 size={16} color="#FF6B35" />
+                <Text className="text-sm font-semibold text-white">
+                  {t('build.configure')}
+                </Text>
+              </Pressable>
+            ) : null}
+            {hasGeneratedCode ? (
+              <Pressable
+                onPress={() => router.push(`/build/${id}/code`)}
+                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3 active:opacity-80"
+              >
+                <Code2 size={16} color="#FF6B35" />
+                <Text className="text-sm font-semibold text-white">
+                  {t('build.codePreview')}
+                </Text>
+              </Pressable>
+            ) : null}
+            {canDeploy ? (
+              <Pressable
+                onPress={() => router.push(`/build/${id}/deploy`)}
+                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3 active:opacity-80"
+              >
+                <Rocket size={16} color="#FF6B35" />
+                <Text className="text-sm font-semibold text-white">
+                  {t('build.deployTitle')}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
+        ) : null}
+
         {/* 进度条 */}
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
             <Text className="text-sm font-semibold text-slate-200">
-              构建进度
+              {t('build.progressTitle')}
             </Text>
             <Text className="text-sm font-semibold text-lynx-500">
               {percent}%
@@ -147,30 +196,30 @@ export default function BuildProgressScreen() {
           </View>
           <Text className="text-xs text-slate-400">
             {isDone
-              ? '构建完成 🎉'
+              ? t('build.completed')
               : isError
-                ? '构建失败，请查看日志'
+                ? t('build.failed')
                 : currentAgent
-                  ? `正在执行：${AGENTS.find((a) => a.id === currentAgent)?.name ?? ''}`
-                  : '等待启动…'}
+                  ? t('build.executing', { task: AGENTS.find((a) => a.id === currentAgent)?.name ?? '' })
+                  : t('build.waitingStart')}
           </Text>
         </View>
 
         {/* 9 层 Agent 进度卡片 */}
         <View className="gap-3">
           <Text className="text-sm font-semibold text-slate-200">
-            9 层 Agent 流水线
+            {t('build.pipeline')}
           </Text>
           <AgentProgress agents={AGENTS} statuses={agentStatuses} />
         </View>
 
         {/* 实时日志（自动滚到底部） */}
         <View className="gap-2">
-          <Text className="text-sm font-semibold text-slate-200">实时日志</Text>
+          <Text className="text-sm font-semibold text-slate-200">{t('build.realtimeLogs')}</Text>
           <View className="rounded-2xl bg-slate-900 p-3">
             {logs.length === 0 ? (
               <Text className="px-1 py-4 text-center text-xs text-slate-500">
-                等待 Agent 输出…
+                {t('build.waitingLogs')}
               </Text>
             ) : (
               <ScrollView
@@ -209,7 +258,7 @@ export default function BuildProgressScreen() {
               className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-700 py-3.5 active:opacity-80 disabled:opacity-40"
             >
               <Eye size={18} color="#F8FAFC" />
-              <Text className="text-sm font-semibold text-white">预览</Text>
+              <Text className="text-sm font-semibold text-white">{t('build.preview')}</Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -219,7 +268,7 @@ export default function BuildProgressScreen() {
               className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-lynx-500 py-3.5 active:opacity-80 disabled:opacity-40"
             >
               <Rocket size={18} color="#FFFFFF" />
-              <Text className="text-sm font-semibold text-white">部署</Text>
+              <Text className="text-sm font-semibold text-white">{t('build.deploy')}</Text>
             </Pressable>
           </View>
         ) : null}

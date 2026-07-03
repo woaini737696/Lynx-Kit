@@ -20,7 +20,7 @@ import { buildApi } from '../lib/api';
  * 进度页通过 store 订阅渲染，与桌面端 use-build 行为对齐。
  */
 export function useBuild() {
-  const { appendLog, setCurrentAgent, updateStatus } = useBuildStore();
+  const { appendLog, setLogs, setCurrentAgent, updateStatus } = useBuildStore();
   const streamingRef = useRef<AbortController | null>(null);
 
   /**
@@ -121,7 +121,59 @@ export function useBuild() {
     streamingRef.current = null;
   }, []);
 
-  return { createAndStart, subscribeProgress, stopSubscribe };
+  /**
+   * 更新构建会话配置（澄清表单提交）。
+   *
+   * @param sessionId 会话 ID
+   * @param patch 配置增量
+   * @param confirmClarify 是否完成澄清进入 ARCHITECTING
+   */
+  const updateConfig = useCallback(
+    async (
+      sessionId: string,
+      patch: Record<string, unknown>,
+      confirmClarify = false,
+    ) => {
+      return buildApi.updateConfig(sessionId, { patch, confirmClarify });
+    },
+    [],
+  );
+
+  /**
+   * 加载历史日志（进入进度页时回填已有日志）。
+   *
+   * @param sessionId 会话 ID
+   */
+  const loadLogs = useCallback(
+    async (sessionId: string) => {
+      const logs = await buildApi.getLogs(sessionId);
+      setLogs(logs);
+      return logs;
+    },
+    [setLogs],
+  );
+
+  /**
+   * 回滚到指定版本。
+   *
+   * @param sessionId 会话 ID
+   * @param version 目标版本号
+   */
+  const rollback = useCallback(
+    async (sessionId: string, version: number) => {
+      return buildApi.rollback(sessionId, version);
+    },
+    [],
+  );
+
+  return {
+    createAndStart,
+    subscribeProgress,
+    stopSubscribe,
+    updateConfig,
+    loadLogs,
+    rollback,
+  };
 }
 
 /** 生成临时日志 ID（Hermes 无 crypto.randomUUID） */

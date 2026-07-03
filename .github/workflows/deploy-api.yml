@@ -1,0 +1,84 @@
+name: Deploy API
+
+# 手动触发 API 部署到阿里云 ECS
+# 需要GitHub Secrets: SSH_HOST, SSH_KEY, SSH_PORT（可选）
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref to deploy (branch/tag/sha)'
+        required: false
+        default: 'main'
+
+jobs:
+  deploy:
+    name: Build & Deploy API to ECS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: 'pnpm' }
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: |
+          pnpm --filter @lynxkit/shared build
+          pnpm --filter @lynxkit/db build
+
+      - name: Bundle API with esbuild
+        run: |
+          node deploy/api/esbuild.config.mjs
+          ls -lh deploy/api/dist/index.js
+
+      - name: Prepare deployment package
+        run: |
+          mkdir -p deploy/api/dist
+          cp deploy/api/.env.example deploy/api/.env.production 2>/dev/null || true
+          # Bundle 是自包含单文件，不需要 node_modules（native 模块可选）
+
+      - name: Upload bundle to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER || 'root' }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "deploy/api/dist/index.js,deploy/api/ecosystem.config.cjs"
+          target: "/tmp/lynxkit-api-deploy"
+          strip_components: 2
+
+      - name: Restart PM2 on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER || 'root' }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -e
+            mkdir -p /opt/lynxkit/api/dist /opt/lynxkit/logs
+            cp /tmp/lynxkit-api-deploy/index.js /opt/lynxkit/api/dist/index.js
+            cp /tmp/lynxkit-api-deploy/ecosystem.config.cjs /opt/lynxkit/api/ecosystem.config.cjs
+            cd /opt/lynxkit/api
+            pm2 delete lynxkit-api 2>/dev/null || true
+            pm2 start ecosystem.config.cjs
+            sleep 3
+            pm2 list
+            curl -s --max-time 5 http://127.0.0.1:8788/health && echo "" || echo "HEALTH CHECK FAILED"
+            pm2 save
+            rm -rf /tmp/lynxkit-api-deploy
+
+      - name: Deployment summary
+        run: |
+          echo "## API Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Server**: ${{ secrets.SSH_HOST }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Port**: 8788" >> $GITHUB_STEP_SUMMARY
+          echo "- **Health**: http://127.0.0.1:8788/health" >> $GITHUB_STEP_SUMMARY
+          echo "- **HTTPS**: https://miaox.lynxdo.com/api/v1/" >> $GITHUB_STEP_SUMMARY

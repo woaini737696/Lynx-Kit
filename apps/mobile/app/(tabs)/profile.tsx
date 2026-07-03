@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../src/hooks/use-auth';
 import {
   Hammer,
@@ -11,26 +12,27 @@ import {
 } from 'lucide-react-native';
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
 
   const menuItems = [
     {
-      label: '我的构建',
+      label: t('profile.myBuilds'),
       icon: Hammer,
       onPress: () => router.push('/(tabs)/build'),
     },
     {
-      label: '我的购买',
+      label: t('profile.myPurchases'),
       icon: ShoppingBag,
       onPress: () => router.push('/(tabs)/store'),
     },
     {
-      label: '创作者中心',
+      label: t('profile.creatorCenter'),
       icon: PenTool,
       onPress: () => router.push('/creator/index'),
     },
     {
-      label: '设置',
+      label: t('profile.settings'),
       icon: Settings,
       onPress: () => router.push('/settings/index'),
     },
@@ -46,7 +48,7 @@ export default function ProfileScreen() {
         </View>
         <View className="items-center gap-1">
           <Text className="text-xl font-bold text-white">
-            {user?.name ?? '未设置昵称'}
+            {user?.name ?? t('profile.unnamed')}
           </Text>
           <Text className="text-sm text-slate-400">{user?.email}</Text>
         </View>
@@ -73,7 +75,7 @@ export default function ProfileScreen() {
           className="mt-4 flex-row items-center justify-center gap-2 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-4 active:opacity-80"
         >
           <LogOut size={18} color="#EF4444" />
-          <Text className="text-base font-semibold text-red-400">退出登录</Text>
+          <Text className="text-base font-semibold text-red-400">{t('profile.logout')}</Text>
         </Pressable>
       </View>
     </ScrollView>

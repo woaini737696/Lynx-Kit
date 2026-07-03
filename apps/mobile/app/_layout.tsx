@@ -7,10 +7,13 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@lynxkit/store';
 import { hydrateToken } from '../src/lib/storage';
 import { usePushNotifications } from '../src/hooks/use-push-notifications';
 import { ErrorBoundary } from '../src/components/error-boundary';
+import { initI18n } from '../src/i18n';
+import '@/i18n';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* preventAutoHideAsync 在已隐藏时可能抛错，忽略 */
@@ -25,7 +28,15 @@ const queryClient = new QueryClient({
 function RootStack() {
   const colorScheme = useColorScheme();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { t } = useTranslation();
   usePushNotifications(isAuthenticated);
+
+  const headerOptions = (title: string) => ({
+    title,
+    headerShown: true as const,
+    headerTintColor: '#F8FAFC',
+    headerStyle: { backgroundColor: '#0F172A' },
+  });
 
   return (
     <Stack
@@ -41,43 +52,55 @@ function RootStack() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen
         name="build/[sessionId]"
-        options={{ title: '构建进度', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('build.progressTitle'))}
+      />
+      <Stack.Screen
+        name="build/[sessionId]/configure"
+        options={headerOptions(t('build.configureTitle'))}
+      />
+      <Stack.Screen
+        name="build/[sessionId]/code"
+        options={headerOptions(t('build.codePreview'))}
+      />
+      <Stack.Screen
+        name="build/[sessionId]/deploy"
+        options={headerOptions(t('build.deployTitle'))}
       />
       <Stack.Screen
         name="build/preview"
-        options={{ title: '预览', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('build.preview'))}
       />
       <Stack.Screen
         name="store/[productId]"
-        options={{ title: '产品详情', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('store.productDetail'))}
       />
       <Stack.Screen
         name="creator/index"
-        options={{ title: '创作者中心', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('creator.title'))}
       />
       <Stack.Screen
         name="creator/products"
-        options={{ title: '产品管理', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('creator.products'))}
       />
       <Stack.Screen
         name="settings/index"
-        options={{ title: '设置', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('settings.title'))}
       />
       <Stack.Screen
         name="settings/ai-models"
-        options={{ title: 'AI 模型配置', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('settings.aiModels'))}
       />
       <Stack.Screen
         name="settings/profile"
-        options={{ title: '编辑个人资料', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('settings.profile'))}
       />
       <Stack.Screen
         name="settings/notifications"
-        options={{ title: '通知设置', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('settings.notifications'))}
       />
       <Stack.Screen
         name="settings/about"
-        options={{ title: '关于', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+        options={headerOptions(t('about.title'))}
       />
       <Stack.Screen name="+not-found" />
     </Stack>
@@ -89,6 +112,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     (async () => {
+      await initI18n();
       await hydrateToken();
       setReady(true);
       await SplashScreen.hideAsync().catch(() => {});

@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import {
   Cpu,
   User,
@@ -9,24 +10,25 @@ import {
 } from 'lucide-react-native';
 
 export default function SettingsScreen() {
+  const { t } = useTranslation();
   const items = [
     {
-      label: 'AI 模型配置',
+      label: t('settings.aiModels'),
       icon: Cpu,
       onPress: () => router.push('/settings/ai-models'),
     },
     {
-      label: '个人资料',
+      label: t('settings.profile'),
       icon: User,
       onPress: () => router.push('/settings/profile'),
     },
     {
-      label: '通知设置',
+      label: t('settings.notifications'),
       icon: Bell,
       onPress: () => router.push('/settings/notifications'),
     },
     {
-      label: '关于 LynxKit',
+      label: t('settings.aboutLynxKit'),
       icon: Info,
       onPress: () => router.push('/settings/about'),
     },

@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { Sparkles } from 'lucide-react-native';
 
-const EXAMPLES = [
-  'AI 交友匹配小程序',
-  '在线教育管理后台',
-  '数据可视化 BI 仪表盘',
-  'AI 内容创作工作站',
+const EXAMPLE_KEYS = [
+  'inspiration.example1',
+  'inspiration.example2',
+  'inspiration.example3',
+  'inspiration.example4',
 ];
 
 interface InspirationInputProps {
@@ -17,7 +18,9 @@ interface InspirationInputProps {
 
 /** 简化版灵感输入框 —— 移动端构建入口 */
 export function InspirationInput({ onCreate, loading }: InspirationInputProps) {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
+  const examples = EXAMPLE_KEYS.map((key) => t(key));
 
   const handleSubmit = () => {
     if (!text.trim() || loading) return;
@@ -30,7 +33,7 @@ export function InspirationInput({ onCreate, loading }: InspirationInputProps) {
       <TextInput
         value={text}
         onChangeText={setText}
-        placeholder="描述你想构建的产品……例如：AI 交友匹配小程序"
+        placeholder={t('inspiration.placeholder')}
         placeholderTextColor="#94A3B8"
         multiline
         numberOfLines={4}
@@ -38,7 +41,7 @@ export function InspirationInput({ onCreate, loading }: InspirationInputProps) {
         className="min-h-[120px] rounded-2xl bg-slate-800 px-4 py-3 text-base text-slate-100"
       />
       <View className="flex-row flex-wrap gap-2">
-        {EXAMPLES.map((ex) => (
+        {examples.map((ex) => (
           <Pressable
             key={ex}
             onPress={() => {
@@ -58,7 +61,7 @@ export function InspirationInput({ onCreate, loading }: InspirationInputProps) {
       >
         <Sparkles size={18} color="#FFFFFF" />
         <Text className="text-base font-semibold text-white">
-          {loading ? '创建中…' : '开始构建'}
+          {loading ? t('inspiration.creating') : t('inspiration.startBuild')}
         </Text>
       </Pressable>
     </View>

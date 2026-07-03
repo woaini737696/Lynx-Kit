@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, Download } from "lucide-react";
 import { Button } from "@lynxkit/ui-web";
 import { cn } from "@/lib/utils";
 
@@ -66,6 +66,12 @@ export function Navbar() {
 
         {/* Actions */}
         <div className="hidden items-center gap-2 md:flex">
+          <Button asChild variant="outline" size="sm">
+            <a href="https://miaox.lynxdo.com/lynxkit/LynxKit-Setup-0.1.0-x64.exe" download>
+              <Download className="h-4 w-4" />
+              下载桌面版
+            </a>
+          </Button>
           <Button asChild variant="ghost" size="sm">
             <Link href="/login">登录</Link>
           </Button>
@@ -99,6 +105,12 @@ export function Navbar() {
               </Link>
             ))}
             <div className="mt-2 flex flex-col gap-2">
+              <Button asChild variant="outline" size="sm">
+                <a href="https://miaox.lynxdo.com/lynxkit/LynxKit-Setup-0.1.0-x64.exe" download>
+                  <Download className="h-4 w-4" />
+                  下载桌面版
+                </a>
+              </Button>
               <Button asChild variant="outline" size="sm">
                 <Link href="/login">登录</Link>
               </Button>
