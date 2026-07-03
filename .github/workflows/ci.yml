@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [master, main]
   pull_request:
-    branches: [main, develop]
+    branches: [master, main]
 
 jobs:
   quality:
@@ -23,7 +23,6 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
-        continue-on-error: true  # 测试可能未实现，不阻塞
 
   build:
     name: Build All Packages

@@ -181,11 +181,12 @@ export const storeProducts = pgTable(
     /** 评价数量，默认 0 */
     reviewCount: integer("review_count").notNull().default(0),
     /**
-     * 产品语义向量（序列化字符串存储，用于商店语义搜索）
-     * MVP 阶段使用 text 存储，后续可迁移至 pgvector。
-     * 可选字段，由后台异步生成。
+     * 产品语义向量（pgvector，1024 维，对应智谱 GLM embedding-3 默认维度）
+     * 用于商店语义搜索：cosine 相似度检索。
+     * 需要 PostgreSQL 安装 pgvector 扩展：`CREATE EXTENSION IF NOT EXISTS vector;`
+     * 可选字段，由 publish-service 在上架时异步调用 embedding API 生成。
      */
-    embeddings: text("embeddings"),
+    embeddings: vector("embeddings", { dimensions: 1024 }),
     /** 创建时间（带时区） */
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     /** 更新时间（带时区，自动更新） */

@@ -5,12 +5,14 @@
  *   1. 校验会话存在且属于当前用户
  *   2. 校验该会话未被重复发布（session_id 唯一约束）
  *   3. 插入 store_products，状态默认 PENDING_REVIEW（待审核）
+ *   4. 异步触发 GLM embedding-3 生成产品语义向量，写入 embeddings 字段
+ *      （fire-and-forget，不阻塞 publish 响应；GLM_API_KEY 未配置时跳过）
  *
  * 由 POST /store/publish 路由调用。
  *
  * 设计要点：db 通过 deps 注入，便于单元测试时直接传 mock 对象。
  */
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { buildSessions, storeProducts, type Database } from "@lynxkit/db";
 
 import {
@@ -18,6 +20,7 @@ import {
   ForbiddenError,
   ConflictError,
 } from "../middleware/error.js";
+import { embedText, toPgVectorLiteral } from "./embeddings.js";
 
 /** 上架输入（与 api-client PublishStoreProductInput 对齐） */
 export interface PublishInput {
@@ -109,6 +112,19 @@ export async function publishBuildToStore(
     throw new Error("上架失败：数据库插入未返回记录");
   }
 
+  // 4. 异步生成产品语义向量（不阻塞 publish 响应）
+  //    把 name + description + tags 拼接为一段文本，调用 GLM embedding-3 生成 1024 维向量
+  //    写回 store_products.embeddings 字段，供商店语义检索使用
+  //    GLM_API_KEY 未配置时 embedText 返回 null，跳过即可
+  void generateProductEmbedding(
+    product.id as string,
+    [input.name, input.description, (input.tags ?? []).join(" ")].join("\n"),
+    db,
+  ).catch((err) => {
+    // 仅记录错误，不影响已上架的产品
+    console.warn(`[publish] 异步生成 embeddings 失败：`, err);
+  });
+
   return {
     product: {
       id: product.id as string,
@@ -116,4 +132,27 @@ export async function publishBuildToStore(
       ...((product as Record<string, unknown>) ?? {}),
     },
   };
+}
+
+/**
+ * 为指定产品生成语义向量并写回 DB。
+ *
+ * 由 publishBuildToStore 异步触发。失败仅记录日志，不影响主流程。
+ */
+async function generateProductEmbedding(
+  productId: string,
+  text: string,
+  db: Database,
+): Promise<void> {
+  const embedding = await embedText(text);
+  if (!embedding) {
+    // GLM_API_KEY 未配置或调用失败：跳过 embeddings 写入
+    return;
+  }
+
+  const vectorLiteral = toPgVectorLiteral(embedding);
+  await db
+    .update(storeProducts)
+    .set({ embeddings: sql`${vectorLiteral}::vector` })
+    .where(eq(storeProducts.id, productId));
 }

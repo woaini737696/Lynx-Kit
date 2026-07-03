@@ -2,6 +2,11 @@ import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@lynxkit/ui-web";
 import { useUIStore } from "@lynxkit/store";
+import "@/i18n"; // i18n 初始化（副作用 import）
+import { initWebVitals } from "@/lib/web-vitals";
+
+// 启动 Web Vitals 采集（main process 会捕获 console 写入 renderer-debug.log）
+initWebVitals();
 
 /**
  * 全局 Providers

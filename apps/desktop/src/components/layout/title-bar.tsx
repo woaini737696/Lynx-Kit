@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Sparkles,
   Sun,
@@ -12,11 +13,12 @@ import {
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@lynxkit/store";
 import { electronAPI } from "@/lib/electron";
+import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
 
 const THEMES = [
-  { value: "light", icon: Sun, label: "亮色" },
-  { value: "dark", icon: Moon, label: "暗色" },
-  { value: "system", icon: Monitor, label: "跟随系统" },
+  { value: "light", icon: Sun, labelKey: "titleBar.themeLight" },
+  { value: "dark", icon: Moon, labelKey: "titleBar.themeDark" },
+  { value: "system", icon: Monitor, labelKey: "titleBar.themeSystem" },
 ] as const;
 
 /**
@@ -29,6 +31,7 @@ const THEMES = [
  * 窗口控制按钮通过 electronAPI.window 调用主进程 IPC。
  */
 export function TitleBar() {
+  const { t } = useTranslation();
   const theme = useUIStore((s) => s.theme);
   const setTheme = useUIStore((s) => s.setTheme);
   const [isMaximized, setIsMaximized] = React.useState(false);
@@ -74,7 +77,7 @@ export function TitleBar() {
             LynxKit
           </span>
           <span className="text-[10px] text-muted-foreground">
-            AI 产品构建器
+            {t("common.tagline")}
           </span>
         </div>
       </div>
@@ -82,25 +85,25 @@ export function TitleBar() {
       {/* 中间：可拖动空白区 */}
       <div className="flex-1" />
 
-      {/* 右侧：主题切换 + 窗口控制 */}
+      {/* 右侧：主题切换 + 语言切换 + 窗口控制 */}
       <div
         className="flex items-center gap-1 px-2"
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
         {/* 主题切换 */}
-        <div className="mr-2 flex items-center rounded-lg border border-border p-0.5">
-          {THEMES.map((t) => {
-            const Icon = t.icon;
+        <div className="mr-1 flex items-center rounded-lg border border-border p-0.5">
+          {THEMES.map((themeOpt) => {
+            const Icon = themeOpt.icon;
             return (
               <button
-                key={t.value}
+                key={themeOpt.value}
                 type="button"
-                onClick={() => setTheme(t.value)}
-                aria-label={t.label}
-                title={t.label}
+                onClick={() => setTheme(themeOpt.value)}
+                aria-label={t(themeOpt.labelKey)}
+                title={t(themeOpt.labelKey)}
                 className={cn(
                   "rounded-md p-1.5 transition",
-                  theme === t.value
+                  theme === themeOpt.value
                     ? "bg-lynx-500/15 text-lynx-600 dark:text-lynx-400"
                     : "text-muted-foreground hover:text-foreground",
                 )}
@@ -111,12 +114,15 @@ export function TitleBar() {
           })}
         </div>
 
+        {/* 语言切换 */}
+        <LanguageSwitcher />
+
         {/* 窗口控制按钮 */}
         <button
           type="button"
           onClick={handleMinimize}
-          aria-label="最小化"
-          title="最小化"
+          aria-label={t("titleBar.minimize")}
+          title={t("titleBar.minimize")}
           className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
         >
           <Minus className="h-4 w-4" />
@@ -124,8 +130,8 @@ export function TitleBar() {
         <button
           type="button"
           onClick={handleMaximizeToggle}
-          aria-label={isMaximized ? "还原" : "最大化"}
-          title={isMaximized ? "还原" : "最大化"}
+          aria-label={isMaximized ? t("titleBar.restore") : t("titleBar.maximize")}
+          title={isMaximized ? t("titleBar.restore") : t("titleBar.maximize")}
           className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
         >
           {isMaximized ? (
@@ -137,8 +143,8 @@ export function TitleBar() {
         <button
           type="button"
           onClick={handleClose}
-          aria-label="关闭"
-          title="关闭"
+          aria-label={t("titleBar.close")}
+          title={t("titleBar.close")}
           className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive hover:text-destructive-foreground"
         >
           <X className="h-4 w-4" />

@@ -27,6 +27,7 @@ import {
 import { createStoreProductSchema } from "@lynxkit/shared";
 import { getDb } from "../lib/db.js";
 import { publishBuildToStore } from "../lib/publish-service.js";
+import { embedText, toPgVectorLiteral } from "../lib/embeddings.js";
 import { logger } from "../lib/logger.js";
 import { authMiddleware, getCurrentUser } from "../middleware/auth.js";
 import {
@@ -328,6 +329,48 @@ storeRoutes.get(
     const { q, page, pageSize, semantic } = c.req.valid("query");
     const db = getDb();
 
+    // 语义检索路径：当 semantic=true 且 GLM_API_KEY 可用时，
+    // 调用 GLM embedding-3 把 q 转为 1024 维向量，用 pgvector <=> 操作符做 cosine 相似度排序
+    if (semantic) {
+      const queryVector = await embedText(q);
+      if (queryVector) {
+        const vectorLiteral = toPgVectorLiteral(queryVector);
+        // 用 raw SQL：drizzle 不直接暴露 pgvector 操作符
+        // 1 - (embeddings <=> query) 将距离转相似度（0=完全相同, 2=完全相反）
+        const semanticRows = await db.execute(sql`
+          SELECT
+            id, session_id, creator_id, name, description, icon, screenshots,
+            tags, category, pricing_type, price, monthly_price, status, version,
+            download_url, demo_url, api_endpoint, usage_count, rating, review_count,
+            created_at, updated_at,
+            1 - (embeddings <=> ${vectorLiteral}::vector) AS similarity
+          FROM store_products
+          WHERE status = 'PUBLISHED' AND embeddings IS NOT NULL
+          ORDER BY embeddings <=> ${vectorLiteral}::vector
+          LIMIT ${pageSize}
+          OFFSET ${(page - 1) * pageSize}
+        `);
+        const semanticItems = semanticRows.rows ?? [];
+
+        logger.info(
+          { q, semantic: true, results: semanticItems.length, mode: "pgvector" },
+          "商店语义检索",
+        );
+
+        return c.json({
+          products: semanticItems,
+          query: q,
+          semantic: true,
+          mode: "pgvector",
+          page,
+          pageSize,
+          total: semanticItems.length,
+        });
+      }
+      // 向量化失败 → 降级为全文搜索
+      logger.warn({ q }, "语义检索降级：GLM API 不可用，回退关键词搜索");
+    }
+
     // 全文搜索（name + description + tags）
     const items = await db.query.storeProducts.findMany({
       where: and(
@@ -342,17 +385,16 @@ storeRoutes.get(
       offset: (page - 1) * pageSize,
     });
 
-    // TODO: 当 semantic=true 且产品已有 embeddings 时，
-    // 使用 pgvector 的 <=> 操作符进行语义检索：
-    //   sql`embeddings <=> ${queryVector}::vector`
-    // 需要先用 embedding 模型将 q 转为向量
-
-    logger.info({ q, semantic, results: items.length }, "商店搜索");
+    logger.info(
+      { q, semantic, results: items.length, mode: "keyword" },
+      "商店搜索",
+    );
 
     return c.json({
       products: items,
       query: q,
       semantic,
+      mode: "keyword",
       page,
       pageSize,
       total: items.length,

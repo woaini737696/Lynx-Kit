@@ -1,0 +1,103 @@
+{
+  "common": {
+    "brand": "LynxKit",
+    "tagline": "AI 产品构建器",
+    "loading": "加载中…",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "back": "返回",
+    "confirm": "确认",
+    "ok": "好",
+    "yes": "是",
+    "no": "否",
+    "close": "关闭",
+    "retry": "重试"
+  },
+  "nav": {
+    "build": "构建",
+    "store": "商店",
+    "creator": "创作者",
+    "settings": "设置",
+    "login": "登录",
+    "logout": "退出登录",
+    "loggedIn": "已登录"
+  },
+  "titleBar": {
+    "themeLight": "亮色",
+    "themeDark": "暗色",
+    "themeSystem": "跟随系统",
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "restore": "还原",
+    "close": "关闭"
+  },
+  "auth": {
+    "loginTitle": "登录",
+    "loginSubtitle": "登录后开始构建你的 AI 产品",
+    "registerTitle": "注册",
+    "registerSubtitle": "创建账号开启造物之旅",
+    "email": "邮箱",
+    "emailPlaceholder": "you@example.com",
+    "password": "密码",
+    "passwordPlaceholder": "••••••••",
+    "phone": "手机号",
+    "code": "验证码",
+    "sendCode": "发送验证码",
+    "loginButton": "登录",
+    "registerButton": "注册",
+    "noAccount": "还没有账号？",
+    "hasAccount": "已有账号？",
+    "fillEmailAndPassword": "请填写邮箱和密码",
+    "loginFailed": "登录失败",
+    "registerFailed": "注册失败"
+  },
+  "settings": {
+    "title": "设置",
+    "general": "通用",
+    "aiModels": "AI 模型",
+    "profile": "个人资料",
+    "notifications": "通知",
+    "about": "关于",
+    "language": "语言"
+  },
+  "build": {
+    "title": "构建",
+    "newSession": "新建构建",
+    "configure": "配置",
+    "console": "控制台",
+    "preview": "预览",
+    "deploy": "部署",
+    "empty": "还没有构建会话"
+  },
+  "store": {
+    "title": "LynxKit 商店",
+    "search": "搜索应用…",
+    "tryDemo": "试用"
+  },
+  "creator": {
+    "title": "创作者",
+    "products": "我的产品"
+  },
+  "about": {
+    "description": "LynxKit 是一站式 AI 产品构建平台，从需求到上架全链路贯通。",
+    "newVersion": "发现新版本",
+    "downloading": "下载中…",
+    "checkUpdate": "检查更新",
+    "checking": "检查中…",
+    "upToDate": "已是最新版本",
+    "downloadUpdate": "下载更新",
+    "installRestart": "安装并重启",
+    "techStack": "技术栈"
+  },
+  "updater": {
+    "downloaded": "更新已下载完成，可以安装",
+    "notAvailable": "当前为最新版本",
+    "checkFailed": "检查更新失败，请稍后重试"
+  },
+  "errors": {
+    "networkError": "网络异常，请稍后重试",
+    "unknownError": "未知错误",
+    "sessionExpired": "会话已过期，请重新登录"
+  }
+}

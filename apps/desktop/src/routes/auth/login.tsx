@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Loader2, LogIn } from "lucide-react";
 import {
   Card,
@@ -17,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login, isPending } = useAuth();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -24,7 +26,7 @@ export default function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast({ title: "请填写邮箱和密码", variant: "destructive" });
+      toast({ title: t("auth.fillEmailAndPassword"), variant: "destructive" });
       return;
     }
     try {
@@ -32,7 +34,7 @@ export default function LoginPage() {
       navigate("/build");
     } catch (err) {
       toast({
-        title: "登录失败",
+        title: t("auth.loginFailed"),
         description: err instanceof Error ? err.message : String(err),
         variant: "destructive",
       });
@@ -44,31 +46,31 @@ export default function LoginPage() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <LogIn className="h-5 w-5 text-lynx-500" />
-          登录
+          {t("auth.loginTitle")}
         </CardTitle>
-        <CardDescription>登录后开始构建你的 AI 产品</CardDescription>
+        <CardDescription>{t("auth.loginSubtitle")}</CardDescription>
       </CardHeader>
       <form onSubmit={submit}>
         <CardContent className="space-y-3">
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs">邮箱</Label>
+            <Label htmlFor="email" className="text-xs">{t("auth.email")}</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder={t("auth.emailPlaceholder")}
               autoComplete="email"
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs">密码</Label>
+            <Label htmlFor="password" className="text-xs">{t("auth.password")}</Label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder={t("auth.passwordPlaceholder")}
               autoComplete="current-password"
             />
           </div>
@@ -84,12 +86,12 @@ export default function LoginPage() {
             ) : (
               <LogIn className="mr-2 h-4 w-4" />
             )}
-            登录
+            {t("auth.loginButton")}
           </Button>
           <p className="text-sm text-muted-foreground">
-            还没有账号？{" "}
+            {t("auth.noAccount")}{" "}
             <Link to="/register" className="text-lynx-600 hover:underline">
-              注册
+              {t("auth.registerTitle")}
             </Link>
           </p>
         </CardFooter>

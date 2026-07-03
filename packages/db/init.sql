@@ -1,6 +1,9 @@
 -- LynxKit 数据库初始化脚本（MVP）
--- 由 schema/*.ts 手动转写，不依赖 pgvector
+-- 由 schema/*.ts 手动转写，依赖 pgvector 扩展用于商店语义检索
 -- 用法：psql -U postgres -d lynxkit -f init.sql
+
+-- ===== 扩展：pgvector（向量相似度检索，store_products.embeddings 字段） =====
+CREATE EXTENSION IF NOT EXISTS vector;
 
 -- ===== 枚举类型 =====
 DO $$ BEGIN
@@ -139,7 +142,7 @@ CREATE TABLE IF NOT EXISTS store_products (
   usage_count INTEGER NOT NULL DEFAULT 0,
   rating REAL NOT NULL DEFAULT 0,
   review_count INTEGER NOT NULL DEFAULT 0,
-  embeddings TEXT,
+  embeddings vector(1024),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -147,6 +150,10 @@ CREATE INDEX IF NOT EXISTS store_products_creator_id_idx ON store_products(creat
 CREATE INDEX IF NOT EXISTS store_products_category_idx ON store_products(category);
 CREATE INDEX IF NOT EXISTS store_products_status_idx ON store_products(status);
 CREATE INDEX IF NOT EXISTS store_products_status_created_idx ON store_products(status, created_at);
+-- pgvector ivfflat 索引：加速 cosine 相似度检索（<=> 操作符）
+-- lists=100 适合 < 1M 条记录；查询时 ivfflat probes 默认 1
+CREATE INDEX IF NOT EXISTS store_products_embeddings_idx
+  ON store_products USING ivfflat (embeddings vector_cosine_ops) WITH (lists = 100);
 
 CREATE TABLE IF NOT EXISTS transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

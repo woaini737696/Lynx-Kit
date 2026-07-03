@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutGrid,
   Store,
@@ -24,15 +25,16 @@ import { useUIStore, useAuthStore } from "@lynxkit/store";
  * - 未登录：显示登录入口（固定在左下角）
  */
 const NAV = [
-  { href: "/build", label: "构建", icon: LayoutGrid },
-  { href: "/store", label: "商店", icon: Store },
-  { href: "/creator", label: "创作者", icon: UserSquare },
-  { href: "/settings", label: "设置", icon: Settings },
+  { href: "/build", labelKey: "nav.build", icon: LayoutGrid },
+  { href: "/store", labelKey: "nav.store", icon: Store },
+  { href: "/creator", labelKey: "nav.creator", icon: UserSquare },
+  { href: "/settings", labelKey: "nav.settings", icon: Settings },
 ] as const;
 
 export function Sidebar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const open = useUIStore((s) => s.sidebarOpen);
   const { user, isAuthenticated, logout } = useAuthStore();
 
@@ -61,7 +63,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}
@@ -86,7 +88,7 @@ export function Sidebar() {
                   {user.name ?? user.email}
                 </span>
                 <span className="truncate text-[10px] text-muted-foreground">
-                  已登录
+                  {t("nav.loggedIn")}
                 </span>
               </div>
               <User className="h-3.5 w-3.5 text-muted-foreground" />
@@ -98,7 +100,7 @@ export function Sidebar() {
               className="w-full justify-start text-muted-foreground"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              退出登录
+              {t("nav.logout")}
             </Button>
           </div>
         ) : (
@@ -107,7 +109,7 @@ export function Sidebar() {
             className="w-full bg-lynx-500 text-white hover:bg-lynx-600"
           >
             <LogIn className="mr-2 h-4 w-4" />
-            登录
+            {t("nav.login")}
           </Button>
         )}
 
