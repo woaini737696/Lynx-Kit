@@ -13,7 +13,7 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { generateText } from "ai";
+import { generateText, type LanguageModel } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 import { templates } from "@lynxkit/db";
@@ -149,16 +149,18 @@ systemRoutes.post(
     const provider = createOpenAICompatible({
       name: input.provider,
       baseURL: input.apiBase,
-      apiKey: input.apiKey,
+      headers: {
+        Authorization: `Bearer ${input.apiKey}`,
+      },
     });
 
-    const model = provider(input.model);
+    const model = provider(input.model) as unknown as LanguageModel;
 
     try {
       const result = await generateText({
         model,
         prompt: input.prompt,
-        maxTokens: 10,
+        maxOutputTokens: 10,
       });
 
       logger.info(

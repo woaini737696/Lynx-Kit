@@ -8,7 +8,7 @@ import { Hammer } from 'lucide-react-native';
 
 const STATUS_LABEL: Record<BuildStatus, string> = {
   draft: '草稿',
-  clarify: '澄清中',
+  clarifying: '澄清中',
   architecting: '架构设计中',
   developing: '开发中',
   testing: '测试中',
@@ -19,7 +19,7 @@ const STATUS_LABEL: Record<BuildStatus, string> = {
 
 const STATUS_COLOR: Record<BuildStatus, string> = {
   draft: '#64748B',
-  clarify: '#3B82F6',
+  clarifying: '#3B82F6',
   architecting: '#3B82F6',
   developing: '#F59E0B',
   testing: '#F59E0B',

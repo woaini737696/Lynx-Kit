@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Stack, useColorScheme } from 'expo-router';
+import { Stack } from 'expo-router';
+import { useColorScheme } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import {
   QueryClient,

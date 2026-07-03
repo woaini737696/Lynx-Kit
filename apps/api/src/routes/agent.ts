@@ -16,7 +16,7 @@ import { streamSSE } from "hono/streaming";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { streamText } from "ai";
+import { streamText, type LanguageModel } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 import { env } from "../env.js";
@@ -399,10 +399,12 @@ agentRoutes.post(
     const provider = createOpenAICompatible({
       name: input.provider,
       baseURL: providerConfig.apiBase,
-      apiKey: providerConfig.apiKey,
+      headers: {
+        Authorization: `Bearer ${providerConfig.apiKey}`,
+      },
     });
 
-    const model = provider(input.model || providerConfig.defaultModel);
+    const model = provider(input.model || providerConfig.defaultModel) as unknown as LanguageModel;
 
     // 构建对话上下文
     const systemPrompt = buildChatSystemPrompt(session);

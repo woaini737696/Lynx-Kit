@@ -214,6 +214,6 @@ export function registerErrorHandler(app: {
       );
     }
 
-    return c.json(body, { status: body.status });
+    return c.json(body as never, { status: body.status as never });
   });
 }

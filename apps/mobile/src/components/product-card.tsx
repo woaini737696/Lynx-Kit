@@ -11,7 +11,7 @@ interface ProductCardProps {
 export function ProductCard({ product, onPress }: ProductCardProps) {
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => onPress?.(product)}
       className="flex-row gap-3 rounded-2xl bg-slate-800 p-3 active:opacity-80"
     >
       <View className="h-14 w-14 items-center justify-center rounded-xl bg-lynx-500/20">

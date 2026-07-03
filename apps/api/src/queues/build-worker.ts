@@ -44,7 +44,6 @@ async function startWorker(): Promise<void> {
   }
 
   const connection: ConnectionOptions = {
-    // @ts-expect-error BullMQ 接受 ioredis 兼容配置
     url: env.REDIS_URL,
   };
 

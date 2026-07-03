@@ -90,7 +90,7 @@ function getRatelimiter(): Ratelimit | null {
 function getClientIp(c: { req: { header: (name: string) => string | undefined } }): string {
   const xff = c.req.header("x-forwarded-for");
   if (xff) {
-    return xff.split(",")[0].trim();
+    return xff.split(",")[0]?.trim() ?? "127.0.0.1";
   }
   const xRealIp = c.req.header("x-real-ip");
   if (xRealIp) return xRealIp;

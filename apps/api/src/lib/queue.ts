@@ -50,7 +50,6 @@ export function getBuildQueue(): Queue<BuildJobData> | null {
   if (!queueInstance) {
     const connection: ConnectionOptions = {
       // BullMQ 复用 ioredis 连接选项；此处直接传 REDIS_URL
-      // @ts-expect-error BullMQ 接受 ioredis 兼容的连接配置
       url: env.REDIS_URL,
     };
     queueInstance = new Queue<BuildJobData>(BUILD_QUEUE_NAME, {

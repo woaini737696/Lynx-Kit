@@ -94,7 +94,7 @@ describe("publishBuildToStore", () => {
     expect(spies.insert).toHaveBeenCalledTimes(1);
     expect(spies.values).toHaveBeenCalledTimes(1);
     // 插入时应携带 creatorId 与 sessionId
-    const insertedValues = spies.values.mock.calls[0][0];
+    const insertedValues = spies.values.mock.calls[0]?.[0];
     expect(insertedValues).toMatchObject({
       sessionId: "session-1",
       creatorId: "user-1",

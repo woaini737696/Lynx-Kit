@@ -419,6 +419,8 @@ storeRoutes.post(
       })
       .returning();
 
+    if (!tx) throw new Error("创建交易失败");
+
     // TODO: 接入支付网关（Stripe / 支付宝 / 微信支付）
     // 当前模拟支付完成
     await db
@@ -497,6 +499,8 @@ storeRoutes.post(
         content: input.content,
       })
       .returning();
+
+    if (!review) throw new Error("创建评价失败");
 
     // 更新产品平均评分与评价数
     const newReviewCount = product.reviewCount + 1;

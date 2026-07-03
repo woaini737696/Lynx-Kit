@@ -19,7 +19,7 @@ export function useAuth() {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { user: u, token: t } = await authApi.login(email, password);
+    const { user: u, accessToken: t } = await authApi.login(email, password);
     await setAuthToken(t);
     setUser(u, t);
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -34,7 +34,7 @@ export function useAuth() {
       phone?: string;
       code?: string;
     }) => {
-      const { user: u, token: t } = await authApi.register(input);
+      const { user: u, accessToken: t } = await authApi.register(input);
       await setAuthToken(t);
       setUser(u, t);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

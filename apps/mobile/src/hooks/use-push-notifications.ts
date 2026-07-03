@@ -13,8 +13,12 @@ import { apiClient } from '../lib/api';
  * 仅在物理设备 + 已登录时生效，模拟器/未登录静默跳过。
  */
 export function usePushNotifications(enabled: boolean) {
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const notificationListener = useRef<Notifications.Subscription | undefined>(
+    undefined,
+  );
+  const responseListener = useRef<Notifications.Subscription | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     if (!enabled) return;
