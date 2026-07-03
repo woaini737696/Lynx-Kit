@@ -10,6 +10,7 @@ import {
 import { useAuthStore } from '@lynxkit/store';
 import { hydrateToken } from '../src/lib/storage';
 import { usePushNotifications } from '../src/hooks/use-push-notifications';
+import { ErrorBoundary } from '../src/components/error-boundary';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* preventAutoHideAsync 在已隐藏时可能抛错，忽略 */
@@ -70,6 +71,14 @@ function RootStack() {
         name="settings/profile"
         options={{ title: '编辑个人资料', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
       />
+      <Stack.Screen
+        name="settings/notifications"
+        options={{ title: '通知设置', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+      />
+      <Stack.Screen
+        name="settings/about"
+        options={{ title: '关于', headerShown: true, headerTintColor: '#F8FAFC', headerStyle: { backgroundColor: '#0F172A' } }}
+      />
       <Stack.Screen name="+not-found" />
     </Stack>
   );
@@ -93,8 +102,10 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar style="light" />
-      <RootStack />
+      <ErrorBoundary>
+        <StatusBar style="light" />
+        <RootStack />
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 }

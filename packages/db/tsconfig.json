@@ -10,6 +10,6 @@
     "module": "ESNext",
     "moduleResolution": "Bundler"
   },
-  "include": ["src/**/*", "drizzle.config.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "drizzle.config.ts", "drizzle"]
 }

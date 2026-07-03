@@ -23,12 +23,12 @@ export default function SettingsScreen() {
     {
       label: '通知设置',
       icon: Bell,
-      onPress: () => {},
+      onPress: () => router.push('/settings/notifications'),
     },
     {
       label: '关于 LynxKit',
       icon: Info,
-      onPress: () => {},
+      onPress: () => router.push('/settings/about'),
     },
   ];
 

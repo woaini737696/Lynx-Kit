@@ -150,7 +150,17 @@ function toErrorBody(err: unknown, c: Context): ErrorResponseBody {
  * Sentry 上报（懒加载，仅在 SENTRY_DSN 配置时启用）
  */
 let sentryInitialized = false;
-async function reportToSentry(err: unknown, c: Context): Promise<void> {
+
+/**
+ * 通用 Sentry 异常上报（不依赖 Hono Context）
+ *
+ * 供 telemetry 路由 / 外部调用方使用。
+ * 当 SENTRY_DSN 未配置时为 no-op。
+ */
+export async function captureException(
+  err: unknown,
+  extra?: Record<string, unknown>,
+): Promise<void> {
   if (!env.SENTRY_DSN) return;
   try {
     if (!sentryInitialized) {
@@ -159,16 +169,18 @@ async function reportToSentry(err: unknown, c: Context): Promise<void> {
       sentryInitialized = true;
     }
     const Sentry = await import("@sentry/node");
-    Sentry.captureException(err, {
-      extra: {
-        method: c.req.method,
-        path: c.req.path,
-        requestId: getRequestId(c),
-      },
-    });
+    Sentry.captureException(err, extra ? { extra } : undefined);
   } catch {
     // Sentry 上报失败不应影响错误响应
   }
+}
+
+async function reportToSentry(err: unknown, c: Context): Promise<void> {
+  await captureException(err, {
+    method: c.req.method,
+    path: c.req.path,
+    requestId: getRequestId(c),
+  });
 }
 
 /**

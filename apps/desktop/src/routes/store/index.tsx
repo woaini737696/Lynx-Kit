@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Search, Store as StoreIcon } from "lucide-react";
 import { ProductCard } from "@/components/store/product-card";
 import {
@@ -11,21 +12,22 @@ import { storeApi } from "@/lib/api";
 import { StoreCategory } from "@lynxkit/shared";
 import type { StoreProduct } from "@lynxkit/shared";
 
-const CATEGORIES: { value: StoreCategory | "all"; label: string }[] = [
-  { value: "all", label: "全部" },
-  { value: StoreCategory.SOCIAL, label: "社交" },
-  { value: StoreCategory.SYSTEM, label: "系统工具" },
-  { value: StoreCategory.WORKSTATION, label: "生产力" },
-  { value: StoreCategory.DATA, label: "数据分析" },
-  { value: StoreCategory.ADMIN, label: "后台管理" },
-  { value: StoreCategory.APP, label: "完整应用" },
-  { value: StoreCategory.MARKETING, label: "营销" },
-  { value: StoreCategory.HARDWARE, label: "硬件/IoT" },
-  { value: StoreCategory.AGENT, label: "AI Agent" },
-  { value: StoreCategory.WORKFLOW, label: "工作流" },
+const CATEGORIES: { value: StoreCategory | "all" }[] = [
+  { value: "all" },
+  { value: StoreCategory.SOCIAL },
+  { value: StoreCategory.SYSTEM },
+  { value: StoreCategory.WORKSTATION },
+  { value: StoreCategory.DATA },
+  { value: StoreCategory.ADMIN },
+  { value: StoreCategory.APP },
+  { value: StoreCategory.MARKETING },
+  { value: StoreCategory.HARDWARE },
+  { value: StoreCategory.AGENT },
+  { value: StoreCategory.WORKFLOW },
 ];
 
 export default function StorePage() {
+  const { t } = useTranslation();
   const [products, setProducts] = React.useState<StoreProduct[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [q, setQ] = React.useState("");
@@ -42,14 +44,14 @@ export default function StorePage() {
       setProducts(res.items);
     } catch (e) {
       toast({
-        title: "加载商店失败",
+        title: t("store.loadFailed"),
         description: e instanceof Error ? e.message : String(e),
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  }, [q, category]);
+  }, [q, category, t]);
 
   React.useEffect(() => {
     void load();
@@ -59,7 +61,7 @@ export default function StorePage() {
     <div className="mx-auto max-w-6xl px-6 py-8">
       <div className="mb-6 flex items-center gap-2">
         <StoreIcon className="h-6 w-6 text-lynx-500" />
-        <h1 className="text-2xl font-bold">LynxKit 商店</h1>
+        <h1 className="text-2xl font-bold">{t("store.title")}</h1>
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -68,7 +70,7 @@ export default function StorePage() {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="搜索产品..."
+            placeholder={t("store.searchPlaceholder")}
             className="pl-9"
           />
         </div>
@@ -83,7 +85,7 @@ export default function StorePage() {
                   : "rounded-full px-3 py-1 text-sm text-muted-foreground hover:bg-accent"
               }
             >
-              {c.label}
+              {t(`store.category.${c.value.toLowerCase()}`)}
             </button>
           ))}
         </div>
@@ -98,10 +100,11 @@ export default function StorePage() {
       ) : products.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center text-sm text-muted-foreground">
           <StoreIcon className="mb-3 h-10 w-10 opacity-30" />
-          暂无产品
+          {t("store.noProducts")}
           {category !== "all" && (
             <Badge variant="outline" className="mt-2">
-              分类：{CATEGORIES.find((c) => c.value === category)?.label}
+              {t("store.categoryLabel")}
+              {t(`store.category.${category.toLowerCase()}`)}
             </Badge>
           )}
         </div>

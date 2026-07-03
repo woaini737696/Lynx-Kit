@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   Hammer,
@@ -26,16 +27,16 @@ import type { BuildSession, BuildStatus } from "@lynxkit/shared";
 /** 状态映射 */
 const STATUS_META: Record<
   BuildStatus,
-  { label: string; variant: "default" | "secondary" | "destructive"; icon: React.ReactNode }
+  { variant: "default" | "secondary" | "destructive"; icon: React.ReactNode }
 > = {
-  draft: { label: "草稿", variant: "secondary", icon: <Clock className="h-3 w-3" /> },
-  clarifying: { label: "澄清中", variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
-  architecting: { label: "架构中", variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
-  developing: { label: "开发中", variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
-  testing: { label: "测试中", variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
-  deploying: { label: "部署中", variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
-  deployed: { label: "已部署", variant: "default", icon: <CheckCircle2 className="h-3 w-3" /> },
-  error: { label: "失败", variant: "destructive", icon: <AlertCircle className="h-3 w-3" /> },
+  draft: { variant: "secondary", icon: <Clock className="h-3 w-3" /> },
+  clarifying: { variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
+  architecting: { variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
+  developing: { variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
+  testing: { variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
+  deploying: { variant: "default", icon: <Loader2 className="h-3 w-3 animate-spin" /> },
+  deployed: { variant: "default", icon: <CheckCircle2 className="h-3 w-3" /> },
+  error: { variant: "destructive", icon: <AlertCircle className="h-3 w-3" /> },
 };
 
 /**
@@ -44,6 +45,7 @@ const STATUS_META: Record<
  * 显示当前用户的所有构建会话，支持进入控制台、删除。
  */
 export default function BuildListPage() {
+  const { t } = useTranslation();
   const { listSessions, reset } = useBuild();
   const [sessions, setSessions] = React.useState<BuildSession[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -55,14 +57,14 @@ export default function BuildListPage() {
       setSessions(list);
     } catch (e) {
       toast({
-        title: "加载构建列表失败",
+        title: t("build.loadListFailed"),
         description: e instanceof Error ? e.message : String(e),
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  }, [listSessions]);
+  }, [listSessions, t]);
 
   React.useEffect(() => {
     void load();
@@ -71,14 +73,14 @@ export default function BuildListPage() {
   }, []);
 
   const remove = async (id: string) => {
-    if (!confirm("确认删除此构建会话？此操作不可撤销。")) return;
+    if (!confirm(t("build.deleteConfirm"))) return;
     try {
       await buildApi.remove(id);
       setSessions((prev) => prev.filter((s) => s.id !== id));
-      toast({ title: "已删除", variant: "success" });
+      toast({ title: t("build.deleted"), variant: "success" });
     } catch (e) {
       toast({
-        title: "删除失败",
+        title: t("build.deleteFailed"),
         description: e instanceof Error ? e.message : String(e),
         variant: "destructive",
       });
@@ -90,12 +92,12 @@ export default function BuildListPage() {
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Hammer className="h-6 w-6 text-lynx-500" />
-          <h1 className="text-2xl font-bold">我的构建</h1>
+          <h1 className="text-2xl font-bold">{t("build.myBuilds")}</h1>
         </div>
         <Link to="/">
           <Button className="bg-lynx-500 text-white hover:bg-lynx-600">
             <Plus className="mr-2 h-4 w-4" />
-            新建构建
+            {t("build.newBuild")}
           </Button>
         </Link>
       </div>
@@ -110,13 +112,13 @@ export default function BuildListPage() {
         <Card>
           <CardContent className="flex flex-col items-center py-20 text-center">
             <Hammer className="mb-3 h-12 w-12 text-muted-foreground/40" />
-            <p className="text-base font-medium">还没有构建会话</p>
+            <p className="text-base font-medium">{t("build.empty")}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              在首页输入你的想法，AI 会帮你生成完整的 AI 产品
+              {t("build.emptySubtitle")}
             </p>
             <Link to="/">
               <Button className="mt-4 bg-lynx-500 text-white hover:bg-lynx-600">
-                开始构建
+                {t("build.startBuild")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -127,7 +129,7 @@ export default function BuildListPage() {
           {sessions.map((s) => {
             const meta = STATUS_META[s.status] ?? STATUS_META.draft;
             const userInput =
-              (s.config?.userInput as string) ?? (s.config?.input as string) ?? "(未命名)";
+              (s.config?.userInput as string) ?? (s.config?.input as string) ?? t("build.untitled");
             return (
               <Card key={s.id} className="transition hover:border-lynx-500/40">
                 <CardContent className="flex items-center justify-between gap-4 p-4">
@@ -136,7 +138,7 @@ export default function BuildListPage() {
                       <span className="truncate font-medium">{userInput}</span>
                       <Badge variant={meta.variant} className="gap-1">
                         {meta.icon}
-                        {meta.label}
+                        {t(`build.status.${s.status}`)}
                       </Badge>
                       <Badge variant="outline" className="text-[10px]">
                         v{s.version}
@@ -157,7 +159,7 @@ export default function BuildListPage() {
                   <div className="flex items-center gap-2">
                     <Link to={`/build/${s.id}`}>
                       <Button variant="outline" size="sm">
-                        进入控制台
+                        {t("build.enterConsole")}
                         <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                       </Button>
                     </Link>
@@ -165,7 +167,7 @@ export default function BuildListPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => void remove(s.id)}
-                      title="删除"
+                      title={t("build.delete")}
                     >
                       <XCircle className="h-4 w-4 text-destructive" />
                     </Button>

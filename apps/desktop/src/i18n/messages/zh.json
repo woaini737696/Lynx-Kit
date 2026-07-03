@@ -68,12 +68,50 @@
     "console": "控制台",
     "preview": "预览",
     "deploy": "部署",
-    "empty": "还没有构建会话"
+    "empty": "还没有构建会话",
+    "myBuilds": "我的构建",
+    "newBuild": "新建构建",
+    "startBuild": "开始构建",
+    "enterConsole": "进入控制台",
+    "loadListFailed": "加载构建列表失败",
+    "deleteConfirm": "确认删除此构建会话？此操作不可撤销。",
+    "deleted": "已删除",
+    "deleteFailed": "删除失败",
+    "delete": "删除",
+    "untitled": "(未命名)",
+    "emptySubtitle": "在首页输入你的想法，AI 会帮你生成完整的 AI 产品",
+    "status": {
+      "draft": "草稿",
+      "clarifying": "澄清中",
+      "architecting": "架构中",
+      "developing": "开发中",
+      "testing": "测试中",
+      "deploying": "部署中",
+      "deployed": "已部署",
+      "error": "失败"
+    }
   },
   "store": {
     "title": "LynxKit 商店",
     "search": "搜索应用…",
-    "tryDemo": "试用"
+    "tryDemo": "试用",
+    "loadFailed": "加载商店失败",
+    "searchPlaceholder": "搜索产品...",
+    "noProducts": "暂无产品",
+    "categoryLabel": "分类：",
+    "category": {
+      "all": "全部",
+      "social": "社交",
+      "system": "系统工具",
+      "workstation": "生产力",
+      "data": "数据分析",
+      "admin": "后台管理",
+      "app": "完整应用",
+      "marketing": "营销",
+      "hardware": "硬件/IoT",
+      "agent": "AI Agent",
+      "workflow": "工作流"
+    }
   },
   "creator": {
     "title": "创作者",

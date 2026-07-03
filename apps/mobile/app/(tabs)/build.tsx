@@ -1,10 +1,10 @@
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { BuildSession, BuildStatus } from '@lynxkit/shared';
 import { buildApi } from '../../src/lib/api';
 import { EmptyState } from '../../src/components/empty-state';
-import { Hammer } from 'lucide-react-native';
+import { Hammer, Trash2 } from 'lucide-react-native';
 
 const STATUS_LABEL: Record<BuildStatus, string> = {
   draft: '草稿',
@@ -29,10 +29,33 @@ const STATUS_COLOR: Record<BuildStatus, string> = {
 };
 
 export default function BuildListScreen() {
+  const queryClient = useQueryClient();
   const { data: sessions, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['builds', 'all'],
     queryFn: () => buildApi.list(),
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => buildApi.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['builds'] });
+    },
+  });
+
+  const handleDelete = (session: BuildSession) => {
+    Alert.alert(
+      '删除构建',
+      `确定要删除「${String(session.config?.name ?? session.productType)}」吗？`,
+      [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '删除',
+          style: 'destructive',
+          onPress: () => deleteMutation.mutate(session.id),
+        },
+      ],
+    );
+  };
 
   return (
     <View className="flex-1 bg-slate-950">
@@ -56,13 +79,19 @@ export default function BuildListScreen() {
             />
           ) : null
         }
-        renderItem={({ item }) => <BuildCard session={item} />}
+        renderItem={({ item }) => <BuildCard session={item} onDelete={() => handleDelete(item)} />}
       />
     </View>
   );
 }
 
-function BuildCard({ session }: { session: BuildSession }) {
+function BuildCard({
+  session,
+  onDelete,
+}: {
+  session: BuildSession;
+  onDelete: () => void;
+}) {
   const color = STATUS_COLOR[session.status] ?? '#64748B';
   return (
     <Pressable
@@ -80,10 +109,19 @@ function BuildCard({ session }: { session: BuildSession }) {
           </Text>
         </View>
       </View>
-      <Text className="text-xs text-slate-500">
-        版本 v{session.version} · 更新于{' '}
-        {new Date(session.updatedAt).toLocaleString()}
-      </Text>
+      <View className="flex-row items-center justify-between">
+        <Text className="text-xs text-slate-500">
+          版本 v{session.version} · 更新于{' '}
+          {new Date(session.updatedAt).toLocaleString()}
+        </Text>
+        <Pressable
+          onPress={onDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          className="active:opacity-50"
+        >
+          <Trash2 size={16} color="#EF4444" />
+        </Pressable>
+      </View>
     </Pressable>
   );
 }

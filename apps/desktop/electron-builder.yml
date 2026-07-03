@@ -32,14 +32,14 @@ nsis:
   shortcutName: LynxKit
 
 # 自动更新源：自建静态服务器（generic provider）
+# 部署在阿里云 ECS（47.119.185.135）nginx 端口 8090，零构建约束
 # 服务器目录结构：
-#   /lynxkit/latest.yml             # 最新版本元数据（electron-builder 自动生成）
-#   /lynxkit/LynxKit-Setup-x.y.z-x64.exe
-#   /lynxkit/LynxKit-x.y.z-x64.exe.blockmap
-# 发布命令：pnpm --filter @lynxkit/desktop dist --publish always
-# 上传：将 installer/ 目录下产物上传到服务器对应路径
+#   /var/www/lynxkit-updates/lynxkit/latest.yml   # 版本元数据
+#   /var/www/lynxkit-updates/lynxkit/LynxKit-Setup-x.y.z-x64.exe
+#   /var/www/lynxkit-updates/lynxkit/LynxKit-Setup-x.y.z-x64.exe.blockmap
+# 发布流程：本地构建 → scp 上传 installer/ 产物到服务器 → 更新 latest.yml
 # 运行时可通过环境变量 LYNXKIT_UPDATE_SERVER_URL 覆盖（见 electron/services/auto-updater.ts）
 publish:
   provider: generic
-  url: https://updates.lynxkit.com/lynxkit/
+  url: http://47.119.185.135:8090/lynxkit/
   channel: latest

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { captureError } from "@/lib/sentry";
 
 interface Props {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ interface State {
  *
  * 捕获子组件渲染错误，避免整个应用白屏/黑屏。
  * 显示错误信息 + 重试按钮。
+ * 通过 captureError 上报到 API → Sentry（DSN 驱动）。
  */
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -27,6 +29,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   override componentDidCatch(error: Error, info: React.ErrorInfo): void {
     console.error("[ErrorBoundary]", error, info.componentStack);
+    captureError(error, { componentStack: info.componentStack });
   }
 
   handleReset = () => {

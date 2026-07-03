@@ -14,9 +14,10 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "pnpm --filter @lynxkit/desktop build:electron && playwright test",
     "clean": "turbo run clean",
-    "db:push": "pnpm --filter @lynxkit/db db:push",
-    "db:migrate": "pnpm --filter @lynxkit/db db:migrate",
-    "db:studio": "pnpm --filter @lynxkit/db db:studio"
+    "db:push": "pnpm --filter @lynxkit/db push",
+    "db:migrate": "pnpm --filter @lynxkit/db run-migrate",
+    "db:generate": "pnpm --filter @lynxkit/db generate",
+    "db:studio": "pnpm --filter @lynxkit/db studio"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

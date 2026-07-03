@@ -68,12 +68,50 @@
     "console": "Console",
     "preview": "Preview",
     "deploy": "Deploy",
-    "empty": "No build sessions yet"
+    "empty": "No build sessions yet",
+    "myBuilds": "My builds",
+    "newBuild": "New build",
+    "startBuild": "Start building",
+    "enterConsole": "Open console",
+    "loadListFailed": "Failed to load build list",
+    "deleteConfirm": "Are you sure you want to delete this build session? This action cannot be undone.",
+    "deleted": "Deleted",
+    "deleteFailed": "Delete failed",
+    "delete": "Delete",
+    "untitled": "(Untitled)",
+    "emptySubtitle": "Enter your idea on the home page and AI will help you build a complete AI product",
+    "status": {
+      "draft": "Draft",
+      "clarifying": "Clarifying",
+      "architecting": "Architecting",
+      "developing": "Developing",
+      "testing": "Testing",
+      "deploying": "Deploying",
+      "deployed": "Deployed",
+      "error": "Failed"
+    }
   },
   "store": {
     "title": "LynxKit Store",
     "search": "Search apps…",
-    "tryDemo": "Try demo"
+    "tryDemo": "Try demo",
+    "loadFailed": "Failed to load store",
+    "searchPlaceholder": "Search products...",
+    "noProducts": "No products yet",
+    "categoryLabel": "Category: ",
+    "category": {
+      "all": "All",
+      "social": "Social",
+      "system": "System tools",
+      "workstation": "Productivity",
+      "data": "Data analysis",
+      "admin": "Admin",
+      "app": "Full app",
+      "marketing": "Marketing",
+      "hardware": "Hardware/IoT",
+      "agent": "AI Agent",
+      "workflow": "Workflow"
+    }
   },
   "creator": {
     "title": "Creator",

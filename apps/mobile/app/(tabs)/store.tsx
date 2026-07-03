@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { router } from 'expo-router';
@@ -12,7 +13,7 @@ import { StoreCategory, type StoreProduct } from '@lynxkit/shared';
 import { storeApi } from '../../src/lib/api';
 import { ProductCard } from '../../src/components/product-card';
 import { EmptyState } from '../../src/components/empty-state';
-import { Store } from 'lucide-react-native';
+import { Store, Search } from 'lucide-react-native';
 
 const CATEGORIES: { label: string; value: StoreCategory | null }[] = [
   { label: '全部', value: null },
@@ -32,12 +33,19 @@ const PAGE_SIZE = 10;
 
 export default function StoreScreen() {
   const [category, setCategory] = useState<StoreCategory | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ['store', category],
+      queryKey: ['store', category, debouncedSearch],
       queryFn: ({ pageParam = 1 }) =>
-        storeApi.list({ category: category ?? undefined, page: pageParam, pageSize: PAGE_SIZE }),
+        storeApi.list({ category: category ?? undefined, q: debouncedSearch || undefined, page: pageParam, pageSize: PAGE_SIZE }),
       getNextPageParam: (last) =>
         last.page < last.totalPages ? last.page + 1 : undefined,
       initialPageParam: 1,
@@ -50,6 +58,20 @@ export default function StoreScreen() {
     <View className="flex-1 bg-slate-950">
       <View className="px-4 pt-12 pb-3">
         <Text className="text-2xl font-bold text-white">AI 应用商店</Text>
+      </View>
+
+      <View className="px-4 pb-3">
+        <View className="flex-row items-center gap-2 rounded-xl bg-slate-800 px-3 py-2.5">
+          <Search size={18} color="#64748B" />
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="搜索应用、标签…"
+            placeholderTextColor="#64748B"
+            className="flex-1 text-sm text-white"
+            returnKeyType="search"
+          />
+        </View>
       </View>
 
       <FlatList

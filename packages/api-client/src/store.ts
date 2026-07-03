@@ -29,12 +29,13 @@ export class StoreApi {
 
   /** 分页浏览商店产品（后端用 GET + query） */
   async list(query: ListStoreQuery = {}): Promise<StoreListResult> {
-    // 后端 GET /store 接收 query 参数：page/pageSize/category/sort
+    // 后端 GET /store 接收 query 参数：page/pageSize/category/sort/q
     const params = new URLSearchParams();
     if (query.page) params.set("page", String(query.page));
     if (query.pageSize) params.set("pageSize", String(query.pageSize));
-    if ((query as any).category) params.set("category", (query as any).category);
-    if ((query as any).sort) params.set("sort", (query as any).sort);
+    if (query.category) params.set("category", query.category);
+    if (query.sort) params.set("sort", query.sort);
+    if (query.q) params.set("q", query.q);
     const qs = params.toString();
     const data = await this.client.get<{
       products: StoreProduct[];

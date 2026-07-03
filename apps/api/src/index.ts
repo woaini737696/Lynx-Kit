@@ -15,6 +15,7 @@
  *   /api/v1/store/*          商店（公开 + 部分 auth）
  *   /api/v1/creator/*        创作者中心（需 auth）
  *   /api/v1/system/*         系统（健康/模板/AI Provider/配置）
+ *   /api/v1/telemetry/*      遥测（错误/性能上报，公开）
  */
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -26,6 +27,7 @@ import { agentRoutes } from "./routes/agent.js";
 import { storeRoutes } from "./routes/store.js";
 import { creatorRoutes } from "./routes/creator.js";
 import { systemRoutes } from "./routes/system.js";
+import { telemetryRoutes } from "./routes/telemetry.js";
 
 import { errorHandler, registerErrorHandler } from "./middleware/error.js";
 import { authMiddleware } from "./middleware/auth.js";
@@ -95,6 +97,9 @@ v1.route("/creator", creatorRoutes);
 
 // 系统路由（公开）
 v1.route("/system", systemRoutes);
+
+// 遥测路由（公开，无需鉴权——客户端可在未登录时上报错误/性能）
+v1.route("/telemetry", telemetryRoutes);
 
 app.route("/api/v1", v1);
 

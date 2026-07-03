@@ -1,7 +1,7 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Star, Eye, ShoppingCart, ArrowLeft } from 'lucide-react-native';
+import { Star, Eye, ShoppingCart, ArrowLeft, Github } from 'lucide-react-native';
 import { storeApi } from '../../src/lib/api';
 import * as Haptics from 'expo-haptics';
 
@@ -26,7 +26,7 @@ export default function ProductDetailScreen() {
       storeApi.purchase({
         productId: id,
         type: 'purchase',
-        paymentMethod: 'stripe',
+        paymentMethod: 'alipay',
       }),
     onSuccess: () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -48,13 +48,26 @@ export default function ProductDetailScreen() {
           <ArrowLeft size={22} color="#F8FAFC" />
         </Pressable>
 
-        {/* 封面占位 */}
-        <View className="h-44 items-center justify-center rounded-2xl bg-lynx-500/20">
-          <Text className="text-5xl">📦</Text>
-        </View>
+        {/* 封面：优先使用 coverUrl，否则占位 emoji */}
+        {product.coverUrl ? (
+          <Image
+            source={{ uri: product.coverUrl }}
+            className="h-44 rounded-2xl"
+            resizeMode="cover"
+          />
+        ) : (
+          <View className="h-44 items-center justify-center rounded-2xl bg-lynx-500/20">
+            <Text className="text-5xl">📦</Text>
+          </View>
+        )}
 
         <View className="gap-2">
-          <Text className="text-xl font-bold text-white">{product.name}</Text>
+          <View className="flex-row items-center gap-2">
+            <Text className="text-xl font-bold text-white">{product.name}</Text>
+            <View className="rounded-full bg-slate-800 px-2 py-0.5">
+              <Text className="text-xs text-slate-400">v{product.version}</Text>
+            </View>
+          </View>
           <View className="flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">
               <Star size={14} color="#F59E0B" fill="#F59E0B" />
@@ -88,6 +101,16 @@ export default function ProductDetailScreen() {
             </View>
           ) : null}
         </View>
+
+        {product.repoUrl ? (
+          <Pressable
+            onPress={() => Linking.openURL(product.repoUrl!)}
+            className="flex-row items-center gap-2 self-start rounded-xl bg-slate-800 px-3 py-2 active:opacity-80"
+          >
+            <Github size={16} color="#FF6B35" />
+            <Text className="text-sm text-lynx-500">查看源码</Text>
+          </Pressable>
+        ) : null}
 
         <View className="gap-2">
           <Text className="text-base font-semibold text-slate-200">用户评价</Text>
