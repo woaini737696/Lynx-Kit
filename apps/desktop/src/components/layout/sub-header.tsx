@@ -2,18 +2,7 @@ import { PanelLeft } from "lucide-react";
 import { Button } from "@lynxkit/ui-web";
 import { useUIStore } from "@lynxkit/store";
 import { useLocation } from "react-router-dom";
-
-const TITLES: Record<string, string> = {
-  "/": "首页",
-  "/login": "登录",
-  "/register": "注册",
-  "/build": "构建",
-  "/store": "商店",
-  "/creator": "创作者中心",
-  "/settings": "设置",
-  "/settings/ai-models": "AI 模型配置",
-  "/settings/profile": "个人资料",
-};
+import { useTranslation } from "react-i18next";
 
 /**
  * 子顶栏
@@ -22,18 +11,33 @@ const TITLES: Record<string, string> = {
  * 主题切换与用户菜单已迁移至 TitleBar / Sidebar。
  */
 export function SubHeader() {
+  const { t } = useTranslation();
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
   const { pathname } = useLocation();
 
+  const titleMap: Record<string, string> = {
+    "/": t("nav.home"),
+    "/login": t("nav.login"),
+    "/register": t("auth.registerTitle"),
+    "/build": t("nav.build"),
+    "/store": t("nav.store"),
+    "/creator": t("nav.creatorCenter"),
+    "/settings": t("nav.settings"),
+    "/settings/ai-models": t("settings.aiModelsTitle"),
+    "/settings/profile": t("settings.profile"),
+    "/settings/notifications": t("settings.notificationsTitle"),
+    "/settings/about": t("settings.about"),
+  };
+
   const title =
-    TITLES[pathname] ??
+    titleMap[pathname] ??
     (pathname.startsWith("/build/")
-      ? "构建控制台"
+      ? t("build.consoleTitle")
       : pathname.startsWith("/store/")
-        ? "产品详情"
+        ? t("store.productDetail")
         : pathname.startsWith("/creator/")
-          ? "创作者中心"
-          : "LynxKit");
+          ? t("nav.creatorCenter")
+          : t("common.brand"));
 
   return (
     <header className="flex h-11 items-center gap-2 border-b border-border bg-background/80 px-3 backdrop-blur">
@@ -41,7 +45,7 @@ export function SubHeader() {
         variant="ghost"
         size="icon"
         onClick={toggleSidebar}
-        aria-label="切换侧边栏"
+        aria-label={t("common.close")}
         className="h-8 w-8"
       >
         <PanelLeft className="h-4 w-4" />

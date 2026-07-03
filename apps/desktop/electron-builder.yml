@@ -2,8 +2,8 @@
 # https://www.electron.build/configuration
 
 appId: com.lynxkit.desktop
-productName: LynxKit
-copyright: Copyright © 2026 LynxKit
+productName: 妙想
+copyright: Copyright © 2026 妙想
 
 directories:
   output: installer
@@ -21,7 +21,7 @@ extraMetadata:
 win:
   target:
     - nsis
-  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
+  artifactName: LynxKit-Setup-${version}-${arch}.${ext}
 
 nsis:
   oneClick: false
@@ -29,7 +29,7 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: LynxKit
+  shortcutName: 妙想
 
 # 自动更新源：自建静态服务器（generic provider）
 # 部署在阿里云 ECS nginx HTTPS，miaox.lynxdo.com 域名

@@ -71,7 +71,7 @@ export default function CreatorProductsPage() {
                 上架新产品
               </DialogTitle>
               <DialogDescription>
-                LynxKit 的产品通过 AI 构建流水线生成，请在构建会话完成部署后上架。
+                妙想 的产品通过 AI 构建流水线生成，请在构建会话完成部署后上架。
               </DialogDescription>
             </DialogHeader>
             <ol className="space-y-2 rounded-md border bg-muted/20 px-4 py-3 text-sm">

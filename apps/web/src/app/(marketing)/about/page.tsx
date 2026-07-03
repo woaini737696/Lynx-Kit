@@ -8,7 +8,7 @@ import { createMetadata } from "@/lib/seo";
 export const metadata: Metadata = createMetadata({
   title: "关于我们",
   description:
-    "LynxKit 是一支由 AI 爱好者组成的团队，致力于让每个人都能成为超级个体。",
+    "妙想 是一支由 AI 爱好者组成的团队，致力于让每个人都能成为超级个体。",
   path: "/about",
 });
 
@@ -40,14 +40,14 @@ export default function AboutPage() {
             <div className="mx-auto max-w-3xl text-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-lynx-500/30 bg-lynx-500/10 px-3 py-1 text-sm text-lynx-600 dark:text-lynx-400">
                 <Sparkles className="h-3.5 w-3.5" />
-                关于 LynxKit
+                关于 妙想
               </span>
               <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">
                 让人人都是造物主
               </h1>
               <p className="mt-4 text-lg text-muted-foreground">
                 我们相信 AI 时代的核心不是技术本身，而是把技术交到每个人手中。
-                LynxKit 是我们献给所有"想做点什么"的人的工具。
+                妙想 是我们献给所有"想做点什么"的人的工具。
               </p>
             </div>
           </div>

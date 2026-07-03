@@ -86,7 +86,7 @@ export default function AdminLayout({
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-lynx-500 text-white">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-lg font-bold tracking-tight">LynxKit</span>
+          <span className="text-lg font-bold tracking-tight">妙想</span>
           <Badge variant="secondary" className="ml-auto">
             {isSuper ? "超级" : "Admin"}
           </Badge>
@@ -117,7 +117,7 @@ export default function AdminLayout({
         </nav>
 
         <div className="border-t border-border p-3 text-xs text-muted-foreground">
-          LynxKit Admin v0.1.0
+          妙想 Admin v0.1.0
         </div>
       </aside>
 
@@ -129,7 +129,7 @@ export default function AdminLayout({
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-lynx-500 text-white">
               <Sparkles className="h-3.5 w-3.5" />
             </div>
-            <span className="text-sm font-bold tracking-tight">LynxKit</span>
+            <span className="text-sm font-bold tracking-tight">妙想</span>
             <Badge variant="secondary" className="ml-1">
               Admin
             </Badge>

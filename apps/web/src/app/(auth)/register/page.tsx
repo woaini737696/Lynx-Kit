@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import { Button, Input, Label, Separator } from "@lynxkit/ui-web";
 import { toast } from "@lynxkit/ui-web";
 import { useAuthStore } from "@lynxkit/store";
@@ -37,7 +37,7 @@ export default function RegisterPage() {
       login(res.accessToken, res.user);
       toast({
         title: "注册成功",
-        description: "欢迎加入 LynxKit，开始你的造物之旅",
+        description: "欢迎加入 妙想，开始你的造物之旅",
       });
       router.push("/store");
     } catch (err) {
@@ -53,15 +53,8 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <div className="lg:hidden mb-8 flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-lynx-500 to-lynx-600">
-          <Sparkles className="h-4 w-4 text-white" />
-        </span>
-        <span className="text-lg font-bold tracking-tight">LynxKit</span>
-      </div>
-
-      <h1 className="text-2xl font-bold tracking-tight">创建 LynxKit 账号</h1>
-      <p className="mt-1 text-sm text-muted-foreground">加入超级个体的行列</p>
+      <h1 className="text-center text-2xl font-bold tracking-tight">创建账号</h1>
+      <p className="mt-1 text-center text-sm text-muted-foreground">加入超级个体的行列</p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div className="space-y-1.5">

@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight } from "lucide-react";
 import { Button, Input, Label, Separator } from "@lynxkit/ui-web";
 import { toast } from "@lynxkit/ui-web";
 import { useAuthStore } from "@lynxkit/store";
@@ -53,41 +53,35 @@ export default function LoginPage() {
 
   return (
     <div>
-      {/* 标题 */}
-      <div className="lg:hidden mb-8 flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-lynx-500 to-lynx-600">
-          <Sparkles className="h-4 w-4 text-white" />
-        </span>
-        <span className="text-lg font-bold tracking-tight">LynxKit</span>
-      </div>
-
-      <h1 className="text-2xl font-bold tracking-tight">登录到 LynxKit</h1>
-      <p className="mt-1 text-sm text-muted-foreground">继续你的造物之旅</p>
+      <h1 className="text-center text-2xl font-bold tracking-tight">登录</h1>
+      <p className="mt-1 text-center text-sm text-muted-foreground">继续你的造物之旅</p>
 
       {/* Tab 切换 */}
-      <div className="mt-6 inline-flex rounded-lg border border-border bg-muted p-1 text-sm">
-        <button
-          type="button"
-          onClick={() => setMode("email")}
-          className={
-            mode === "email"
-              ? "rounded-md bg-background px-3 py-1.5 font-medium shadow-sm"
-              : "px-3 py-1.5 text-muted-foreground"
-          }
-        >
-          邮箱
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("phone")}
-          className={
-            mode === "phone"
-              ? "rounded-md bg-background px-3 py-1.5 font-medium shadow-sm"
-              : "px-3 py-1.5 text-muted-foreground"
-          }
-        >
-          手机号
-        </button>
+      <div className="mt-6 flex justify-center">
+        <div className="inline-flex rounded-lg border border-border bg-muted p-1 text-sm">
+          <button
+            type="button"
+            onClick={() => setMode("email")}
+            className={
+              mode === "email"
+                ? "rounded-md bg-background px-4 py-1.5 font-medium shadow-sm"
+                : "px-4 py-1.5 text-muted-foreground"
+            }
+          >
+            邮箱
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("phone")}
+            className={
+              mode === "phone"
+                ? "rounded-md bg-background px-4 py-1.5 font-medium shadow-sm"
+                : "px-4 py-1.5 text-muted-foreground"
+            }
+          >
+            手机号
+          </button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">

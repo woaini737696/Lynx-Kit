@@ -64,7 +64,7 @@ export function TitleBar() {
 
   return (
     <header
-      className="flex h-12 items-stretch justify-between border-b border-border bg-background/95 backdrop-blur"
+      className="relative z-50 flex h-12 items-stretch justify-between border-b border-border bg-background/95 backdrop-blur"
       style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
     >
       {/* 左侧：LOGO + 产品名称（放大显示，固定左上角） */}
@@ -74,7 +74,7 @@ export function TitleBar() {
         </div>
         <div className="flex flex-col leading-none">
           <span className="text-xl font-bold tracking-tight text-foreground">
-            LynxKit
+            妙想
           </span>
           <span className="text-[10px] text-muted-foreground">
             {t("common.tagline")}

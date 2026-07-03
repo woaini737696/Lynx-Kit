@@ -48,7 +48,7 @@ export function Navbar() {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-lynx-500 to-lynx-600 shadow-lg shadow-lynx-500/30">
             <Sparkles className="h-4 w-4 text-white" />
           </span>
-          <span className="text-lg font-bold tracking-tight">LynxKit</span>
+          <span className="text-lg font-bold tracking-tight">妙想</span>
         </Link>
 
         {/* Desktop nav */}

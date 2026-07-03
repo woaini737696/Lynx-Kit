@@ -9,7 +9,7 @@ import { STORE_PRODUCTS, STORE_CATEGORIES } from "@/components/store/data";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createMetadata({
-  title: "LynxKit 商店",
+  title: "妙想 商店",
   description:
     "由超级个体创造的 AI 应用商店 - 社交、CRM、BI、营销、IoT 等 8 大类 AI 应用任你挑选。",
   path: "/store",
@@ -30,7 +30,7 @@ export default function StorePage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-                LynxKit 商店
+                妙想 商店
               </h1>
               <p className="mt-4 text-lg text-muted-foreground">
                 由超级个体创造的 AI 应用，覆盖社交、CRM、BI、营销等 8 大场景

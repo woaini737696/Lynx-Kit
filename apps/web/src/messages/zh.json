@@ -1,7 +1,7 @@
 {
   "common": {
-    "brand": "LynxKit",
-    "tagline": "AI 时代，人人都是造物主",
+    "brand": "妙想",
+    "tagline": "从灵感到上线，全流程零门槛。",
     "description": "描述你的想法，AI 帮你从架构到代码再到部署一站完成。",
     "getStarted": "免费开始构建",
     "viewExamples": "查看示例",
@@ -78,7 +78,7 @@
     },
     "step3": {
       "title": "部署上架",
-      "desc": "一键部署到云端，并可发布到 LynxKit 商店"
+      "desc": "一键部署到云端，并可发布到 妙想 商店"
     }
   },
   "pricing": {
@@ -121,7 +121,7 @@
     "follow": "关注我们"
   },
   "store": {
-    "title": "LynxKit 商店",
+    "title": "妙想 商店",
     "subtitle": "由超级个体创造的 AI 应用",
     "search": "搜索应用…",
     "allCategories": "全部分类",
@@ -132,8 +132,8 @@
     "reviews": "评价"
   },
   "auth": {
-    "loginTitle": "登录到 LynxKit",
-    "registerTitle": "创建 LynxKit 账号",
+    "loginTitle": "登录到 妙想",
+    "registerTitle": "创建 妙想 账号",
     "email": "邮箱",
     "password": "密码",
     "phone": "手机号",

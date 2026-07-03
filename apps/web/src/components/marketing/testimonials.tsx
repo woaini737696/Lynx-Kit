@@ -15,7 +15,7 @@ const TESTIMONIALS: Testimonial[] = [
     avatar: "陈",
     rating: 5,
     content:
-      "LynxKit 让我用一句话就生成了一个完整的电商后台，从数据库到 UI 全自动。过去两周的工作量现在只要一下午。",
+      "妙想 让我用一句话就生成了一个完整的电商后台，从数据库到 UI 全自动。过去两周的工作量现在只要一下午。",
   },
   {
     name: "Linda Wang",
@@ -31,7 +31,7 @@ const TESTIMONIALS: Testimonial[] = [
     avatar: "张",
     rating: 5,
     content:
-      "上线一周内就发布了 3 个 AI 应用到商店，第一个已经开始有付费用户了。LynxKit 真的让超级个体成为可能。",
+      "上线一周内就发布了 3 个 AI 应用到商店，第一个已经开始有付费用户了。妙想 真的让超级个体成为可能。",
   },
 ];
 

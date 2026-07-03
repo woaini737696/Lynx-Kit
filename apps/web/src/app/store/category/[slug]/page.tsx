@@ -31,7 +31,7 @@ export async function generateMetadata({
     });
   }
   return createMetadata({
-    title: `${category.name} - LynxKit 商店`,
+    title: `${category.name} - 妙想 商店`,
     description: `浏览 ${category.name} 分类的 AI 应用，由超级个体创造。`,
     path: `/store/category/${slug}`,
   });

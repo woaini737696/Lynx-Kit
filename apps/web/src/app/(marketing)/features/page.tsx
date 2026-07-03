@@ -9,7 +9,7 @@ import { createMetadata } from "@/lib/seo";
 export const metadata: Metadata = createMetadata({
   title: "功能介绍",
   description:
-    "LynxKit 提供意图识别、架构生成、一键部署三大核心能力，9 层 Agent 流水线从一句话到上线。",
+    "妙想 提供意图识别、架构生成、一键部署三大核心能力，9 层 Agent 流水线从一句话到上线。",
   path: "/features",
 });
 
@@ -63,7 +63,7 @@ export default function FeaturesPage() {
                 进阶能力
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                LynxKit 不仅是代码生成器，更是完整的造物平台
+                妙想 不仅是代码生成器，更是完整的造物平台
               </p>
             </div>
 

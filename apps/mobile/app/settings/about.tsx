@@ -25,7 +25,7 @@ export default function AboutScreen() {
       <View className="gap-3 rounded-2xl bg-slate-800 p-4">
         <View className="flex-row items-center justify-between">
           <View className="gap-1">
-            <Text className="text-lg font-bold text-white">LynxKit</Text>
+            <Text className="text-lg font-bold text-white">妙想</Text>
             <Text className="text-xs text-slate-400">{t('about.tagline')}</Text>
           </View>
           <View className="rounded-full bg-lynx-500/20 px-3 py-1">

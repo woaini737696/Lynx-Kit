@@ -1,7 +1,7 @@
 {
   "common": {
-    "brand": "LynxKit",
-    "tagline": "AI App Builder",
+    "brand": "Miaoxiang",
+    "tagline": "From inspiration to launch, zero barrier.",
     "loading": "Loading…",
     "cancel": "Cancel",
     "save": "Save",
@@ -15,9 +15,11 @@
     "retry": "Retry"
   },
   "nav": {
+    "home": "Home",
     "build": "Build",
     "store": "Store",
     "creator": "Creator",
+    "creatorCenter": "Creator Center",
     "settings": "Settings",
     "login": "Log in",
     "logout": "Log out",
@@ -56,16 +58,64 @@
     "title": "Settings",
     "general": "General",
     "aiModels": "AI Models",
+    "aiModelsTitle": "AI Models",
+    "aiModelsDesc": "Configure API keys for DeepSeek / Kimi / Qwen / GLM providers",
     "profile": "Profile",
+    "profileDesc": "Manage account info, avatar and password",
     "notifications": "Notifications",
+    "notificationsTitle": "Notifications",
+    "notificationsDesc": "Build completion, system tray behavior",
     "about": "About",
+    "aboutDesc": "App version and update check",
     "language": "Language"
+  },
+  "profile": {
+    "basicInfo": "Basic info",
+    "updateAccount": "Update your account info",
+    "username": "Username",
+    "usernamePlaceholder": "Username",
+    "phonePlaceholder": "11-digit phone number",
+    "notSet": "Not set",
+    "noUpdates": "Nothing to update",
+    "updated": "Profile updated",
+    "saveFailed": "Save failed",
+    "saving": "Saving..."
+  },
+  "aiModels": {
+    "desc": "Configure API keys for model providers. The 9-layer Agent pipeline will use the default provider. Desktop supports local Ollama offline inference.",
+    "localOllama": "Local model (Ollama)",
+    "localOllamaDesc": "Detect local Ollama service, offline and private",
+    "recheck": "Recheck",
+    "detecting": "Detecting...",
+    "running": "Running",
+    "modelsCount": "{{count}} local models available",
+    "notRunning": "Not running",
+    "installOllama": "Please install and start Ollama",
+    "localModels": "Local models"
+  },
+  "notifications": {
+    "prefs": "Notification preferences",
+    "prefsDesc": "Choose notification types to receive",
+    "buildCompletedTitle": "Build completion",
+    "buildCompletedDesc": "Notify when the 9-layer Agent pipeline finishes",
+    "buildFailedTitle": "Build failure",
+    "buildFailedDesc": "Notify when any Agent fails",
+    "deploySuccessTitle": "Deploy success",
+    "deploySuccessDesc": "Notify when an app is deployed and accessible",
+    "systemTrayTitle": "System tray",
+    "systemTrayDesc": "Minimize to tray instead of quitting when closing the window",
+    "productUpdatesTitle": "Product updates",
+    "productUpdatesDesc": "Notify when followed store products update",
+    "enabled": "On",
+    "disabled": "Off",
+    "saved": "Saved"
   },
   "build": {
     "title": "Build",
     "newSession": "New build",
     "configure": "Configure",
     "console": "Console",
+    "consoleTitle": "Build Console",
     "preview": "Preview",
     "deploy": "Deploy",
     "empty": "No build sessions yet",
@@ -92,12 +142,13 @@
     }
   },
   "store": {
-    "title": "LynxKit Store",
+    "title": "Miaoxiang Store",
     "search": "Search apps…",
     "tryDemo": "Try demo",
     "loadFailed": "Failed to load store",
     "searchPlaceholder": "Search products...",
     "noProducts": "No products yet",
+    "productDetail": "Product details",
     "categoryLabel": "Category: ",
     "category": {
       "all": "All",
@@ -118,7 +169,7 @@
     "products": "My products"
   },
   "about": {
-    "description": "LynxKit is an all-in-one AI product building platform, from idea to release.",
+    "description": "Miaoxiang is an all-in-one AI product building platform, from idea to release.",
     "newVersion": "New version available",
     "downloading": "Downloading…",
     "checkUpdate": "Check for updates",

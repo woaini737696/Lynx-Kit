@@ -1,7 +1,7 @@
 {
   "common": {
-    "brand": "LynxKit",
-    "tagline": "In the AI era, everyone is a creator",
+    "brand": "Miaoxiang",
+    "tagline": "From inspiration to launch, zero barrier.",
     "description": "Describe your idea, AI takes you from architecture to code to deployment.",
     "getStarted": "Start building for free",
     "viewExamples": "View examples",
@@ -78,7 +78,7 @@
     },
     "step3": {
       "title": "Deploy & publish",
-      "desc": "One click to the cloud, then publish to the LynxKit store"
+      "desc": "One click to the cloud, then publish to the Miaoxiang store"
     }
   },
   "pricing": {
@@ -121,7 +121,7 @@
     "follow": "Follow us"
   },
   "store": {
-    "title": "LynxKit Store",
+    "title": "Miaoxiang Store",
     "subtitle": "AI apps built by super individuals",
     "search": "Search apps…",
     "allCategories": "All categories",
@@ -132,8 +132,8 @@
     "reviews": "Reviews"
   },
   "auth": {
-    "loginTitle": "Log in to LynxKit",
-    "registerTitle": "Create a LynxKit account",
+    "loginTitle": "Log in to Miaoxiang",
+    "registerTitle": "Create a Miaoxiang account",
     "email": "Email",
     "password": "Password",
     "phone": "Phone",

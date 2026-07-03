@@ -1,7 +1,7 @@
 {
   "common": {
-    "brand": "LynxKit",
-    "tagline": "AI Full-Stack Builder",
+    "brand": "Miaoxiang",
+    "tagline": "From inspiration to launch, zero barrier.",
     "loading": "Loading…",
     "cancel": "Cancel",
     "save": "Save",
@@ -187,13 +187,13 @@
     "aiModels": "AI Models",
     "profile": "Edit profile",
     "notifications": "Notifications",
-    "about": "About LynxKit",
+    "about": "About Miaoxiang",
     "language": "Language",
-    "aboutLynxKit": "About LynxKit"
+    "aboutLynxKit": "About Miaoxiang"
   },
   "about": {
-    "title": "About LynxKit",
-    "description": "LynxKit is an AI-driven full-stack application building platform that transforms natural language descriptions into deployable complete products through a 9-layer Agent pipeline.",
+    "title": "About Miaoxiang",
+    "description": "Miaoxiang is an AI-driven full-stack application building platform that transforms natural language descriptions into deployable complete products through a 9-layer Agent pipeline.",
     "tagline": "AI Full-Stack Builder",
     "checkUpdate": "Check for updates",
     "techStack": "Tech stack",

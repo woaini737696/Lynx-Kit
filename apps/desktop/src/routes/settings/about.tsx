@@ -99,7 +99,7 @@ export default function AboutPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base">LynxKit</CardTitle>
+              <CardTitle className="text-base">妙想</CardTitle>
               <CardDescription>{t("common.tagline")}</CardDescription>
             </div>
             <Badge variant="outline">v{APP_VERSION}</Badge>

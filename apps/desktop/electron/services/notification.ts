@@ -30,7 +30,7 @@ export function createTray(iconPath: string, onClick: () => void): Tray | null {
       { label: "退出", role: "quit" },
     ]);
 
-    tray.setToolTip("LynxKit - AI 产品构建器");
+    tray.setToolTip("妙想 - AI 产品构建器");
     tray.setContextMenu(menu);
     tray.on("click", () => onClick());
     return tray;
@@ -54,7 +54,7 @@ export function showNotification(
 /** 更新托盘提示文本 */
 export function setTrayLabel(label: string): void {
   if (tray) {
-    tray.setToolTip(`LynxKit - ${label}`);
+    tray.setToolTip(`妙想 - ${label}`);
   }
 }
 

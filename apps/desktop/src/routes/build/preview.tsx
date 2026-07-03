@@ -52,7 +52,7 @@ export default function HomePage() {
   const [count, setCount] = useState(0);
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold">Hello LynxKit</h1>
+      <h1 className="text-3xl font-bold">Hello 妙想</h1>
       <button onClick={() => setCount((c) => c + 1)}>
         点击 {count} 次
       </button>
@@ -79,7 +79,7 @@ app.listen(PORT, () => {
   },
   {
     path: "README.md",
-    content: `# LynxKit 生成应用
+    content: `# 妙想 生成应用
 
 由 9 层 Agent 流水线自动生成的 MVP 应用。
 

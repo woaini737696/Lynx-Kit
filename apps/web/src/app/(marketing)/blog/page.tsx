@@ -7,7 +7,7 @@ import { createMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createMetadata({
   title: "博客",
-  description: "LynxKit 团队博客 - AI 造物的最佳实践、案例与更新日志。",
+  description: "妙想 团队博客 - AI 造物的最佳实践、案例与更新日志。",
   path: "/blog",
 });
 
@@ -32,7 +32,7 @@ const POSTS: Post[] = [
   },
   {
     slug: "local-first-ai",
-    title: "本地优先 AI：用 Ollama 跑起 LynxKit",
+    title: "本地优先 AI：用 Ollama 跑起 妙想",
     excerpt:
       "隐私优先、离线可用 —— 本文介绍如何在桌面端通过 Ollama 接入本地大模型。",
     date: "2025-12-08",
@@ -41,9 +41,9 @@ const POSTS: Post[] = [
   },
   {
     slug: "store-launch",
-    title: "LynxKit 商店正式上线",
+    title: "妙想 商店正式上线",
     excerpt:
-      "经过三个月内测，LynxKit 商店现已正式开放。来看看前 100 个 AI 应用长什么样。",
+      "经过三个月内测，妙想 商店现已正式开放。来看看前 100 个 AI 应用长什么样。",
     date: "2025-11-28",
     category: "产品更新",
     readingTime: "5 分钟",
@@ -59,7 +59,7 @@ const POSTS: Post[] = [
   },
   {
     slug: "behind-the-scenes",
-    title: "幕后：LynxKit 团队的工作方式",
+    title: "幕后：妙想 团队的工作方式",
     excerpt: "我们如何在 4 个月内构建一个跨端 AI 造物平台？工具栈、协作流程与踩坑实录。",
     date: "2025-11-01",
     category: "团队",
@@ -84,7 +84,7 @@ export default function BlogPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-                LynxKit 博客
+                妙想 博客
               </h1>
               <p className="mt-4 text-lg text-muted-foreground">
                 AI 造物的最佳实践、案例与团队思考

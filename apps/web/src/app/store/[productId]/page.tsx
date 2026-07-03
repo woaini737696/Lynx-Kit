@@ -203,7 +203,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                     <div className="flex-1">
                       <p className="font-semibold">{product.creator.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        LynxKit 认证创作者
+                        妙想 认证创作者
                       </p>
                     </div>
                     <Button asChild variant="outline" size="sm">
@@ -240,11 +240,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 <div className="prose prose-sm mt-4 max-w-none text-muted-foreground">
                   <p>{product.description}</p>
                   <p className="mt-3">
-                    这是一款由 LynxKit 平台生成的 AI 应用，使用 Next.js + Hono +
+                    这是一款由 妙想 平台生成的 AI 应用，使用 Next.js + Hono +
                     PostgreSQL 构建，开箱即用。源代码可在购买后导出，便于二次开发。
                   </p>
                   <ul className="mt-3 list-disc pl-5">
-                    <li>基于 LynxKit 9 层 Agent 流水线生成</li>
+                    <li>基于 妙想 9 层 Agent 流水线生成</li>
                     <li>TypeScript strict + shadcn/ui 组件库</li>
                     <li>Docker 一键部署，自动 HTTPS</li>
                     <li>30 天无理由退款保证</li>

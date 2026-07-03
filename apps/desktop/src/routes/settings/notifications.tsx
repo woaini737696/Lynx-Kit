@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Bell, Check } from "lucide-react";
 import {
   Card,
@@ -21,15 +22,10 @@ const DEFAULT_PREFS = {
   productUpdates: false,
 };
 
-const PREF_META: { key: keyof typeof DEFAULT_PREFS; title: string; desc: string }[] = [
-  { key: "buildCompleted", title: "构建完成通知", desc: "9 层 Agent 流水线跑完时提醒" },
-  { key: "buildFailed", title: "构建失败通知", desc: "任一 Agent 报错中断时提醒" },
-  { key: "deploySuccess", title: "部署成功通知", desc: "应用部署完成可访问时提醒" },
-  { key: "systemTray", title: "系统托盘驻留", desc: "关闭窗口时最小化到托盘而非退出" },
-  { key: "productUpdates", title: "产品更新通知", desc: "关注的商店产品更新时提醒" },
-];
+type PrefKey = keyof typeof DEFAULT_PREFS;
 
 export default function NotificationsPage() {
+  const { t } = useTranslation();
   const [prefs, setPrefs] = React.useState(DEFAULT_PREFS);
 
   React.useEffect(() => {
@@ -41,7 +37,15 @@ export default function NotificationsPage() {
     }
   }, []);
 
-  const toggle = (key: keyof typeof DEFAULT_PREFS) => {
+  const prefMeta: { key: PrefKey; title: string; desc: string }[] = [
+    { key: "buildCompleted", title: t("notifications.buildCompletedTitle"), desc: t("notifications.buildCompletedDesc") },
+    { key: "buildFailed", title: t("notifications.buildFailedTitle"), desc: t("notifications.buildFailedDesc") },
+    { key: "deploySuccess", title: t("notifications.deploySuccessTitle"), desc: t("notifications.deploySuccessDesc") },
+    { key: "systemTray", title: t("notifications.systemTrayTitle"), desc: t("notifications.systemTrayDesc") },
+    { key: "productUpdates", title: t("notifications.productUpdatesTitle"), desc: t("notifications.productUpdatesDesc") },
+  ];
+
+  const toggle = (key: PrefKey) => {
     const next = { ...prefs, [key]: !prefs[key] };
     setPrefs(next);
     try {
@@ -49,23 +53,23 @@ export default function NotificationsPage() {
     } catch {
       // ignore
     }
-    toast({ title: "已保存", variant: "success" });
+    toast({ title: t("notifications.saved"), variant: "success" });
   };
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
       <div className="mb-6 flex items-center gap-2">
         <Bell className="h-6 w-6 text-lynx-500" />
-        <h1 className="text-2xl font-bold">通知设置</h1>
+        <h1 className="text-2xl font-bold">{t("settings.notificationsTitle")}</h1>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">通知偏好</CardTitle>
-          <CardDescription>选择需要接收的通知类型</CardDescription>
+          <CardTitle className="text-base">{t("notifications.prefs")}</CardTitle>
+          <CardDescription>{t("notifications.prefsDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="divide-y">
-          {PREF_META.map((p) => {
+          {prefMeta.map((p) => {
             const on = prefs[p.key];
             return (
               <div key={p.key} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
@@ -82,10 +86,10 @@ export default function NotificationsPage() {
                   {on ? (
                     <>
                       <Check className="mr-1.5 h-3.5 w-3.5" />
-                      已开启
+                      {t("notifications.enabled")}
                     </>
                   ) : (
-                    "已关闭"
+                    t("notifications.disabled")
                   )}
                 </Button>
               </div>

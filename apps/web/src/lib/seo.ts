@@ -8,14 +8,14 @@ import type { Metadata } from "next";
  */
 
 const SITE_URL = process.env.NEXT_PUBLIC_WEB_URL ?? "https://lynxkit.com";
-const SITE_NAME = "LynxKit";
+const SITE_NAME = "妙想";
 const DEFAULT_OG_IMAGE = "/og.png";
 
 export const siteConfig = {
   name: SITE_NAME,
   url: SITE_URL,
   description:
-    "LynxKit 是 AI 时代的超级个体造物平台 —— 描述你的想法，AI 帮你从架构到代码再到部署一站完成。",
+    "妙想是 AI 时代的超级个体造物平台 —— 描述你的想法，AI 帮你从架构到代码再到部署一站完成。",
   ogImage: DEFAULT_OG_IMAGE,
 };
 
@@ -77,7 +77,7 @@ export const rootMetadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: [
-    "LynxKit",
+    "妙想",
     "AI 构建",
     "AI 造物",
     "无代码",

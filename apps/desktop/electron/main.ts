@@ -45,7 +45,7 @@ function createWindow(): void {
     minHeight: 600,
     show: false,
     backgroundColor: "#ffffff",
-    title: "LynxKit",
+    title: "妙想",
     frame: false,
     titleBarStyle: "hidden",
     autoHideMenuBar: true,

@@ -465,7 +465,7 @@ function buildChatSystemPrompt(session: {
   config: unknown;
 }): string {
   return [
-    "你是 LynxKit 的 AI 助手，正在协助用户修改一个已生成的 AI 应用。",
+    "你是 妙想 的 AI 助手，正在协助用户修改一个已生成的 AI 应用。",
     `产品类型：${session.productType}`,
     `原始需求：${session.description ?? "（未提供）"}`,
     `当前配置：${JSON.stringify(session.config)}`,

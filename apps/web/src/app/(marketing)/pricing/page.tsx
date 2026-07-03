@@ -8,7 +8,7 @@ import { createMetadata } from "@/lib/seo";
 export const metadata: Metadata = createMetadata({
   title: "定价",
   description:
-    "LynxKit 提供免费、专业、团队三档定价方案，从个人尝鲜到团队协作，按需选择。",
+    "妙想 提供免费、专业、团队三档定价方案，从个人尝鲜到团队协作，按需选择。",
   path: "/pricing",
 });
 

@@ -202,7 +202,7 @@ systemRoutes.get("/config", async (c) => {
   // 返回不影响安全的公开配置
   return c.json({
     platform: {
-      name: "LynxKit",
+      name: "妙想",
       version: "0.1.0",
       environment: process.env.NODE_ENV ?? "development",
     },

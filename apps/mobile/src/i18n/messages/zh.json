@@ -1,7 +1,7 @@
 {
   "common": {
-    "brand": "LynxKit",
-    "tagline": "AI 全栈构建平台",
+    "brand": "妙想",
+    "tagline": "从灵感到上线，全流程零门槛。",
     "loading": "加载中…",
     "cancel": "取消",
     "save": "保存",
@@ -187,13 +187,13 @@
     "aiModels": "AI 模型配置",
     "profile": "编辑个人资料",
     "notifications": "通知设置",
-    "about": "关于 LynxKit",
+    "about": "关于妙想",
     "language": "语言",
-    "aboutLynxKit": "关于 LynxKit"
+    "aboutLynxKit": "关于妙想"
   },
   "about": {
-    "title": "关于 LynxKit",
-    "description": "LynxKit 是一个 AI 驱动的全栈应用构建平台，通过 9 层 Agent 流水线，将自然语言描述转化为可部署的完整产品。",
+    "title": "关于妙想",
+    "description": "妙想是一个 AI 驱动的全栈应用构建平台，通过 9 层 Agent 流水线，将自然语言描述转化为可部署的完整产品。",
     "tagline": "AI 全栈构建平台",
     "checkUpdate": "检查更新",
     "techStack": "技术栈",

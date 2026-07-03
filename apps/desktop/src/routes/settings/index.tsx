@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Cpu,
   User,
@@ -11,42 +12,44 @@ import {
   CardContent,
 } from "@lynxkit/ui-web";
 
-const SECTIONS = [
-  {
-    href: "/settings/ai-models",
-    icon: Cpu,
-    title: "AI 模型配置",
-    desc: "配置 DeepSeek / Kimi / Qwen / GLM 等模型供应商的 API Key",
-  },
-  {
-    href: "/settings/profile",
-    icon: User,
-    title: "个人资料",
-    desc: "管理账号信息、头像与密码",
-  },
-  {
-    href: "/settings/notifications",
-    icon: Bell,
-    title: "通知设置",
-    desc: "构建完成通知、系统托盘行为",
-  },
-  {
-    href: "/settings/about",
-    icon: Info,
-    title: "关于",
-    desc: "应用版本与更新检查",
-  },
-] as const;
-
 export default function SettingsPage() {
+  const { t } = useTranslation();
+
+  const sections = [
+    {
+      href: "/settings/ai-models",
+      icon: Cpu,
+      title: t("settings.aiModelsTitle"),
+      desc: t("settings.aiModelsDesc"),
+    },
+    {
+      href: "/settings/profile",
+      icon: User,
+      title: t("settings.profile"),
+      desc: t("settings.profileDesc"),
+    },
+    {
+      href: "/settings/notifications",
+      icon: Bell,
+      title: t("settings.notificationsTitle"),
+      desc: t("settings.notificationsDesc"),
+    },
+    {
+      href: "/settings/about",
+      icon: Info,
+      title: t("settings.about"),
+      desc: t("settings.aboutDesc"),
+    },
+  ] as const;
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-8">
-      <h1 className="mb-6 text-2xl font-bold">设置</h1>
+      <h1 className="mb-6 text-2xl font-bold">{t("settings.title")}</h1>
       <div className="space-y-2">
-        {SECTIONS.map((s) => {
+        {sections.map((s) => {
           const Icon = s.icon;
           return (
-            <Link key={s.title} to={s.href}>
+            <Link key={s.href} to={s.href}>
               <Card className="cursor-pointer transition hover:border-lynx-500/50">
                 <CardContent className="flex items-center gap-4 p-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-lynx-500/10 text-lynx-500">

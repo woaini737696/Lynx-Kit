@@ -24,7 +24,7 @@ const STEPS = [
   {
     icon: <Rocket className="h-5 w-5" />,
     title: "部署上架",
-    desc: "一键部署到云端，并可发布到 LynxKit 商店",
+    desc: "一键部署到云端，并可发布到妙想商店",
     step: "03",
   },
 ];

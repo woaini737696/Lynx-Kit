@@ -1,7 +1,7 @@
 {
   "common": {
-    "brand": "LynxKit",
-    "tagline": "AI 产品构建器",
+    "brand": "妙想",
+    "tagline": "从灵感到上线，全流程零门槛。",
     "loading": "加载中…",
     "cancel": "取消",
     "save": "保存",
@@ -15,9 +15,11 @@
     "retry": "重试"
   },
   "nav": {
+    "home": "首页",
     "build": "构建",
     "store": "商店",
     "creator": "创作者",
+    "creatorCenter": "创作者中心",
     "settings": "设置",
     "login": "登录",
     "logout": "退出登录",
@@ -56,16 +58,64 @@
     "title": "设置",
     "general": "通用",
     "aiModels": "AI 模型",
+    "aiModelsTitle": "AI 模型配置",
+    "aiModelsDesc": "配置 DeepSeek / Kimi / Qwen / GLM 等模型供应商的 API Key",
     "profile": "个人资料",
+    "profileDesc": "管理账号信息、头像与密码",
     "notifications": "通知",
+    "notificationsTitle": "通知设置",
+    "notificationsDesc": "构建完成通知、系统托盘行为",
     "about": "关于",
+    "aboutDesc": "应用版本与更新检查",
     "language": "语言"
+  },
+  "profile": {
+    "basicInfo": "基本信息",
+    "updateAccount": "更新你的账号信息",
+    "username": "用户名",
+    "usernamePlaceholder": "用户名",
+    "phonePlaceholder": "11 位手机号",
+    "notSet": "未设置",
+    "noUpdates": "没有需要更新的字段",
+    "updated": "资料已更新",
+    "saveFailed": "保存失败",
+    "saving": "保存中..."
+  },
+  "aiModels": {
+    "desc": "配置各模型供应商的 API Key，9 层 Agent 将按默认 Provider 调用。桌面端支持本地 Ollama 离线推理。",
+    "localOllama": "本地模型（Ollama）",
+    "localOllamaDesc": "检测本机 Ollama 服务，离线可用，数据不出本机",
+    "recheck": "重新检测",
+    "detecting": "检测中...",
+    "running": "运行中",
+    "modelsCount": "{{count}} 个本地模型可用",
+    "notRunning": "未运行",
+    "installOllama": "请安装并启动 Ollama",
+    "localModels": "本地模型"
+  },
+  "notifications": {
+    "prefs": "通知偏好",
+    "prefsDesc": "选择需要接收的通知类型",
+    "buildCompletedTitle": "构建完成通知",
+    "buildCompletedDesc": "9 层 Agent 流水线跑完时提醒",
+    "buildFailedTitle": "构建失败通知",
+    "buildFailedDesc": "任一 Agent 报错中断时提醒",
+    "deploySuccessTitle": "部署成功通知",
+    "deploySuccessDesc": "应用部署完成可访问时提醒",
+    "systemTrayTitle": "系统托盘驻留",
+    "systemTrayDesc": "关闭窗口时最小化到托盘而非退出",
+    "productUpdatesTitle": "产品更新通知",
+    "productUpdatesDesc": "关注的商店产品更新时提醒",
+    "enabled": "已开启",
+    "disabled": "已关闭",
+    "saved": "已保存"
   },
   "build": {
     "title": "构建",
     "newSession": "新建构建",
     "configure": "配置",
     "console": "控制台",
+    "consoleTitle": "构建控制台",
     "preview": "预览",
     "deploy": "部署",
     "empty": "还没有构建会话",
@@ -92,12 +142,13 @@
     }
   },
   "store": {
-    "title": "LynxKit 商店",
+    "title": "妙想商店",
     "search": "搜索应用…",
     "tryDemo": "试用",
     "loadFailed": "加载商店失败",
     "searchPlaceholder": "搜索产品...",
     "noProducts": "暂无产品",
+    "productDetail": "产品详情",
     "categoryLabel": "分类：",
     "category": {
       "all": "全部",
@@ -118,7 +169,7 @@
     "products": "我的产品"
   },
   "about": {
-    "description": "LynxKit 是一站式 AI 产品构建平台，从需求到上架全链路贯通。",
+    "description": "妙想是一站式 AI 产品构建平台，从需求到上架全链路贯通。",
     "newVersion": "发现新版本",
     "downloading": "下载中…",
     "checkUpdate": "检查更新",

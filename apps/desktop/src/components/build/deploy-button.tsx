@@ -37,7 +37,7 @@ export function DeployButton({
       onDeployed?.(final.deployUrl ?? "");
       toast({ title: "部署完成 🚀", variant: "success" });
       electronAPI?.notification.notifyBuildDone(
-        "LynxKit 构建完成",
+        "妙想 构建完成",
         "你的 AI 产品已部署上线，点击查看",
       );
     } catch (e) {

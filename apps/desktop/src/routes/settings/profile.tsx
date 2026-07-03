@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { User, Mail, Phone, Save, Loader2 } from "lucide-react";
 import {
   Card,
@@ -19,6 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { authApi } from "@/lib/api";
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, updateProfile: updateLocalProfile } = useAuthStore();
   const { fetchMe } = useAuth();
   const [name, setName] = React.useState(user?.name ?? "");
@@ -42,7 +44,7 @@ export default function ProfilePage() {
     if (phone !== user?.phone) patch.phone = phone || undefined;
 
     if (Object.keys(patch).length === 0) {
-      toast({ title: "没有需要更新的字段", variant: "default" });
+      toast({ title: t("profile.noUpdates"), variant: "default" });
       return;
     }
 
@@ -55,10 +57,10 @@ export default function ProfilePage() {
         phone: updated.phone,
         avatar: updated.avatar,
       });
-      toast({ title: "资料已更新", variant: "success" });
+      toast({ title: t("profile.updated"), variant: "success" });
     } catch (e) {
       toast({
-        title: "保存失败",
+        title: t("profile.saveFailed"),
         description: e instanceof Error ? e.message : String(e),
         variant: "destructive",
       });
@@ -69,12 +71,12 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="mb-6 text-2xl font-bold">个人资料</h1>
+      <h1 className="mb-6 text-2xl font-bold">{t("settings.profile")}</h1>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">基本信息</CardTitle>
-          <CardDescription>更新你的账号信息</CardDescription>
+          <CardTitle className="text-base">{t("profile.basicInfo")}</CardTitle>
+          <CardDescription>{t("profile.updateAccount")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
@@ -84,7 +86,7 @@ export default function ProfilePage() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{name || "未设置"}</p>
+              <p className="font-medium">{name || t("profile.notSet")}</p>
               <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
           </div>
@@ -92,15 +94,19 @@ export default function ProfilePage() {
           <div className="space-y-1.5">
             <Label className="flex items-center gap-1.5 text-xs">
               <User className="h-3.5 w-3.5 text-muted-foreground" />
-              用户名
+              {t("profile.username")}
             </Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="用户名" />
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t("profile.usernamePlaceholder")}
+            />
           </div>
 
           <div className="space-y-1.5">
             <Label className="flex items-center gap-1.5 text-xs">
               <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-              邮箱
+              {t("auth.email")}
             </Label>
             <Input value={user?.email ?? ""} disabled className="bg-muted/30" />
           </div>
@@ -108,9 +114,13 @@ export default function ProfilePage() {
           <div className="space-y-1.5">
             <Label className="flex items-center gap-1.5 text-xs">
               <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-              手机号
+              {t("auth.phone")}
             </Label>
-            <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="11 位手机号" />
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder={t("profile.phonePlaceholder")}
+            />
           </div>
         </CardContent>
         <CardFooter className="justify-end border-t bg-muted/30 py-3">
@@ -120,7 +130,7 @@ export default function ProfilePage() {
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            {saving ? "保存中..." : "保存"}
+            {saving ? t("profile.saving") : t("common.save")}
           </Button>
         </CardFooter>
       </Card>

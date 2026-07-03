@@ -15,13 +15,13 @@ import { useAuthStore } from "@lynxkit/store";
 /**
  * api-client 单例
  *
- * 桌面端通过 @lynxkit/api-client 调用 LynxKit Hono API（默认 http://localhost:8787）。
+ * 桌面端通过 @lynxkit/api-client 调用 LynxKit Hono API（默认线上 https://miaox.lynxdo.com/api）。
  * JWT 从 @lynxkit/store 的 auth-store 读取并注入 Authorization 头。
- * 后端地址可通过 VITE_API_URL 环境变量覆盖。
+ * 后端地址可通过 VITE_API_URL 环境变量覆盖（开发时本地启动 API 用 http://localhost:8787/api）。
  */
 
 const API_BASE_URL =
-  (import.meta as any).env?.VITE_API_URL ?? "http://localhost:8787/api";
+  (import.meta as any).env?.VITE_API_URL ?? "https://miaox.lynxdo.com/api";
 
 let client: ApiClient | null = null;
 
@@ -31,10 +31,14 @@ function getClient(): ApiClient {
     baseUrl: API_BASE_URL,
     getToken: () => useAuthStore.getState().token,
     onError: (error: ApiError) => {
-      // 401 → 清空登录态，提示重新登录
+      // 401 处理：
+      // - 若本地仍有 token，说明 token 已过期 → 清空登录态并提示
+      // - 若本地无 token，说明只是未登录访问受保护资源（如 /auth/me 探测）→ 静默
       if (error.status === 401) {
-        useAuthStore.getState().logout();
-        toast({ title: "登录已过期，请重新登录", variant: "destructive" });
+        if (useAuthStore.getState().token) {
+          useAuthStore.getState().logout();
+          toast({ title: "登录已过期，请重新登录", variant: "destructive" });
+        }
         return;
       }
       // 其它错误统一提示（调用方仍可自行 catch）

@@ -46,7 +46,7 @@ export default function LoginScreen() {
         <View className="w-full max-w-sm gap-6">
           <View className="items-center gap-2">
             <Text className="text-4xl">🦊</Text>
-            <Text className="text-2xl font-bold text-white">LynxKit</Text>
+            <Text className="text-2xl font-bold text-white">妙想</Text>
             <Text className="text-sm text-slate-400">{t('auth.loginSubtitle')}</Text>
           </View>
 

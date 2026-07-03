@@ -51,7 +51,7 @@ export function Footer() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-lynx-500 to-lynx-600">
                 <Sparkles className="h-4 w-4 text-white" />
               </span>
-              <span className="text-lg font-bold tracking-tight">LynxKit</span>
+              <span className="text-lg font-bold tracking-tight">妙想</span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-muted-foreground">
               AI 时代，人人都是造物主。从一句话到上线，只需一杯咖啡的时间。
@@ -107,7 +107,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} LynxKit. 保留所有权利。
+            © {new Date().getFullYear()} 妙想. 保留所有权利。
           </p>
           <p className="text-xs text-muted-foreground">
             Made with <span className="text-lynx-500">♥</span> by super

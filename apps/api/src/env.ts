@@ -26,7 +26,7 @@ const envSchema = z.object({
   /** 允许的 CORS 来源（逗号分隔） */
   CORS_ORIGINS: z
     .string()
-    .default("http://localhost:3000,http://localhost:5173,capacitor://localhost,http://localhost"),
+    .default("https://miaox.lynxdo.com,http://localhost:3000,http://localhost:5173,capacitor://localhost,http://localhost"),
   /** KMS 主密钥（AES-256-GCM，64 位十六进制 = 32 字节） */
   KMS_MASTER_KEY: z.string().min(64),
 
