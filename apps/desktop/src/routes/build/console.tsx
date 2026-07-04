@@ -72,11 +72,13 @@ export default function BuildConsolePage() {
     loadSession,
     loadLogs,
     startBuildFlow,
+    cancelBuild,
     reset,
   } = useBuild();
 
   const [loading, setLoading] = React.useState(true);
   const [starting, setStarting] = React.useState(false);
+  const [cancelling, setCancelling] = React.useState(false);
   const logEndRef = React.useRef<HTMLDivElement>(null);
 
   // 加载会话详情 + 历史日志
@@ -118,6 +120,16 @@ export default function BuildConsolePage() {
       });
     } finally {
       setStarting(false);
+    }
+  };
+
+  const onCancel = async () => {
+    if (!confirm("确认取消当前构建？已生成的进度将被标记为失败。")) return;
+    setCancelling(true);
+    try {
+      await cancelBuild(sessionId);
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -177,9 +189,18 @@ export default function BuildConsolePage() {
             </Button>
           </Link>
           {isBuilding ? (
-            <Button variant="destructive" size="sm" disabled>
-              <Square className="mr-1.5 h-4 w-4" />
-              构建中
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => void onCancel()}
+              disabled={cancelling}
+            >
+              {cancelling ? (
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+              ) : (
+                <Square className="mr-1.5 h-4 w-4" />
+              )}
+              {cancelling ? "取消中..." : "停止构建"}
             </Button>
           ) : (
             <Button

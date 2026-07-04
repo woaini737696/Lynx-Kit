@@ -5,6 +5,7 @@ import {
   ipcMain,
   shell,
   Menu,
+  session,
   type Tray,
 } from "electron";
 import { fileURLToPath } from "node:url";
@@ -36,6 +37,26 @@ function logDebug(msg: string): void {
 
 let win: BrowserWindow | null = null;
 let tray: Tray | null = null;
+
+/**
+ * 修复桌面端 CORS 问题
+ *
+ * Electron 在 loadFile 模式下 origin 为 file://，不在服务器 CORS 白名单中。
+ * 通过 onBeforeSendHeaders 将 file:// origin 替换为 http://localhost，
+ * 使请求能通过后端 CORS 检查。
+ */
+function fixCorsForFileProtocol(): void {
+  session.defaultSession.webRequest.onBeforeSendHeaders(
+    { urls: ["https://*/*", "http://*/*"] },
+    (details, callback) => {
+      // file:// 协议的请求 Origin 为空或 file://，替换为允许的 origin
+      if (!details.requestHeaders["Origin"] || details.requestHeaders["Origin"] === "file://") {
+        details.requestHeaders["Origin"] = "http://localhost";
+      }
+      callback({ requestHeaders: details.requestHeaders });
+    },
+  );
+}
 
 function createWindow(): void {
   win = new BrowserWindow({
@@ -209,6 +230,9 @@ if (!gotLock) {
   app.whenReady().then(() => {
     // 开发态隐藏默认菜单
     if (isDev) Menu.setApplicationMenu(null);
+
+    // 修复 file:// 协议下的 CORS 问题（loadFile 模式必需）
+    fixCorsForFileProtocol();
 
     registerIpcHandlers();
     createWindow();

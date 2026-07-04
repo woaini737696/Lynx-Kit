@@ -141,6 +141,34 @@ export function useBuild() {
     [appendLog],
   );
 
+  /**
+   * 取消构建：调用后端 cancel 接口 + 中止 SSE 流
+   *
+   * 后端会把会话状态更新为 ERROR，前端通过 abort controller
+   * 主动断开 streamAgent 的长连接，避免悬空 fetch。
+   */
+  const cancelBuild = useCallback(
+    async (sessionId: string) => {
+      // 1. 中止 SSE 流（必须在 API 调用前，避免 race）
+      streamingRef.current?.abort();
+      streamingRef.current = null;
+
+      // 2. 调用后端 cancel 接口
+      try {
+        await buildApi.cancel(sessionId);
+        updateStatus("error" as never);
+        toast({ title: "已取消构建", variant: "default" });
+      } catch (e) {
+        toast({
+          title: "取消构建失败",
+          description: e instanceof Error ? e.message : String(e),
+          variant: "destructive",
+        });
+      }
+    },
+    [updateStatus],
+  );
+
   /** 拉取会话列表 */
   const listSessions = useCallback(async () => {
     const list = await buildApi.list();
@@ -183,6 +211,7 @@ export function useBuild() {
     createBuild: createMutation.mutateAsync,
     updateConfig: updateConfigMutation.mutateAsync,
     startBuildFlow,
+    cancelBuild,
     loadLogs,
     listSessions,
     loadSession,

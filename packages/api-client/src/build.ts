@@ -95,6 +95,30 @@ export class BuildApi {
   }
 
   /**
+   * 部署构建会话
+   *
+   * 后端会更新会话状态为 DEPLOYING → DEPLOYED，生成访问 URL，
+   * 并写入版本快照。返回更新后的 session（含 deployUrl）。
+   */
+  async deploy(
+    id: string,
+    target: "aliyun-ecs" | "vercel" | "github-pages" = "aliyun-ecs",
+  ): Promise<{ session: BuildSession; deployUrl: string }> {
+    return this.client.post(`/v1/build/${id}/deploy`, { target });
+  }
+
+  /**
+   * 取消构建（标记会话为 ERROR 状态，前端同步中止 SSE 流）
+   */
+  async cancel(id: string): Promise<{ ok: boolean; cancelled: boolean }> {
+    const data = await this.client.post<{ ok: boolean; cancelled: boolean }>(
+      `/v1/build/${id}/cancel`,
+      {},
+    );
+    return { ok: !!data.ok, cancelled: !!data.cancelled };
+  }
+
+  /**
    * 订阅构建会话的 Agent 流式响应（SSE）
    * 后端实际路径为 GET /v1/agent/:sessionId/stream
    */

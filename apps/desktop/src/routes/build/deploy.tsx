@@ -148,35 +148,55 @@ export default function DeployPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
-  const runDeploy = () => {
+  const runDeploy = async () => {
     if (phase === "deploying") return;
     setPhase("deploying");
     setCurrentStep(0);
+
+    // 客户端按步骤推进 UI（每步 ~300ms），与后端 API 并行执行
     let step = 0;
-
-    const tick = () => {
+    const advance = () => {
       step += 1;
-      if (step >= DEPLOY_STEPS.length) {
-        // 完成
-        const url = `https://lynxkit-${sessionId.slice(0, 8)}.aliyuncs.com`;
-        setDeployUrl(url);
-        setPhase("success");
-        setCurrentStep(DEPLOY_STEPS.length);
-        // 回写会话 deployUrl（mock，调用 updateConfig 持久化）
-        buildApi
-          .updateConfig(sessionId, {
-            patch: { deployUrl: url },
-            confirmClarify: false,
-          })
-          .catch(() => {});
-        toast({ title: "部署成功 🎉", variant: "success" });
-        return;
-      }
       setCurrentStep(step);
-      timerRef.current = setTimeout(tick, 900);
+      if (step < DEPLOY_STEPS.length) {
+        timerRef.current = setTimeout(advance, 300);
+      }
     };
+    timerRef.current = setTimeout(advance, 300);
 
-    timerRef.current = setTimeout(tick, 900);
+    try {
+      // 调用真实部署 API（后端会更新状态为 DEPLOYING → DEPLOYED）
+      const { session, deployUrl: realUrl } = await buildApi.deploy(
+        sessionId,
+        target as "aliyun-ecs" | "vercel" | "github-pages",
+      );
+      // 推进到完成
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      setCurrentStep(DEPLOY_STEPS.length);
+      setDeployUrl(realUrl);
+      setPhase("success");
+      // 同步会话状态到 store
+      if (currentSession) {
+        // 触发 use-build 内部状态更新
+        await loadSession(sessionId);
+      }
+      toast({ title: "部署成功 🎉", variant: "success" });
+      void session; // session 已通过 loadSession 应用
+    } catch (e) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      setPhase("error");
+      toast({
+        title: "部署失败",
+        description: e instanceof Error ? e.message : String(e),
+        variant: "destructive",
+      });
+    }
   };
 
   const rollback = async () => {
@@ -420,7 +440,7 @@ export default function DeployPage() {
               <Button
                 className="bg-lynx-500 text-white hover:bg-lynx-600"
                 size="sm"
-                onClick={runDeploy}
+                onClick={() => void runDeploy()}
                 disabled={!canDeploy}
               >
                 <Rocket className="mr-1.5 h-4 w-4" />

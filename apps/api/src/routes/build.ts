@@ -78,6 +78,39 @@ const startBuildSchema = z.object({
 });
 
 /**
+ * 校验部署请求体
+ */
+const deploySchema = z.object({
+  /** 部署目标：aliyun-ecs / vercel / github-pages */
+  target: z.enum(["aliyun-ecs", "vercel", "github-pages"]).default("aliyun-ecs"),
+});
+
+/**
+ * 部署 URL 基础域名（按目标生成子域名/路径）
+ *
+ * - aliyun-ecs：使用主域名下的子路径（实际 DNS/SSL 由 nginx 后续配置）
+ * - vercel / github-pages：返回占位 URL（前端 Vercel/GH Pages 接入属于未来迭代）
+ */
+const DEPLOY_BASE_DOMAIN =
+  process.env.DEPLOY_BASE_DOMAIN ?? "miaox.lynxdo.com";
+
+/**
+ * 根据部署目标生成访问 URL
+ */
+function buildDeployUrl(target: string, sessionId: string): string {
+  const short = sessionId.slice(0, 8);
+  switch (target) {
+    case "vercel":
+      return `https://lynxkit-${short}.vercel.app`;
+    case "github-pages":
+      return `https://woaini737696.github.io/lynx-${short}`;
+    case "aliyun-ecs":
+    default:
+      return `https://${DEPLOY_BASE_DOMAIN}/apps/${short}/`;
+  }
+}
+
+/**
  * @openapi
  * POST /build
  * @summary 创建构建会话
@@ -419,5 +452,125 @@ buildRoutes.delete(
     logger.info({ sessionId: id }, "构建会话已删除");
 
     return c.json({ deleted: true });
+  },
+);
+
+/**
+ * @openapi
+ * POST /build/:id/deploy
+ * @summary 部署构建会话（更新状态 + 生成访问 URL）
+ * @tags build
+ * @security BearerAuth
+ *
+ * 注：本接口执行「应用层部署」——更新会话状态为 DEPLOYING→DEPLOYED，
+ * 生成访问 URL 并写入版本快照。真实的 SSH/CDN 上传由后续迭代接入
+ * @lynxkit/deployer 模块（当前为占位实现）。
+ */
+buildRoutes.post(
+  "/:id/deploy",
+  zValidator("param", sessionIdParam),
+  zValidator("json", deploySchema),
+  async (c) => {
+    const { id } = c.req.valid("param");
+    const input = c.req.valid("json");
+    const user = getCurrentUser(c);
+    const db = getDb();
+
+    const session = await db.query.buildSessions.findFirst({
+      where: eq(buildSessions.id, id),
+    });
+    if (!session) {
+      throw new NotFoundError("构建会话");
+    }
+    if (session.userId !== user.id) {
+      throw new ForbiddenError();
+    }
+    if (session.status === "DEPLOYING") {
+      throw new BadRequestError("正在部署中，请勿重复操作");
+    }
+
+    // 1. 标记为部署中
+    await db
+      .update(buildSessions)
+      .set({ status: "DEPLOYING", updatedAt: new Date() })
+      .where(eq(buildSessions.id, id));
+
+    // 2. 生成访问 URL
+    const deployUrl = buildDeployUrl(input.target, id);
+
+    // 3. 短暂等待模拟部署流程（DB 状态推进 + URL 写入）
+    //    实际生产中此处会调用 deployer.uploadFiles + caddy.reload
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // 4. 更新会话：状态=已部署，写入 deployUrl，版本号自增
+    const [updated] = await db
+      .update(buildSessions)
+      .set({
+        status: "DEPLOYED",
+        deployUrl,
+        version: session.version + 1,
+        updatedAt: new Date(),
+      })
+      .where(eq(buildSessions.id, id))
+      .returning();
+
+    // 5. 写入版本快照（用于回滚）
+    await db.insert(buildVersions).values({
+      sessionId: id,
+      version: session.version + 1,
+      config: session.config,
+      codeHash: `deploy-${input.target}-${id.slice(0, 8)}`,
+      status: "success",
+    });
+
+    logger.info(
+      { sessionId: id, target: input.target, deployUrl },
+      "构建会话已部署",
+    );
+
+    return c.json({ session: updated, deployUrl });
+  },
+);
+
+/**
+ * @openapi
+ * POST /build/:id/cancel
+ * @summary 取消构建（标记为 ERROR，前端中止 SSE 流）
+ * @tags build
+ * @security BearerAuth
+ */
+buildRoutes.post(
+  "/:id/cancel",
+  zValidator("param", sessionIdParam),
+  async (c) => {
+    const { id } = c.req.valid("param");
+    const user = getCurrentUser(c);
+    const db = getDb();
+
+    const session = await db.query.buildSessions.findFirst({
+      where: eq(buildSessions.id, id),
+      columns: { id: true, userId: true, status: true },
+    });
+    if (!session) {
+      throw new NotFoundError("构建会话");
+    }
+    if (session.userId !== user.id) {
+      throw new ForbiddenError();
+    }
+
+    // 仅允许在 DEVELOPING / TESTING / DEPLOYING 状态下取消
+    const cancellable = ["DEVELOPING", "TESTING", "DEPLOYING", "ARCHITECTING"];
+    if (!cancellable.includes(session.status)) {
+      throw new BadRequestError(`当前状态 ${session.status} 不可取消`);
+    }
+
+    await db
+      .update(buildSessions)
+      .set({ status: "ERROR", updatedAt: new Date() })
+      .where(eq(buildSessions.id, id));
+
+    logger.info({ sessionId: id, prevStatus: session.status }, "构建已取消");
+
+    return c.json({ ok: true, cancelled: true });
   },
 );
