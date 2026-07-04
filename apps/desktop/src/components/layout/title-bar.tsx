@@ -64,19 +64,19 @@ export function TitleBar() {
 
   return (
     <header
-      className="relative z-50 flex h-12 items-stretch justify-between border-b border-border bg-background/95 backdrop-blur"
+      className="glass-card relative z-50 flex h-12 items-stretch justify-between rounded-none border-x-0 border-t-0"
       style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
     >
-      {/* 左侧：LOGO + 产品名称（放大显示，固定左上角） */}
+      {/* 左侧：LOGO + 产品名称（纯黑方块强调，固定左上角） */}
       <div className="flex items-center gap-2.5 px-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-lynx-400 to-lynx-600 text-white shadow-sm">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ink-950 text-ink-0 shadow-sm dark:bg-ink-100 dark:text-ink-950">
           <Sparkles className="h-5 w-5" />
         </div>
         <div className="flex flex-col leading-none">
-          <span className="text-xl font-bold tracking-tight text-foreground">
+          <span className="text-xl font-bold tracking-tight text-ink-900 dark:text-ink-100">
             {t("common.brand")}
           </span>
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">
             {t("common.tagline")}
           </span>
         </div>
@@ -91,7 +91,7 @@ export function TitleBar() {
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
         {/* 主题切换 */}
-        <div className="mr-1 flex items-center rounded-lg border border-border p-0.5">
+        <div className="mr-1 flex items-center rounded-full border border-ink-200/60 bg-ink-50/40 p-0.5 dark:border-ink-700/60 dark:bg-ink-900/40">
           {THEMES.map((themeOpt) => {
             const Icon = themeOpt.icon;
             return (
@@ -102,10 +102,10 @@ export function TitleBar() {
                 aria-label={t(themeOpt.labelKey)}
                 title={t(themeOpt.labelKey)}
                 className={cn(
-                  "rounded-md p-1.5 transition",
+                  "rounded-full p-1.5 transition-all duration-200",
                   theme === themeOpt.value
-                    ? "bg-lynx-500/15 text-lynx-600 dark:text-lynx-400"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950"
+                    : "text-ink-500 hover:text-ink-800 dark:text-ink-400 dark:hover:text-ink-100",
                 )}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -123,7 +123,7 @@ export function TitleBar() {
           onClick={handleMinimize}
           aria-label={t("titleBar.minimize")}
           title={t("titleBar.minimize")}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 transition-all duration-200 hover:bg-ink-100 hover:text-ink-900 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
         >
           <Minus className="h-4 w-4" />
         </button>
@@ -132,7 +132,7 @@ export function TitleBar() {
           onClick={handleMaximizeToggle}
           aria-label={isMaximized ? t("titleBar.restore") : t("titleBar.maximize")}
           title={isMaximized ? t("titleBar.restore") : t("titleBar.maximize")}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 transition-all duration-200 hover:bg-ink-100 hover:text-ink-900 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
         >
           {isMaximized ? (
             <Copy className="h-3.5 w-3.5 -scale-x-100" />
@@ -145,7 +145,7 @@ export function TitleBar() {
           onClick={handleClose}
           aria-label={t("titleBar.close")}
           title={t("titleBar.close")}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive hover:text-destructive-foreground"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-500 transition-all duration-200 hover:bg-destructive hover:text-destructive-foreground"
         >
           <X className="h-4 w-4" />
         </button>

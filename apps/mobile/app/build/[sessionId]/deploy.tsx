@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  useColorScheme,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -95,6 +96,7 @@ const PRICING_OPTIONS: { value: PricingType; labelKey: string }[] = [
 
 export default function DeployScreen() {
   const { t } = useTranslation();
+  const isDark = useColorScheme() === 'dark';
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const id = Array.isArray(sessionId) ? sessionId[0] : sessionId;
 
@@ -141,9 +143,6 @@ export default function DeployScreen() {
       (session.config?.userInput as string | undefined) ?? '';
     setName(userInput.slice(0, 40) || t('build.productName'));
     setDescription(userInput);
-    if (deployUrl) {
-      // demoUrl 已隐含在 deployUrl
-    }
   }, [session, name, t, deployUrl]);
 
   const runDeploy = () => {
@@ -233,35 +232,33 @@ export default function DeployScreen() {
 
   if (isLoading || !session) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-950">
-        <ActivityIndicator color="#FF6B35" />
+      <View className="flex-1 items-center justify-center bg-ink-100 dark:bg-ink-950">
+        <ActivityIndicator color="#09090B" />
       </View>
     );
   }
 
-  const canDeploy =
-    phase === 'idle' || phase === 'error';
+  const canDeploy = phase === 'idle' || phase === 'error';
+  const emphasisIcon = isDark ? '#09090B' : '#FFFFFF';
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-ink-100 dark:bg-ink-950" edges={['bottom']}>
       <ScrollView
-        contentContainerClassName="px-4 pb-8 gap-5"
+        contentContainerClassName="px-4 pb-8 gap-5 pt-4"
         keyboardShouldPersistTaps="handled"
       >
-        {/* 状态徽标 */}
-        <View className="flex-row items-center gap-2 pt-4">
-          <View
-            className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${phase === 'success' ? 'bg-green-500/20' : phase === 'deploying' ? 'bg-lynx-500/20' : 'bg-slate-800'}`}
-          >
+        {/* 状态徽标（badge-glass） */}
+        <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center gap-1 rounded-full border border-white/70 bg-white/70 px-2.5 py-1 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
             {phase === 'success' ? (
               <CheckCircle2 size={12} color="#22C55E" />
             ) : phase === 'deploying' ? (
-              <Loader2 size={12} color="#FF6B35" />
+              <Loader2 size={12} color="#09090B" />
             ) : (
-              <AlertCircle size={12} color="#94A3B8" />
+              <AlertCircle size={12} color="#71717A" />
             )}
             <Text
-              className={`text-xs ${phase === 'success' ? 'text-green-500' : phase === 'deploying' ? 'text-lynx-500' : 'text-slate-400'}`}
+              className={`text-xs ${phase === 'success' ? 'text-green-600' : 'text-ink-700 dark:text-ink-300'}`}
             >
               {phase === 'success'
                 ? t('build.status.deployed')
@@ -272,9 +269,9 @@ export default function DeployScreen() {
           </View>
         </View>
 
-        {/* 部署目标 */}
+        {/* 部署目标（毛玻璃卡片，选中态 ink-950 边框） */}
         <View className="gap-2">
-          <Text className="text-sm font-semibold text-slate-200">
+          <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
             {t('build.deployTarget')}
           </Text>
           <View className="gap-2">
@@ -286,16 +283,24 @@ export default function DeployScreen() {
                   key={tgt.id}
                   onPress={() => phase !== 'deploying' && setTarget(tgt.id)}
                   disabled={phase === 'deploying'}
-                  className={`flex-row items-center gap-3 rounded-xl border p-3 ${active ? 'border-lynx-500 bg-lynx-500/10' : 'border-slate-800 bg-slate-900'} ${phase === 'deploying' ? 'opacity-50' : ''}`}
+                  className={`flex-row items-center gap-3 rounded-2xl border p-3 backdrop-blur-xl ${
+                    active
+                      ? 'border-ink-950 bg-ink-950/5 dark:border-ink-50 dark:bg-ink-50/5'
+                      : 'border-white/70 bg-white/70 dark:border-ink-800/60 dark:bg-ink-900/70'
+                  } ${phase === 'deploying' ? 'opacity-50' : ''}`}
                 >
-                  <Icon size={18} color={active ? '#FF6B35' : '#94A3B8'} />
+                  <Icon size={18} color={active ? '#09090B' : '#71717A'} />
                   <Text
-                    className={`flex-1 text-sm ${active ? 'text-lynx-500' : 'text-slate-300'}`}
+                    className={`flex-1 text-sm ${
+                      active
+                        ? 'text-ink-950 dark:text-ink-50'
+                        : 'text-ink-700 dark:text-ink-200'
+                    }`}
                   >
                     {t(tgt.labelKey)}
                   </Text>
                   {active ? (
-                    <CheckCircle2 size={16} color="#FF6B35" />
+                    <CheckCircle2 size={16} color="#09090B" />
                   ) : null}
                 </Pressable>
               );
@@ -305,7 +310,7 @@ export default function DeployScreen() {
 
         {/* 部署步骤 */}
         <View className="gap-2">
-          <Text className="text-sm font-semibold text-slate-200">
+          <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
             {t('build.deploySteps')}
           </Text>
           <View className="gap-1.5">
@@ -315,20 +320,24 @@ export default function DeployScreen() {
               return (
                 <View
                   key={s.id}
-                  className={`flex-row items-center gap-3 rounded-lg px-3 py-2 ${active ? 'bg-lynx-500/10' : 'bg-slate-900'}`}
+                  className={`flex-row items-center gap-3 rounded-xl border px-3 py-2 backdrop-blur-xl ${
+                    active
+                      ? 'border-ink-950/20 bg-ink-950/5 dark:border-ink-50/20 dark:bg-ink-50/5'
+                      : 'border-white/70 bg-white/70 dark:border-ink-800/60 dark:bg-ink-900/70'
+                  }`}
                 >
                   {done ? (
                     <CheckCircle2 size={14} color="#22C55E" />
                   ) : active ? (
-                    <Loader2 size={14} color="#FF6B35" />
+                    <Loader2 size={14} color="#09090B" />
                   ) : (
-                    <View className="h-3.5 w-3.5 items-center justify-center rounded-full border border-slate-700">
-                      <Text className="text-[9px] text-slate-500">
+                    <View className="h-3.5 w-3.5 items-center justify-center rounded-full border border-ink-300 dark:border-ink-700">
+                      <Text className="text-[9px] text-ink-500 dark:text-ink-400">
                         {i + 1}
                       </Text>
                     </View>
                   )}
-                  <Text className="flex-1 text-xs text-slate-300">
+                  <Text className="flex-1 text-xs text-ink-700 dark:text-ink-200">
                     {s.label}
                   </Text>
                 </View>
@@ -337,15 +346,33 @@ export default function DeployScreen() {
           </View>
         </View>
 
+        {/* 部署日志（终端样式） */}
+        {phase !== 'idle' ? (
+          <View className="gap-2">
+            <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
+              {t('build.realtimeLogs')}
+            </Text>
+            <View className="rounded-2xl bg-ink-950 p-3">
+              <Text className="font-mono text-xs leading-5 text-ink-100">
+                {phase === 'success'
+                  ? `✔ 部署完成 → ${deployUrl ?? ''}`
+                  : phase === 'error'
+                    ? '✘ 部署失败，请重试'
+                    : `▸ 执行步骤 ${currentStep + 1}/${DEPLOY_STEPS.length}：${DEPLOY_STEPS[Math.min(currentStep, DEPLOY_STEPS.length - 1)]?.label ?? ''}`}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
         {/* 部署 / 回滚 按钮 */}
         <View className="flex-row gap-3">
           {phase === 'success' && session.version > 1 ? (
             <Pressable
               onPress={onRollback}
-              className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3.5 active:opacity-80"
+              className="flex-1 flex-row items-center justify-center gap-2 rounded-full border border-ink-300 bg-transparent py-3.5 active:opacity-80 dark:border-ink-700"
             >
-              <RotateCcw size={16} color="#F8FAFC" />
-              <Text className="text-sm font-semibold text-white">
+              <RotateCcw size={16} color="#09090B" />
+              <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
                 {t('build.rollback')}
               </Text>
             </Pressable>
@@ -353,43 +380,43 @@ export default function DeployScreen() {
           {canDeploy ? (
             <Pressable
               onPress={runDeploy}
-              className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-lynx-500 py-3.5 active:opacity-80"
+              className="flex-1 flex-row items-center justify-center gap-2 rounded-full bg-ink-950 py-3.5 active:opacity-80 dark:bg-ink-100"
             >
-              <Rocket size={16} color="#FFFFFF" />
-              <Text className="text-sm font-semibold text-white">
+              <Rocket size={16} color={emphasisIcon} />
+              <Text className="text-sm font-semibold text-ink-0 dark:text-ink-950">
                 {t('build.deploy')}
               </Text>
             </Pressable>
           ) : phase === 'deploying' ? (
-            <View className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3.5 opacity-50">
-              <Loader2 size={16} color="#94A3B8" />
-              <Text className="text-sm font-semibold text-slate-400">
+            <View className="flex-1 flex-row items-center justify-center gap-2 rounded-full border border-ink-300 bg-transparent py-3.5 opacity-50 dark:border-ink-700">
+              <Loader2 size={16} color="#71717A" />
+              <Text className="text-sm font-semibold text-ink-500 dark:text-ink-400">
                 {t('build.status.deploying')}…
               </Text>
             </View>
           ) : null}
         </View>
 
-        {/* 部署结果 */}
+        {/* 部署结果（毛玻璃卡） */}
         {phase === 'success' && deployUrl ? (
           <View className="gap-3">
-            <Text className="text-sm font-semibold text-slate-200">
+            <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
               {t('build.deployResult')}
             </Text>
-            <View className="flex-row items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 p-3">
-              <Globe size={14} color="#FF6B35" />
+            <View className="flex-row items-center gap-2 rounded-2xl border border-white/70 bg-white/70 p-3 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
+              <Globe size={14} color="#09090B" />
               <Text
-                className="flex-1 text-xs text-lynx-500"
+                className="flex-1 font-mono text-xs text-ink-950 dark:text-ink-50"
                 numberOfLines={1}
               >
                 {deployUrl}
               </Text>
               <Pressable
                 onPress={() => Linking.openURL(deployUrl)}
-                className="flex-row items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1.5 active:opacity-80"
+                className="flex-row items-center gap-1 rounded-full bg-ink-950 px-2.5 py-1.5 active:opacity-80 dark:bg-ink-100"
               >
-                <ExternalLink size={12} color="#F8FAFC" />
-                <Text className="text-xs text-slate-200">
+                <ExternalLink size={12} color={emphasisIcon} />
+                <Text className="text-xs text-ink-0 dark:text-ink-950">
                   {t('build.visitUrl')}
                 </Text>
               </Pressable>
@@ -401,44 +428,44 @@ export default function DeployScreen() {
         {phase === 'success' && deployUrl ? (
           <View className="gap-3">
             <View className="flex-row items-center gap-2">
-              <Package size={16} color="#FF6B35" />
-              <Text className="text-sm font-semibold text-slate-200">
+              <Package size={16} color="#09090B" />
+              <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
                 {t('build.publishToStore')}
               </Text>
             </View>
 
             {/* 产品名称 */}
             <View className="gap-1.5">
-              <Text className="text-xs text-slate-400">
+              <Text className="text-xs text-ink-500 dark:text-ink-400">
                 {t('build.productName')}
               </Text>
               <TextInput
                 value={name}
                 onChangeText={setName}
                 placeholder={t('build.productName')}
-                placeholderTextColor="#64748B"
-                className="rounded-xl bg-slate-900 px-3 py-2.5 text-sm text-slate-200"
+                placeholderTextColor="#A1A1AA"
+                className="rounded-xl border border-white/70 bg-white/55 px-3 py-2.5 text-sm text-ink-900 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/55 dark:text-ink-50"
               />
             </View>
 
             {/* 产品简介 */}
             <View className="gap-1.5">
-              <Text className="text-xs text-slate-400">
+              <Text className="text-xs text-ink-500 dark:text-ink-400">
                 {t('build.productDesc')}
               </Text>
               <TextInput
                 value={description}
                 onChangeText={setDescription}
                 placeholder={t('build.productDesc')}
-                placeholderTextColor="#64748B"
+                placeholderTextColor="#A1A1AA"
                 multiline
-                className="rounded-xl bg-slate-900 px-3 py-2.5 text-sm text-slate-200"
+                className="rounded-xl border border-white/70 bg-white/55 px-3 py-2.5 text-sm text-ink-900 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/55 dark:text-ink-50"
               />
             </View>
 
-            {/* 分类按钮组 */}
+            {/* 分类按钮组（选中态 bg-ink-950 text-ink-0） */}
             <View className="gap-1.5">
-              <Text className="text-xs text-slate-400">
+              <Text className="text-xs text-ink-500 dark:text-ink-400">
                 {t('build.category')}
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -448,10 +475,18 @@ export default function DeployScreen() {
                     <Pressable
                       key={c}
                       onPress={() => setCategory(c)}
-                      className={`rounded-full px-3 py-1.5 ${active ? 'bg-lynx-500' : 'bg-slate-800'}`}
+                      className={`rounded-full px-3 py-1.5 ${
+                        active
+                          ? 'bg-ink-950 dark:bg-ink-100'
+                          : 'border border-ink-300 bg-transparent dark:border-ink-700'
+                      }`}
                     >
                       <Text
-                        className={`text-xs ${active ? 'text-white' : 'text-slate-300'}`}
+                        className={`text-xs ${
+                          active
+                            ? 'text-ink-0 dark:text-ink-950'
+                            : 'text-ink-600 dark:text-ink-300'
+                        }`}
                       >
                         {t(`store.category.${c.toLowerCase()}`)}
                       </Text>
@@ -463,7 +498,7 @@ export default function DeployScreen() {
 
             {/* 定价类型按钮组 */}
             <View className="gap-1.5">
-              <Text className="text-xs text-slate-400">
+              <Text className="text-xs text-ink-500 dark:text-ink-400">
                 {t('build.pricing')}
               </Text>
               <View className="flex-row gap-2">
@@ -473,10 +508,18 @@ export default function DeployScreen() {
                     <Pressable
                       key={opt.value}
                       onPress={() => setPricingType(opt.value)}
-                      className={`flex-1 items-center rounded-xl py-2 ${active ? 'bg-lynx-500' : 'bg-slate-800'}`}
+                      className={`flex-1 items-center rounded-xl py-2 ${
+                        active
+                          ? 'bg-ink-950 dark:bg-ink-100'
+                          : 'border border-ink-300 bg-transparent dark:border-ink-700'
+                      }`}
                     >
                       <Text
-                        className={`text-xs ${active ? 'text-white' : 'text-slate-300'}`}
+                        className={`text-xs ${
+                          active
+                            ? 'text-ink-0 dark:text-ink-950'
+                            : 'text-ink-600 dark:text-ink-300'
+                        }`}
                       >
                         {t(opt.labelKey)}
                       </Text>
@@ -489,28 +532,28 @@ export default function DeployScreen() {
             {/* 价格（非免费时显示） */}
             {pricingType !== PricingType.FREE ? (
               <View className="gap-1.5">
-                <Text className="text-xs text-slate-400">
+                <Text className="text-xs text-ink-500 dark:text-ink-400">
                   {t('build.price')}
                 </Text>
                 <TextInput
                   value={price}
                   onChangeText={setPrice}
                   placeholder="1990"
-                  placeholderTextColor="#64748B"
+                  placeholderTextColor="#A1A1AA"
                   keyboardType="numeric"
-                  className="rounded-xl bg-slate-900 px-3 py-2.5 text-sm text-slate-200"
+                  className="rounded-xl border border-white/70 bg-white/55 px-3 py-2.5 text-sm text-ink-900 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/55 dark:text-ink-50"
                 />
               </View>
             ) : null}
 
-            {/* 发布按钮 */}
+            {/* 发布按钮（纯黑） */}
             <Pressable
               onPress={onPublish}
               disabled={publishMutation.isPending}
-              className="flex-row items-center justify-center gap-2 rounded-2xl bg-lynx-500 py-3.5 active:opacity-80 disabled:opacity-40"
+              className="flex-row items-center justify-center gap-2 rounded-full bg-ink-950 py-3.5 active:opacity-80 disabled:opacity-40 dark:bg-ink-100"
             >
-              <Package size={16} color="#FFFFFF" />
-              <Text className="text-sm font-semibold text-white">
+              <Package size={16} color={emphasisIcon} />
+              <Text className="text-sm font-semibold text-ink-0 dark:text-ink-950">
                 {publishMutation.isPending
                   ? t('common.loading')
                   : t('build.publish')}

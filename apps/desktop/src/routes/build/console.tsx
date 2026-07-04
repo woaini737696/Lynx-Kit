@@ -11,13 +11,9 @@ import {
   Loader2,
   Cpu,
   FileCode2,
+  CheckCircle2,
 } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   Button,
   Badge,
   Skeleton,
@@ -136,15 +132,15 @@ export default function BuildConsolePage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-8">
-        <Skeleton className="mb-4 h-24 w-full rounded-xl" />
-        <Skeleton className="h-96 w-full rounded-xl" />
+        <Skeleton className="mb-4 h-24 w-full rounded-card" />
+        <Skeleton className="h-96 w-full rounded-card" />
       </div>
     );
   }
 
   if (!currentSession) {
     return (
-      <div className="px-6 py-20 text-center text-muted-foreground">
+      <div className="px-6 py-20 text-center text-ink-500 dark:text-ink-400">
         会话不存在或已被删除
       </div>
     );
@@ -165,7 +161,7 @@ export default function BuildConsolePage() {
               返回列表
             </Button>
           </Link>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-ink-500 dark:text-ink-400">
             会话 {currentSession.id.slice(0, 8)}…
           </span>
         </div>
@@ -203,69 +199,66 @@ export default function BuildConsolePage() {
               {cancelling ? "取消中..." : "停止构建"}
             </Button>
           ) : (
-            <Button
-              className="bg-lynx-500 text-white hover:bg-lynx-600"
-              size="sm"
+            <button
+              className="btn-ink inline-flex items-center gap-1.5 text-sm disabled:opacity-50"
               onClick={() => void onStart()}
               disabled={starting || status === "deployed"}
             >
               {starting ? (
-                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Play className="mr-1.5 h-4 w-4" />
+                <Play className="h-4 w-4" />
               )}
               {starting ? "启动中..." : status === "deployed" ? "已完成" : "启动构建"}
-            </Button>
+            </button>
           )}
         </div>
       </div>
 
       {/* 进度条 + 当前 Agent */}
-      <Card className="mb-4">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2">
-              <Cpu className="h-4 w-4 text-lynx-500" />
-              <span className="font-medium">
-                {agentMeta ? `Agent #${agentMeta.step} ${agentMeta.name}` : "等待启动"}
-              </span>
-              <Badge variant="outline" className="text-[10px]">
-                {currentSession.productType}
-              </Badge>
-              <Badge variant="outline" className="text-[10px]">
-                v{currentSession.version}
-              </Badge>
-            </div>
-            <span className="text-xs text-muted-foreground">
-              {formatDateTime(currentSession.updatedAt)}
+      <div className="glass-card mb-4 p-5">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <Cpu className="h-4 w-4 text-ink-900 dark:text-ink-100" />
+            <span className="font-medium text-ink-900 dark:text-ink-100">
+              {agentMeta ? `Agent #${agentMeta.step} ${agentMeta.name}` : "等待启动"}
             </span>
+            <Badge variant="outline" className="text-[10px]">
+              {currentSession.productType}
+            </Badge>
+            <Badge variant="outline" className="text-[10px]">
+              v{currentSession.version}
+            </Badge>
           </div>
-          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full bg-gradient-to-r from-lynx-500 to-lynx-400 transition-all"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-          <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-            <span>进度 {progressPct}%</span>
-            <span>状态：{status}</span>
-          </div>
-        </CardContent>
-      </Card>
+          <span className="text-xs text-ink-500 dark:text-ink-400">
+            {formatDateTime(currentSession.updatedAt)}
+          </span>
+        </div>
+        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-ink-200 dark:bg-ink-800">
+          <div
+            className="h-full bg-ink-950 transition-all duration-300 dark:bg-ink-100"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+        <div className="mt-2 flex justify-between text-xs text-ink-500 dark:text-ink-400">
+          <span>进度 {progressPct}%</span>
+          <span>状态：{status}</span>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Agent 步骤列表 */}
-        <Card className="lg:col-span-1">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Terminal className="h-4 w-4 text-lynx-500" />
+        <div className="glass-card lg:col-span-1">
+          <div className="border-b border-ink-200/60 p-4 dark:border-ink-800/60">
+            <div className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-ink-100">
+              <Terminal className="h-4 w-4" />
               Agent 流水线
-            </CardTitle>
-            <CardDescription className="text-xs">
+            </div>
+            <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
               10 步 Agent 串行执行
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
+            </p>
+          </div>
+          <div className="p-4">
             <ol className="space-y-1.5 text-sm">
               {(Object.keys(AGENT_META) as AgentRole[]).map((role) => {
                 const m = AGENT_META[role];
@@ -281,49 +274,58 @@ export default function BuildConsolePage() {
                   <li
                     key={role}
                     className={
-                      "flex items-center justify-between rounded-md px-2 py-1.5 " +
-                      (isActive ? "bg-lynx-500/10 text-lynx-700" : "")
+                      "flex items-center justify-between rounded-md px-2 py-1.5 transition-all duration-200 " +
+                      (isActive
+                        ? "bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950"
+                        : "text-ink-700 dark:text-ink-300")
                     }
                   >
                     <span className="flex items-center gap-2">
-                      <span className="text-xs tabular-nums text-muted-foreground">
+                      <span
+                        className={
+                          "text-xs tabular-nums " +
+                          (isActive
+                            ? "text-ink-300 dark:text-ink-500"
+                            : "text-ink-400 dark:text-ink-500")
+                        }
+                      >
                         {m.step.toString().padStart(2, "0")}
                       </span>
                       <span>{m.name}</span>
                     </span>
                     {isActive ? (
-                      <Loader2 className="h-3 w-3 animate-spin text-lynx-500" />
+                      <Loader2 className="h-3 w-3 animate-spin" />
                     ) : isDone ? (
-                      <span className="text-xs text-green-600">✓</span>
+                      <CheckCircle2 className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />
                     ) : null}
                   </li>
                 );
               })}
             </ol>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* 日志流 */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <FileCode2 className="h-4 w-4 text-lynx-500" />
+        {/* 日志流（终端样式） */}
+        <div className="glass-card lg:col-span-2">
+          <div className="border-b border-ink-200/60 p-4 dark:border-ink-800/60">
+            <div className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-ink-100">
+              <FileCode2 className="h-4 w-4" />
               实时日志
               <Badge variant="outline" className="ml-1 text-[10px]">
                 {logs.length} 条
               </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="h-[420px] overflow-y-auto rounded-md bg-slate-950 p-3 font-mono text-xs leading-5 text-slate-200">
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="h-[420px] overflow-y-auto rounded-lg bg-ink-950 p-3 font-mono text-xs leading-5 text-ink-100">
               {logs.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-slate-500">
+                <div className="flex h-full items-center justify-center text-ink-500">
                   {isBuilding ? "等待 Agent 输出..." : "点击「启动构建」开始"}
                 </div>
               ) : (
                 logs.map((log: AgentLog) => (
                   <div key={log.id} className="flex gap-2 py-0.5">
-                    <span className="shrink-0 text-slate-500">
+                    <span className="shrink-0 text-ink-500">
                       {new Date(log.createdAt).toLocaleTimeString()}
                     </span>
                     <span
@@ -333,12 +335,12 @@ export default function BuildConsolePage() {
                           ? "text-red-400"
                           : log.level === "warn"
                             ? "text-yellow-400"
-                            : "text-lynx-400")
+                            : "text-ink-300")
                       }
                     >
                       [{log.agent}]
                     </span>
-                    <span className="whitespace-pre-wrap break-all text-slate-200">
+                    <span className="whitespace-pre-wrap break-all text-ink-100">
                       {log.message}
                     </span>
                   </div>
@@ -346,8 +348,8 @@ export default function BuildConsolePage() {
               )}
               <div ref={logEndRef} />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

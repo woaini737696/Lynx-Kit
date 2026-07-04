@@ -65,14 +65,14 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-4xl px-6 py-8">
-        <Skeleton className="h-72 w-full rounded-xl" />
+        <Skeleton className="h-72 w-full rounded-card" />
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="px-6 py-20 text-center text-muted-foreground">
+      <div className="px-6 py-20 text-center text-ink-500 dark:text-ink-400">
         产品不存在或已下架
       </div>
     );
@@ -93,8 +93,8 @@ export default function ProductDetailPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* 主信息 */}
         <div className="lg:col-span-2">
-          <Card className="overflow-hidden">
-            <div className="flex h-48 items-center justify-center bg-gradient-to-br from-lynx-500/15 to-lynx-400/5">
+          <div className="glass-card overflow-hidden">
+            <div className="flex h-48 items-center justify-center bg-ink-100 dark:bg-ink-900">
               {product.coverUrl ? (
                 <img
                   src={product.coverUrl}
@@ -102,16 +102,16 @@ export default function ProductDetailPage() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <ShoppingCart className="h-12 w-12 text-lynx-500/40" />
+                <ShoppingCart className="h-12 w-12 text-ink-300 dark:text-ink-700" />
               )}
             </div>
-            <CardContent className="p-5">
+            <div className="p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h1 className="text-xl font-bold">{product.name}</h1>
-                  <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                  <h1 className="text-xl font-bold text-ink-950 dark:text-ink-0">{product.name}</h1>
+                  <div className="mt-1 flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
                     <span className="inline-flex items-center gap-0.5">
-                      <Star className="h-3.5 w-3.5 text-yellow-500" />
+                      <Star className="h-3.5 w-3.5 text-ink-700 dark:text-ink-300" />
                       {product.ratingAvg.toFixed(1)}
                       <span className="opacity-60">({product.ratingCount})</span>
                     </span>
@@ -125,7 +125,7 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-lynx-600">
+                  <div className="text-2xl font-bold text-ink-950 dark:text-ink-0">
                     {product.price === 0 ? "免费" : formatPrice(product.price)}
                   </div>
                 </div>
@@ -134,7 +134,7 @@ export default function ProductDetailPage() {
               <Separator className="my-4" />
 
               <div className="prose prose-sm max-w-none dark:prose-invert">
-                <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                <p className="whitespace-pre-wrap text-sm text-ink-600 dark:text-ink-400">
                   {product.readme ?? product.description}
                 </p>
               </div>
@@ -149,37 +149,37 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="mt-4 flex items-center gap-4 text-xs text-ink-500 dark:text-ink-400">
                 <span>更新于 {formatDateTime(product.updatedAt)}</span>
                 {product.repoUrl && (
                   <a
                     href={product.repoUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 hover:text-foreground"
+                    className="inline-flex items-center gap-1 hover:text-ink-950 dark:hover:text-ink-100"
                   >
                     <GitBranch className="h-3 w-3" />
                     源码仓库
                   </a>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* 评价 */}
-          <Card className="mt-4">
-            <CardContent className="p-5">
-              <h2 className="mb-3 text-sm font-semibold">
+          <div className="glass-card mt-4">
+            <div className="p-5">
+              <h2 className="mb-3 text-sm font-semibold text-ink-900 dark:text-ink-100">
                 评价 ({reviews.length})
               </h2>
               {reviews.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">
+                <p className="py-6 text-center text-sm text-ink-500 dark:text-ink-400">
                   暂无评价
                 </p>
               ) : (
                 <div className="space-y-3">
                   {reviews.map((r) => (
-                    <div key={r.id} className="border-b border-border pb-3 last:border-0">
+                    <div key={r.id} className="border-b border-ink-200/60 pb-3 last:border-0 dark:border-ink-800/60">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
                           {Array.from({ length: 5 }).map((_, i) => (
@@ -187,34 +187,34 @@ export default function ProductDetailPage() {
                               key={i}
                               className={
                                 i < r.rating
-                                  ? "h-3.5 w-3.5 text-yellow-500"
-                                  : "h-3.5 w-3.5 text-muted-foreground/30"
+                                  ? "h-3.5 w-3.5 text-ink-950 dark:text-ink-100"
+                                  : "h-3.5 w-3.5 text-ink-300 dark:text-ink-700"
                               }
                             />
                           ))}
                         </div>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-ink-500 dark:text-ink-400">
                           {formatDateTime(r.createdAt)}
                         </span>
                       </div>
                       {r.content && (
-                        <p className="mt-1 text-sm">{r.content}</p>
+                        <p className="mt-1 text-sm text-ink-800 dark:text-ink-200">{r.content}</p>
                       )}
                     </div>
                   ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* 侧边购买栏 */}
         <div className="lg:col-span-1">
-          <Card className="sticky top-4">
-            <CardContent className="space-y-3 p-5">
+          <div className="glass-card sticky top-4">
+            <div className="space-y-3 p-5">
               <TryDemoModal demoUrl={product.demoUrl} productName={product.name} />
-              <Button
-                className="w-full bg-lynx-500 text-white hover:bg-lynx-600"
+              <button
+                className="btn-ink w-full justify-center text-sm"
                 onClick={purchase}
                 disabled={purchasing}
               >
@@ -224,7 +224,7 @@ export default function ProductDetailPage() {
                   <ShoppingCart className="mr-2 h-4 w-4" />
                 )}
                 {product.price === 0 ? "免费获取" : "立即购买"}
-              </Button>
+              </button>
               {product.demoUrl && (
                 <Button
                   variant="outline"
@@ -235,8 +235,8 @@ export default function ProductDetailPage() {
                   访问演示
                 </Button>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

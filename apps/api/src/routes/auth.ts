@@ -1,22 +1,24 @@
 /**
  * 认证路由 - LynxKit API
  *
- * 端点：
- *   POST /register       邮箱+密码注册
- *   POST /login          邮箱密码登录
- *   POST /send-code      发送手机验证码
- *   POST /verify-code    验证码校验
- *   GET  /me             获取当前用户（需 auth）
- *   POST /logout          登出（token 加入黑名单）
- *   POST /refresh         刷新 access token
+ * 登录方式（邮箱已从登录链路中移除）：
+ *   - 手机号 + 密码   POST /login
+ *   - 手机号 + 验证码  POST /login-by-code
+ *
+ * 其他端点：
+ *   POST /register      手机号 + 验证码 + 密码 + 昵称
+ *   POST /send-code     发送短信验证码（Mock + Redis，开发环境返回 code）
+ *   POST /verify-code   校验验证码（独立校验，不签发 token）
+ *   GET  /me            获取当前用户（需 auth）
+ *   PUT  /me            更新资料
+ *   POST /logout        登出（token 加入黑名单）
+ *   POST /refresh        刷新 access token
  *
  * 实现：
  *   - 密码用 bcrypt 哈希（saltRounds=10）
- *   - JWT 用 jose 签发（access 15min + refresh 30d）
+ *   - JWT 用 jose 签发（access 15min + refresh 30d），payload 携带 phone
  *   - 登出 token 加入 Redis 黑名单（立即失效）
  *   - 短信验证码存 Redis（5 分钟过期）
- *
- * Better Auth 实例配置在 lib/auth.ts，此处使用 jose 直接签发 JWT（简化）。
  */
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
@@ -26,6 +28,7 @@ import { nanoid } from "nanoid";
 
 import {
   loginSchema,
+  loginByCodeSchema,
   registerSchema,
   sendCodeSchema,
   verifyCodeSchema,
@@ -60,11 +63,28 @@ export const authRoutes = new Hono();
 const SMS_CODE_PREFIX = "lynxkit:sms:code:";
 
 /**
+ * 统一签发 token 的工具：基于用户记录签发 access + refresh
+ */
+async function issueTokens(user: { id: string; phone: string; role: string }) {
+  const accessToken = await signAccessToken({
+    id: user.id,
+    phone: user.phone,
+    role: user.role,
+  });
+  const refreshToken = await signRefreshToken({
+    id: user.id,
+    phone: user.phone,
+    role: user.role,
+  });
+  return { accessToken, refreshToken };
+}
+
+/**
  * @openapi
  * POST /auth/register
- * @summary 邮箱密码注册
+ * @summary 手机号 + 验证码注册
  * @tags auth
- * @requestBody email + password + name + phone?(+code)
+ * @requestBody phone + code + password + name
  */
 authRoutes.post(
   "/register",
@@ -72,38 +92,35 @@ authRoutes.post(
   async (c) => {
     const input = c.req.valid("json");
     const db = getDb();
+    const redis = getRedis();
 
-    // 检查邮箱是否已注册
+    // 校验手机号是否已注册
     const existing = await db.query.users.findFirst({
-      where: eq(users.email, input.email),
+      where: eq(users.phone, input.phone),
     });
     if (existing) {
-      throw new ConflictError("该邮箱已注册");
+      throw new ConflictError("该手机号已注册");
     }
 
-    // 校验手机号验证码（如提供 phone）
-    if (input.phone && input.code) {
-      const redis = getRedis();
-      if (redis) {
-        const key = SMS_CODE_PREFIX + `register:${input.phone}`;
-        const stored = await redis.get(key);
-        if (stored !== input.code) {
-          throw new BadRequestError("验证码错误或已过期");
-        }
-        await redis.del(key);
+    // 校验验证码（强制要求）
+    if (redis) {
+      const key = SMS_CODE_PREFIX + `register:${input.phone}`;
+      const stored = await redis.get(key);
+      if (!stored || stored !== input.code) {
+        throw new BadRequestError("验证码错误或已过期");
       }
+      await redis.del(key);
     }
 
     // 哈希密码
     const passwordHash = await bcrypt.hash(input.password, 10);
 
-    // 创建用户（密码哈希直接存数据库，MVP 阶段不依赖 Redis）
+    // 创建用户
     const [user] = await db
       .insert(users)
       .values({
-        email: input.email,
-        name: input.name,
         phone: input.phone,
+        name: input.name,
         passwordHash,
       })
       .returning();
@@ -112,30 +129,19 @@ authRoutes.post(
       throw new Error("用户创建失败");
     }
 
-    // 签发 JWT
-    const accessToken = await signAccessToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
-    const refreshToken = await signRefreshToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const tokens = await issueTokens(user);
 
-    logger.info({ userId: user.id, email: user.email }, "用户注册成功");
+    logger.info({ userId: user.id, phone: user.phone }, "用户注册成功");
 
     return c.json(
       {
         user: {
           id: user.id,
-          email: user.email,
+          phone: user.phone,
           name: user.name,
           role: user.role,
         },
-        accessToken,
-        refreshToken,
+        ...tokens,
       },
       201,
     );
@@ -145,7 +151,7 @@ authRoutes.post(
 /**
  * @openapi
  * POST /auth/login
- * @summary 邮箱密码登录
+ * @summary 手机号 + 密码 登录
  * @tags auth
  */
 authRoutes.post(
@@ -156,42 +162,81 @@ authRoutes.post(
     const db = getDb();
 
     const user = await db.query.users.findFirst({
-      where: eq(users.email, input.email),
+      where: eq(users.phone, input.phone),
     });
     if (!user) {
-      throw new UnauthorizedError("邮箱或密码错误");
+      throw new UnauthorizedError("手机号或密码错误");
     }
     if (user.status !== "ACTIVE") {
       throw new UnauthorizedError("账号已被禁用，请联系管理员");
     }
 
-    // 校验密码（直接从数据库读取，MVP 阶段不依赖 Redis）
     if (!user.passwordHash || !(await bcrypt.compare(input.password, user.passwordHash))) {
-      throw new UnauthorizedError("邮箱或密码错误");
+      throw new UnauthorizedError("手机号或密码错误");
     }
 
-    const accessToken = await signAccessToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
-    const refreshToken = await signRefreshToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const tokens = await issueTokens(user);
 
-    logger.info({ userId: user.id, email: user.email }, "用户登录成功");
+    logger.info({ userId: user.id, phone: user.phone }, "用户登录成功（密码）");
 
     return c.json({
       user: {
         id: user.id,
-        email: user.email,
+        phone: user.phone,
         name: user.name,
         role: user.role,
       },
-      accessToken,
-      refreshToken,
+      ...tokens,
+    });
+  },
+);
+
+/**
+ * @openapi
+ * POST /auth/login-by-code
+ * @summary 手机号 + 验证码 登录
+ * @tags auth
+ */
+authRoutes.post(
+  "/login-by-code",
+  zValidator("json", loginByCodeSchema),
+  async (c) => {
+    const input = c.req.valid("json");
+    const db = getDb();
+    const redis = getRedis();
+
+    // 校验验证码
+    if (redis) {
+      const key = SMS_CODE_PREFIX + `login:${input.phone}`;
+      const stored = await redis.get(key);
+      if (!stored || stored !== input.code) {
+        throw new BadRequestError("验证码错误或已过期");
+      }
+      await redis.del(key);
+    }
+
+    const user = await db.query.users.findFirst({
+      where: eq(users.phone, input.phone),
+    });
+    if (!user) {
+      throw new UnauthorizedError("该手机号尚未注册");
+    }
+    if (user.status !== "ACTIVE") {
+      throw new UnauthorizedError("账号已被禁用，请联系管理员");
+    }
+
+    const tokens = await issueTokens(user);
+
+    logger.info({ userId: user.id, phone: user.phone }, "用户登录成功（验证码）");
+
+    return c.json({
+      user: {
+        id: user.id,
+        phone: user.phone,
+        name: user.name,
+        role: user.role,
+      },
+      ...tokens,
     });
   },
 );
@@ -235,7 +280,7 @@ authRoutes.post(
 /**
  * @openapi
  * POST /auth/verify-code
- * @summary 验证码校验
+ * @summary 验证码校验（不签发 token）
  * @tags auth
  */
 authRoutes.post(
@@ -313,7 +358,7 @@ authRoutes.post("/logout", authMiddleware, async (c) => {
 /**
  * @openapi
  * PUT /auth/me
- * @summary 更新当前用户资料（name / phone / avatar）
+ * @summary 更新当前用户资料（name / phone / avatar / email）
  * @tags auth
  * @security BearerAuth
  */
@@ -343,6 +388,16 @@ authRoutes.put(
       });
       if (existing && existing.id !== currentUser.id) {
         throw new ConflictError("该手机号已被其他账号绑定");
+      }
+    }
+
+    // 邮箱唯一性校验（如提供）
+    if (patch.email) {
+      const existing = await db.query.users.findFirst({
+        where: eq(users.email, patch.email),
+      });
+      if (existing && existing.id !== currentUser.id) {
+        throw new ConflictError("该邮箱已被其他账号绑定");
       }
     }
 
@@ -401,20 +456,8 @@ authRoutes.post(
       throw new UnauthorizedError("用户不存在或已被禁用");
     }
 
-    const newAccessToken = await signAccessToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
-    const newRefreshToken = await signRefreshToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const tokens = await issueTokens(user);
 
-    return c.json({
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-    });
+    return c.json(tokens);
   },
 );

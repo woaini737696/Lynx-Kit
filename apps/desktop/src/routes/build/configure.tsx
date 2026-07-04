@@ -8,14 +8,10 @@ import {
   Lock,
   CheckCircle2,
   ListChecks,
+  ArrowRight,
+  ArrowLeft as ChevronLeft,
 } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
   Button,
   Badge,
   Label,
@@ -84,6 +80,8 @@ const CLARIFY_QUESTIONS: Record<
  *
  * - clarifying / draft 状态：可编辑澄清问题表单，提交后调用 updateConfig
  * - 其他状态：只读展示已提交的配置项
+ *
+ * 交互：每问一个问题，逐个回答，支持「上一题/下一题」与回车跳转。
  */
 export default function ConfigurePage() {
   const params = useParams<{ sessionId: string }>();
@@ -92,6 +90,7 @@ export default function ConfigurePage() {
 
   const [loading, setLoading] = React.useState(true);
   const [answers, setAnswers] = React.useState<Record<string, string>>({});
+  const [step, setStep] = React.useState(0);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -129,15 +128,15 @@ export default function ConfigurePage() {
     return (
       <div className="mx-auto max-w-3xl px-6 py-8">
         <Skeleton className="mb-4 h-10 w-48 rounded-md" />
-        <Skeleton className="mb-3 h-32 w-full rounded-xl" />
-        <Skeleton className="h-64 w-full rounded-xl" />
+        <Skeleton className="mb-3 h-32 w-full rounded-card" />
+        <Skeleton className="h-64 w-full rounded-card" />
       </div>
     );
   }
 
   if (!currentSession) {
     return (
-      <div className="px-6 py-20 text-center text-muted-foreground">
+      <div className="px-6 py-20 text-center text-ink-500 dark:text-ink-400">
         会话不存在或已被删除
       </div>
     );
@@ -150,6 +149,12 @@ export default function ConfigurePage() {
     (currentSession.config?.userInput as string) ??
     (currentSession.config?.input as string) ??
     "(未命名需求)";
+
+  const currentQuestion = questions[step];
+  const isLast = step >= questions.length - 1;
+  const progressPct = questions.length > 0
+    ? Math.round(((step + (currentQuestion ? 1 : 0)) / questions.length) * 100)
+    : 0;
 
   const onSubmit = async () => {
     // 简单校验必填项
@@ -178,6 +183,23 @@ export default function ConfigurePage() {
     }
   };
 
+  const goNext = () => {
+    if (!currentQuestion) return;
+    if (currentQuestion.required && !answers[currentQuestion.id]?.trim()) {
+      toast({
+        title: "请填写必填项",
+        description: currentQuestion.label,
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!isLast) setStep((s) => s + 1);
+  };
+
+  const goPrev = () => {
+    if (step > 0) setStep((s) => s - 1);
+  };
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-6">
       {/* 顶部 */}
@@ -188,8 +210,8 @@ export default function ConfigurePage() {
             返回控制台
           </Button>
         </Link>
-        <Settings2 className="h-5 w-5 text-lynx-500" />
-        <h1 className="text-xl font-bold">配置</h1>
+        <Settings2 className="h-5 w-5 text-ink-900 dark:text-ink-100" />
+        <h1 className="text-lg font-semibold text-ink-950 dark:text-ink-0">配置</h1>
         <Badge variant={editable ? "default" : "secondary"} className="gap-1">
           {editable ? (
             <>
@@ -209,67 +231,132 @@ export default function ConfigurePage() {
       </div>
 
       {/* 用户原始需求（只读） */}
-      <Card className="mb-4">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm">原始需求</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <p className="rounded-md bg-muted/40 px-3 py-2 text-sm">
-            {userInput}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="glass-card mb-4 p-5">
+        <h2 className="mb-2 text-sm font-semibold text-ink-900 dark:text-ink-100">原始需求</h2>
+        <p className="rounded bg-ink-100/60 px-3 py-2 text-sm text-ink-700 dark:bg-ink-900/60 dark:text-ink-300">
+          {userInput}
+        </p>
+      </div>
 
-      {/* 澄清问题表单 */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <ListChecks className="h-4 w-4 text-lynx-500" />
-            需求澄清
-          </CardTitle>
-          <CardDescription className="text-xs">
+      {/* 澄清问答交互 */}
+      <div className="glass-card">
+        {/* 头部 */}
+        <div className="border-b border-ink-200/60 p-5 dark:border-ink-800/60">
+          <div className="flex items-center gap-2">
+            <ListChecks className="h-4 w-4 text-ink-900 dark:text-ink-100" />
+            <h2 className="text-sm font-semibold text-ink-900 dark:text-ink-100">需求澄清</h2>
+          </div>
+          <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
             {editable
               ? "请补充以下信息，CLARIFY Agent 将据此生成结构化需求文档"
               : "配置已锁定，如需修改请新建构建会话"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          </p>
+
+          {/* 进度条 */}
+          {editable && questions.length > 0 && (
+            <div className="mt-3">
+              <div className="mb-1 flex items-center justify-between text-xs text-ink-500 dark:text-ink-400">
+                <span>
+                  第 {step + 1} / {questions.length} 题
+                  {currentQuestion?.required && <span className="ml-1 text-destructive">*</span>}
+                </span>
+                <span className="tabular-nums">{progressPct}%</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-ink-200 dark:bg-ink-800">
+                <div
+                  className="h-full bg-ink-950 transition-all duration-300 dark:bg-ink-100"
+                  style={{ width: `${progressPct}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 问答体 */}
+        <div className="p-5">
           {questions.length === 0 ? (
-            <div className="py-6 text-center text-sm text-muted-foreground">
+            <div className="py-6 text-center text-sm text-ink-500 dark:text-ink-400">
               暂无预设问题
             </div>
-          ) : (
-            questions.map((q) => (
-              <div key={q.id} className="space-y-1.5">
-                <Label className="flex items-center gap-1 text-xs">
-                  {q.label}
-                  {q.required && <span className="text-destructive">*</span>}
+          ) : editable && currentQuestion ? (
+            <div className="space-y-4">
+              {/* 当前问题 */}
+              <div key={currentQuestion.id} className="space-y-2">
+                <Label className="flex items-center gap-1 text-sm font-medium text-ink-900 dark:text-ink-100">
+                  <span className="tabular-nums text-ink-400 dark:text-ink-500">
+                    {(step + 1).toString().padStart(2, "0")}
+                  </span>
+                  <span className="ml-1">{currentQuestion.label}</span>
+                  {currentQuestion.required && <span className="text-destructive">*</span>}
                 </Label>
-                {editable ? (
-                  <Textarea
-                    value={answers[q.id] ?? ""}
-                    onChange={(e) =>
-                      setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
+                <Textarea
+                  autoFocus
+                  value={answers[currentQuestion.id] ?? ""}
+                  onChange={(e) =>
+                    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }))
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault();
+                      if (isLast) void onSubmit();
+                      else goNext();
                     }
-                    placeholder={q.placeholder}
-                    rows={2}
-                  />
-                ) : (
-                  <div className="rounded-md border bg-muted/20 px-3 py-2 text-sm">
+                  }}
+                  placeholder={currentQuestion.placeholder}
+                  rows={3}
+                  className="input-glass border-0 bg-transparent font-mono shadow-none focus-visible:ring-0"
+                />
+                <p className="text-[11px] text-ink-500 dark:text-ink-400">
+                  按 ⌘/Ctrl + Enter {isLast ? "提交" : "下一题"}
+                </p>
+              </div>
+
+              {/* 步骤点 */}
+              <div className="flex flex-wrap gap-1.5 pt-2">
+                {questions.map((q, idx) => {
+                  const filled = !!answers[q.id]?.trim();
+                  const isCurrent = idx === step;
+                  return (
+                    <button
+                      key={q.id}
+                      type="button"
+                      onClick={() => setStep(idx)}
+                      className={
+                        "flex h-7 w-7 items-center justify-center rounded-full text-xs tabular-nums transition-all duration-200 " +
+                        (isCurrent
+                          ? "bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950"
+                          : filled
+                            ? "bg-ink-200 text-ink-700 dark:bg-ink-800 dark:text-ink-300"
+                            : "border border-ink-200 text-ink-400 dark:border-ink-700 dark:text-ink-500")
+                      }
+                      title={q.label}
+                    >
+                      {filled && !isCurrent ? <CheckCircle2 className="h-3.5 w-3.5" /> : idx + 1}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {questions.map((q) => (
+                <div key={q.id} className="space-y-1">
+                  <Label className="text-xs text-ink-500 dark:text-ink-400">{q.label}</Label>
+                  <div className="rounded bg-ink-100/40 px-3 py-2 text-sm text-ink-800 dark:bg-ink-900/40 dark:text-ink-200">
                     {answers[q.id] || (
-                      <span className="text-muted-foreground">（未填写）</span>
+                      <span className="text-ink-400 dark:text-ink-500">（未填写）</span>
                     )}
                   </div>
-                )}
-              </div>
-            ))
+                </div>
+              ))}
+            </div>
           )}
 
           {/* 架构产物（已存在时展示） */}
           {currentSession.architecture && (
-            <div className="space-y-1.5">
+            <div className="mt-4 space-y-1.5">
               <Label className="text-xs">架构产物（ARCHITECT Agent 生成）</Label>
-              <div className="rounded-md border bg-muted/20 px-3 py-2 text-xs">
+              <div className="rounded bg-ink-100/40 px-3 py-2 text-xs text-ink-800 dark:bg-ink-900/40 dark:text-ink-200">
                 <div>
                   <span className="font-medium">前端：</span>
                   {currentSession.architecture.frontend.join(" / ")}
@@ -285,32 +372,55 @@ export default function ConfigurePage() {
               </div>
             </div>
           )}
-        </CardContent>
-        <CardFooter className="justify-between border-t bg-muted/30 py-3">
-          <span className="text-xs text-muted-foreground">
+        </div>
+
+        {/* 底部操作 */}
+        <div className="flex items-center justify-between border-t border-ink-200/60 bg-ink-50/40 p-4 dark:border-ink-800/60 dark:bg-ink-900/40">
+          <span className="text-xs text-ink-500 dark:text-ink-400">
             版本 v{currentSession.version} · {formatDateTime(currentSession.updatedAt)}
           </span>
           {editable ? (
-            <Button
-              className="bg-lynx-500 text-white hover:bg-lynx-600"
-              onClick={() => void onSubmit()}
-              disabled={isUpdating}
-            >
-              {isUpdating ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={goPrev}
+                disabled={step === 0}
+              >
+                <ChevronLeft className="mr-1.5 h-4 w-4" />
+                上一题
+              </Button>
+              {isLast ? (
+                <button
+                  className="btn-ink inline-flex items-center gap-2 text-sm"
+                  onClick={() => void onSubmit()}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  {isUpdating ? "提交中..." : "提交并进入架构设计"}
+                </button>
               ) : (
-                <Save className="mr-2 h-4 w-4" />
+                <button
+                  className="btn-ink inline-flex items-center gap-2 text-sm"
+                  onClick={goNext}
+                >
+                  下一题
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               )}
-              {isUpdating ? "提交中..." : "提交并进入架构设计"}
-            </Button>
+            </div>
           ) : (
             <Badge variant="outline" className="gap-1 text-xs">
               <CheckCircle2 className="h-3 w-3" />
               已提交
             </Badge>
           )}
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

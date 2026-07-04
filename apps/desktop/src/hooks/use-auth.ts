@@ -11,6 +11,9 @@ import { authApi } from "@/lib/api";
  * 认证 Hook
  *
  * 封装登录 / 注册 / 登出 / 获取当前用户，写回 @lynxkit/store 的 auth-store。
+ * 登录方式：
+ *   - 手机号 + 密码   login({ phone, password })
+ *   - 手机号 + 验证码  loginByCode({ phone, code })
  * 登录成功后 token 持久化到 localStorage，后续请求自动注入 Authorization 头。
  */
 export function useAuth() {
@@ -19,8 +22,17 @@ export function useAuth() {
     useAuthStore();
 
   const loginMutation = useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      authApi.login(email, password),
+    mutationFn: ({ phone, password }: { phone: string; password: string }) =>
+      authApi.login(phone, password),
+    onSuccess: (res) => {
+      setUser(res.user, res.accessToken);
+      toast({ title: t("auth.loginSuccess"), variant: "success" });
+    },
+  });
+
+  const loginByCodeMutation = useMutation({
+    mutationFn: ({ phone, code }: { phone: string; code: string }) =>
+      authApi.loginByCode(phone, code),
     onSuccess: (res) => {
       setUser(res.user, res.accessToken);
       toast({ title: t("auth.loginSuccess"), variant: "success" });
@@ -53,12 +65,14 @@ export function useAuth() {
     token,
     isAuthenticated,
     login: loginMutation.mutateAsync,
+    loginByCode: loginByCodeMutation.mutateAsync,
     register: registerMutation.mutateAsync,
     logout: logoutMutation.mutateAsync,
     fetchMe,
     updateProfile,
     isPending:
       loginMutation.isPending ||
+      loginByCodeMutation.isPending ||
       registerMutation.isPending ||
       logoutMutation.isPending,
   };

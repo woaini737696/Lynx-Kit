@@ -11,12 +11,6 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
   Input,
   Label,
   Button,
@@ -127,47 +121,47 @@ export function AIProviderCard({ meta, localModels }: AIProviderCardProps) {
   };
 
   return (
-    <Card
+    <div
       className={
         activeProvider === meta.id
-          ? "border-lynx-500 ring-1 ring-lynx-500/30"
-          : undefined
+          ? "glass-card overflow-hidden ring-1 ring-ink-950 dark:ring-ink-100"
+          : "glass-card overflow-hidden"
       }
     >
-      <CardHeader className="pb-3">
+      <div className="border-b border-ink-200/60 px-5 py-4 pb-3 dark:border-ink-800/60">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2 text-base">
+            <h3 className="flex items-center gap-2 text-base font-semibold text-ink-950 dark:text-ink-0">
               {meta.name}
               {isLocal && (
-                <Badge variant="outline" className="text-[10px]">
+                <Badge variant="outline" className="border-ink-200 text-[10px] text-ink-700 dark:border-ink-700 dark:text-ink-300">
                   本地
                 </Badge>
               )}
               {activeProvider === meta.id && (
-                <Badge className="bg-lynx-500/10 text-lynx-600">
+                <Badge className="bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950">
                   <Star className="mr-1 h-3 w-3" />
                   默认
                 </Badge>
               )}
               {saved && <ConfiguredBadge />}
-            </CardTitle>
-            <CardDescription className="mt-1">
+            </h3>
+            <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">
               {meta.description}
-            </CardDescription>
+            </p>
           </div>
           <ModelTestResult
             state={(testState?.state ?? "idle") as ProviderTestState}
             result={testState?.result}
           />
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="space-y-3">
+      <div className="space-y-3 p-5">
         {!isLocal && (
           <div className="space-y-1.5">
-            <Label className="flex items-center gap-1.5 text-xs">
-              <KeyRound className="h-3.5 w-3.5 text-muted-foreground" />
+            <Label className="flex items-center gap-1.5 text-xs text-ink-700 dark:text-ink-300">
+              <KeyRound className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />
               API Key
             </Label>
             <Input
@@ -176,26 +170,27 @@ export function AIProviderCard({ meta, localModels }: AIProviderCardProps) {
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="sk-..."
               autoComplete="off"
+              className="input-glass border-0 font-mono text-xs shadow-none focus-visible:ring-0"
             />
           </div>
         )}
 
         <div className="space-y-1.5">
-          <Label className="flex items-center gap-1.5 text-xs">
-            <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
+          <Label className="flex items-center gap-1.5 text-xs text-ink-700 dark:text-ink-300">
+            <Link2 className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />
             API Base
           </Label>
           <Input
             value={apiBase}
             onChange={(e) => setApiBase(e.target.value)}
             placeholder={meta.apiBase}
-            className="font-mono text-xs"
+            className="input-glass border-0 font-mono text-xs shadow-none focus-visible:ring-0"
           />
         </div>
 
         <div className="space-y-1.5">
-          <Label className="flex items-center gap-1.5 text-xs">
-            <Cpu className="h-3.5 w-3.5 text-muted-foreground" />
+          <Label className="flex items-center gap-1.5 text-xs text-ink-700 dark:text-ink-300">
+            <Cpu className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />
             模型
           </Label>
           <Select value={model} onValueChange={setModel}>
@@ -217,19 +212,19 @@ export function AIProviderCard({ meta, localModels }: AIProviderCardProps) {
         </div>
 
         {isLocal && localModels && localModels.length === 0 && (
-          <p className="rounded bg-muted/50 p-2 text-xs text-muted-foreground">
+          <p className="rounded-md bg-ink-100/60 p-2 text-xs text-ink-500 dark:bg-ink-900/60 dark:text-ink-400">
             未检测到本地模型，请确认 Ollama 正在运行并已拉取模型（如{" "}
-            <code className="font-mono">ollama pull qwen2.5-coder:7b</code>）。
+            <code className="font-mono text-ink-700 dark:text-ink-300">ollama pull qwen2.5-coder:7b</code>）。
           </p>
         )}
-      </CardContent>
+      </div>
 
-      <CardFooter className="justify-between gap-2 border-t bg-muted/30 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-ink-200/60 bg-ink-50/50 px-5 py-3 dark:border-ink-800/60 dark:bg-ink-900/40">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => meta.website && window.open(meta.website, "_blank")}
-          className="text-muted-foreground"
+          className="text-ink-500 hover:bg-ink-100 dark:text-ink-400 dark:hover:bg-ink-800"
         >
           查看文档
         </Button>
@@ -239,31 +234,33 @@ export function AIProviderCard({ meta, localModels }: AIProviderCardProps) {
             size="sm"
             onClick={handleTest}
             disabled={isTesting}
+            className="rounded-full border-ink-200 text-ink-700 hover:bg-ink-100 dark:border-ink-700 dark:text-ink-300 dark:hover:bg-ink-800"
           >
             <FlaskConical className="mr-1.5 h-3.5 w-3.5" />
             测试连通性
           </Button>
-          <Button
-            size="sm"
+          <button
+            type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-lynx-500 text-white hover:bg-lynx-600"
+            className="btn-ink inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:opacity-50"
           >
-            <Save className="mr-1.5 h-3.5 w-3.5" />
+            <Save className="h-3.5 w-3.5" />
             保存
-          </Button>
+          </button>
           {saved && activeProvider !== meta.id && (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => void setDefault({ provider: meta.id })}
+              className="text-ink-600 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800"
             >
               <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
               设为默认
             </Button>
           )}
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

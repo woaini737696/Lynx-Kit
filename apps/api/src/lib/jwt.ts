@@ -21,8 +21,8 @@ import { env } from "../env.js";
 export interface JwtPayload extends JWTPayload {
   /** 用户 ID */
   sub: string;
-  /** 用户邮箱 */
-  email: string;
+  /** 用户手机号（登录主标识） */
+  phone: string;
   /** 用户角色 */
   role: string;
   /** token 类型：access | refresh */
@@ -46,16 +46,16 @@ function getSecretKey(): Uint8Array {
 /**
  * 签发 access token
  *
- * @param user 用户信息（id / email / role）
+ * @param user 用户信息（id / phone / role）
  * @returns JWT access token 字符串
  */
 export async function signAccessToken(user: {
   id: string;
-  email: string;
+  phone: string;
   role: string;
 }): Promise<string> {
   return new SignJWT({
-    email: user.email,
+    phone: user.phone,
     role: user.role,
     type: "access",
   })
@@ -76,11 +76,11 @@ export async function signAccessToken(user: {
  */
 export async function signRefreshToken(user: {
   id: string;
-  email: string;
+  phone: string;
   role: string;
 }): Promise<string> {
   return new SignJWT({
-    email: user.email,
+    phone: user.phone,
     role: user.role,
     type: "refresh",
   })

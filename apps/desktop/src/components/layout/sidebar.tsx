@@ -41,7 +41,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col border-r border-border bg-card/40 transition-[width] duration-200",
+        "glass-card flex h-full flex-col rounded-none border-x-0 border-y-0 transition-[width] duration-200",
         open ? "w-60" : "w-0 overflow-hidden",
       )}
     >
@@ -56,10 +56,10 @@ export function Sidebar() {
               key={item.href}
               to={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
+                "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-px",
                 active
-                  ? "bg-lynx-500/10 text-lynx-600 dark:text-lynx-400"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                  ? "bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950"
+                  : "text-ink-600 hover:bg-ink-100 hover:text-ink-950 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100",
               )}
             >
               <Icon className="h-4 w-4" />
@@ -70,34 +70,34 @@ export function Sidebar() {
       </nav>
 
       {/* 底部固定区域：登录入口 / 用户信息 */}
-      <div className="border-t border-border p-3">
+      <div className="border-t border-ink-200/60 p-3 dark:border-ink-800/60">
         {isAuthenticated && user ? (
           <div className="space-y-2">
             <button
               type="button"
               onClick={() => navigate("/settings/profile")}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-accent"
+              className="flex w-full items-center gap-2 rounded-full px-2 py-2 text-left text-sm transition-all duration-200 hover:-translate-y-px hover:bg-ink-100 dark:hover:bg-ink-800"
             >
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-lynx-500/10 text-xs text-lynx-600">
-                  {(user.name ?? user.email)[0]?.toUpperCase()}
+                <AvatarFallback className="bg-ink-950 text-xs text-ink-0 dark:bg-ink-100 dark:text-ink-950">
+                  {(user.name ?? user.email ?? "")[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex min-w-0 flex-1 flex-col leading-tight">
-                <span className="truncate text-xs font-medium text-foreground">
+                <span className="truncate text-xs font-medium text-ink-900 dark:text-ink-100">
                   {user.name ?? user.email}
                 </span>
-                <span className="truncate text-[10px] text-muted-foreground">
+                <span className="truncate text-[10px] text-ink-500 dark:text-ink-400">
                   {t("nav.loggedIn")}
                 </span>
               </div>
-              <User className="h-3.5 w-3.5 text-muted-foreground" />
+              <User className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />
             </button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => void logout()}
-              className="w-full justify-start text-muted-foreground"
+              className="w-full justify-start text-ink-600 hover:bg-ink-100 dark:text-ink-400 dark:hover:bg-ink-800"
             >
               <LogOut className="mr-2 h-4 w-4" />
               {t("nav.logout")}
@@ -106,7 +106,7 @@ export function Sidebar() {
         ) : (
           <Button
             onClick={() => navigate("/login")}
-            className="w-full bg-lynx-500 text-white hover:bg-lynx-600"
+            className="btn-ink w-full border-0"
           >
             <LogIn className="mr-2 h-4 w-4" />
             {t("nav.login")}
@@ -117,7 +117,7 @@ export function Sidebar() {
           href="https://github.com/woaini737696/Lynx-Kit"
           target="_blank"
           rel="noreferrer"
-          className="mt-2 flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-[11px] text-muted-foreground/70 transition hover:bg-accent hover:text-foreground"
+          className="mt-2 flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] text-ink-500 transition hover:bg-ink-100 hover:text-ink-900 dark:text-ink-500 dark:hover:bg-ink-800 dark:hover:text-ink-100"
         >
           <Github className="h-3 w-3" />
           GitHub

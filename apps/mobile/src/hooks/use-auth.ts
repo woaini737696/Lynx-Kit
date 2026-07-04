@@ -8,6 +8,10 @@ import { setAuthToken, clearAuthToken, hydrateToken } from '../lib/storage';
  * 认证 Hook —— 桥接 @lynxkit/store 的 authStore 与 api-client。
  *
  * token 同步落盘到 expo-secure-store，并通过内存缓存供 api-client 同步读取。
+ *
+ * 登录方式：
+ *   - 手机号 + 密码   login(phone, password)
+ *   - 手机号 + 验证码  loginByCode(phone, code)
  */
 export function useAuth() {
   const { user, token, isAuthenticated, setUser, logout, updateProfile } =
@@ -18,21 +22,37 @@ export function useAuth() {
     await hydrateToken();
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const { user: u, accessToken: t } = await authApi.login(email, password);
-    await setAuthToken(t);
-    setUser(u, t);
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    return u;
-  }, [setUser]);
+  /** 手机号 + 密码 登录 */
+  const login = useCallback(
+    async (phone: string, password: string) => {
+      const { user: u, accessToken: t } = await authApi.login(phone, password);
+      await setAuthToken(t);
+      setUser(u, t);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      return u;
+    },
+    [setUser],
+  );
 
+  /** 手机号 + 验证码 登录 */
+  const loginByCode = useCallback(
+    async (phone: string, code: string) => {
+      const { user: u, accessToken: t } = await authApi.loginByCode(phone, code);
+      await setAuthToken(t);
+      setUser(u, t);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      return u;
+    },
+    [setUser],
+  );
+
+  /** 手机号 + 验证码 注册 */
   const register = useCallback(
     async (input: {
-      email: string;
+      phone: string;
+      code: string;
       password: string;
       name: string;
-      phone?: string;
-      code?: string;
     }) => {
       const { user: u, accessToken: t } = await authApi.register(input);
       await setAuthToken(t);
@@ -60,6 +80,7 @@ export function useAuth() {
     isAuthenticated,
     hydrate,
     login,
+    loginByCode,
     register,
     signOut,
     updateProfile,

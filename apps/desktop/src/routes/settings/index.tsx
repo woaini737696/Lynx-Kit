@@ -7,10 +7,6 @@ import {
   Info,
   ChevronRight,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-} from "@lynxkit/ui-web";
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -44,26 +40,26 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-8">
-      <h1 className="mb-6 text-2xl font-bold">{t("settings.title")}</h1>
+      <h1 className="mb-6 text-2xl font-bold text-ink-950 dark:text-ink-0">{t("settings.title")}</h1>
       <div className="space-y-2">
         {sections.map((s) => {
           const Icon = s.icon;
           return (
-            <Link key={s.href} to={s.href}>
-              <Card className="cursor-pointer transition hover:border-lynx-500/50">
-                <CardContent className="flex items-center gap-4 p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-lynx-500/10 text-lynx-500">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium">{s.title}</div>
-                    <div className="truncate text-sm text-muted-foreground">
-                      {s.desc}
-                    </div>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </CardContent>
-              </Card>
+            <Link
+              key={s.href}
+              to={s.href}
+              className="glass-card flex items-center gap-4 p-4 transition-all duration-200 hover:-translate-y-px"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950">
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-ink-950 dark:text-ink-0">{s.title}</div>
+                <div className="truncate text-sm text-ink-500 dark:text-ink-400">
+                  {s.desc}
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-ink-400 dark:text-ink-500" />
             </Link>
           );
         })}

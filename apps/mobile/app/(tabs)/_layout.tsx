@@ -12,13 +12,23 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#FF6B35',
-        tabBarInactiveTintColor: isDark ? '#64748B' : '#94A3B8',
+        // DESIGN_SYSTEM.md：毛玻璃 Tab bar（半透明 + 浮动）
+        tabBarActiveTintColor: isDark ? '#F5F5F7' : '#09090B',
+        tabBarInactiveTintColor: '#A1A1AA',
         tabBarStyle: {
-          backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
-          borderTopColor: isDark ? '#1E293B' : '#E2E8F0',
+          position: 'absolute',
+          backgroundColor: isDark
+            ? 'rgba(24,24,27,0.80)'
+            : 'rgba(255,255,255,0.80)',
+          borderTopColor: isDark
+            ? 'rgba(39,39,42,0.6)'
+            : 'rgba(235,235,239,0.6)',
+          borderTopWidth: 1,
           height: 56,
           paddingBottom: 4,
+          paddingTop: 4,
+          elevation: 0,
+          shadowOpacity: 0,
         },
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       }}

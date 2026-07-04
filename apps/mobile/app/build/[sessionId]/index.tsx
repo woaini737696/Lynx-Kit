@@ -10,6 +10,7 @@ import {
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Settings2, Code2, Rocket, Eye } from 'lucide-react-native';
@@ -36,6 +37,7 @@ import {
  */
 export default function BuildProgressScreen() {
   const { t } = useTranslation();
+  const isDark = useColorScheme() === 'dark';
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const id = Array.isArray(sessionId) ? sessionId[0] : sessionId;
 
@@ -70,7 +72,6 @@ export default function BuildProgressScreen() {
   const isError = status === BuildStatus.ERROR;
 
   // 完成时拉取最新会话（拿到 deployUrl）；失败时触感反馈。
-  // 推送通知由 use-build hook 在 SSE done 事件中发送（仅对实时完成的构建触发）。
   useEffect(() => {
     if (isDone) {
       refetch();
@@ -118,37 +119,44 @@ export default function BuildProgressScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-950">
-        <ActivityIndicator color="#FF6B35" />
+      <View className="flex-1 items-center justify-center bg-ink-100 dark:bg-ink-950">
+        <ActivityIndicator color="#09090B" />
       </View>
     );
   }
 
+  const emphasisIcon = isDark ? '#09090B' : '#FFFFFF';
+
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-ink-100 dark:bg-ink-950" edges={['bottom']}>
       <ScrollView
-        contentContainerClassName="px-4 pb-8 gap-5"
+        contentContainerClassName="px-4 pb-8 gap-5 pt-4"
         keyboardShouldPersistTaps="handled"
       >
         {/* 会话标识：sessionId 标题 */}
-        <View className="gap-1 pt-4">
-          <Text className="text-xs text-slate-500">{t('build.sessionTitle')}</Text>
-          <Text className="text-lg font-bold text-white" numberOfLines={1}>
+        <View className="gap-1">
+          <Text className="text-xs text-ink-500 dark:text-ink-400">
+            {t('build.sessionTitle')}
+          </Text>
+          <Text
+            className="text-lg font-semibold text-ink-900 dark:text-ink-50"
+            numberOfLines={1}
+          >
             {sessionName ?? shortId}
           </Text>
-          <Text className="text-xs text-slate-500">{shortId}</Text>
+          <Text className="text-xs text-ink-500 dark:text-ink-400">{shortId}</Text>
         </View>
 
-        {/* 导航入口：配置 / 代码 / 部署 */}
-        {(canConfigure || hasGeneratedCode || canDeploy) ? (
+        {/* 导航入口：配置 / 代码 / 部署（毛玻璃按钮） */}
+        {canConfigure || hasGeneratedCode || canDeploy ? (
           <View className="flex-row gap-3">
             {canConfigure ? (
               <Pressable
                 onPress={() => router.push(`/build/${id}/configure`)}
-                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3 active:opacity-80"
+                className="flex-1 flex-row items-center justify-center gap-2 rounded-full border border-white/70 bg-white/70 py-3 backdrop-blur-xl active:opacity-80 dark:border-ink-800/60 dark:bg-ink-900/70"
               >
-                <Settings2 size={16} color="#FF6B35" />
-                <Text className="text-sm font-semibold text-white">
+                <Settings2 size={16} color="#09090B" />
+                <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
                   {t('build.configure')}
                 </Text>
               </Pressable>
@@ -156,10 +164,10 @@ export default function BuildProgressScreen() {
             {hasGeneratedCode ? (
               <Pressable
                 onPress={() => router.push(`/build/${id}/code`)}
-                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3 active:opacity-80"
+                className="flex-1 flex-row items-center justify-center gap-2 rounded-full border border-white/70 bg-white/70 py-3 backdrop-blur-xl active:opacity-80 dark:border-ink-800/60 dark:bg-ink-900/70"
               >
-                <Code2 size={16} color="#FF6B35" />
-                <Text className="text-sm font-semibold text-white">
+                <Code2 size={16} color="#09090B" />
+                <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
                   {t('build.codePreview')}
                 </Text>
               </Pressable>
@@ -167,10 +175,10 @@ export default function BuildProgressScreen() {
             {canDeploy ? (
               <Pressable
                 onPress={() => router.push(`/build/${id}/deploy`)}
-                className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3 active:opacity-80"
+                className="flex-1 flex-row items-center justify-center gap-2 rounded-full border border-white/70 bg-white/70 py-3 backdrop-blur-xl active:opacity-80 dark:border-ink-800/60 dark:bg-ink-900/70"
               >
-                <Rocket size={16} color="#FF6B35" />
-                <Text className="text-sm font-semibold text-white">
+                <Rocket size={16} color="#09090B" />
+                <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
                   {t('build.deployTitle')}
                 </Text>
               </Pressable>
@@ -178,47 +186,51 @@ export default function BuildProgressScreen() {
           </View>
         ) : null}
 
-        {/* 进度条 */}
-        <View className="gap-2">
+        {/* 进度条（毛玻璃卡片） */}
+        <View className="gap-2 rounded-3xl border border-white/70 bg-white/70 p-4 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
           <View className="flex-row items-center justify-between">
-            <Text className="text-sm font-semibold text-slate-200">
+            <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
               {t('build.progressTitle')}
             </Text>
-            <Text className="text-sm font-semibold text-lynx-500">
+            <Text className="text-sm font-semibold text-ink-950 dark:text-ink-50">
               {percent}%
             </Text>
           </View>
-          <View className="h-2 overflow-hidden rounded-full bg-slate-800">
+          <View className="h-2 overflow-hidden rounded-full bg-ink-200 dark:bg-ink-800">
             <View
-              className="h-full rounded-full bg-lynx-500"
+              className="h-full rounded-full bg-ink-950 dark:bg-ink-100"
               style={{ width: `${percent}%` }}
             />
           </View>
-          <Text className="text-xs text-slate-400">
+          <Text className="text-xs text-ink-500 dark:text-ink-400">
             {isDone
               ? t('build.completed')
               : isError
                 ? t('build.failed')
                 : currentAgent
-                  ? t('build.executing', { task: AGENTS.find((a) => a.id === currentAgent)?.name ?? '' })
+                  ? t('build.executing', {
+                      task: AGENTS.find((a) => a.id === currentAgent)?.name ?? '',
+                    })
                   : t('build.waitingStart')}
           </Text>
         </View>
 
         {/* 9 层 Agent 进度卡片 */}
         <View className="gap-3">
-          <Text className="text-sm font-semibold text-slate-200">
+          <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
             {t('build.pipeline')}
           </Text>
           <AgentProgress agents={AGENTS} statuses={agentStatuses} />
         </View>
 
-        {/* 实时日志（自动滚到底部） */}
+        {/* 实时日志（终端样式 bg-ink-950 text-ink-100） */}
         <View className="gap-2">
-          <Text className="text-sm font-semibold text-slate-200">{t('build.realtimeLogs')}</Text>
-          <View className="rounded-2xl bg-slate-900 p-3">
+          <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
+            {t('build.realtimeLogs')}
+          </Text>
+          <View className="rounded-2xl bg-ink-950 p-3">
             {logs.length === 0 ? (
-              <Text className="px-1 py-4 text-center text-xs text-slate-500">
+              <Text className="px-1 py-4 text-center font-mono text-xs text-ink-400">
                 {t('build.waitingLogs')}
               </Text>
             ) : (
@@ -233,7 +245,7 @@ export default function BuildProgressScreen() {
                 {logs.map((log) => (
                   <Text
                     key={log.id}
-                    className="font-mono text-xs leading-5 text-slate-300"
+                    className="font-mono text-xs leading-5 text-ink-100"
                   >
                     {log.message}
                   </Text>
@@ -255,20 +267,24 @@ export default function BuildProgressScreen() {
                 });
               }}
               disabled={!deployUrl}
-              className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-slate-700 py-3.5 active:opacity-80 disabled:opacity-40"
+              className="flex-1 flex-row items-center justify-center gap-2 rounded-full border border-ink-300 bg-transparent py-3.5 active:opacity-80 disabled:opacity-40 dark:border-ink-700"
             >
-              <Eye size={18} color="#F8FAFC" />
-              <Text className="text-sm font-semibold text-white">{t('build.preview')}</Text>
+              <Eye size={18} color="#09090B" />
+              <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
+                {t('build.preview')}
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => {
                 if (deployUrl) void Linking.openURL(deployUrl);
               }}
               disabled={!deployUrl}
-              className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-lynx-500 py-3.5 active:opacity-80 disabled:opacity-40"
+              className="flex-1 flex-row items-center justify-center gap-2 rounded-full bg-ink-950 py-3.5 active:opacity-80 disabled:opacity-40 dark:bg-ink-100"
             >
-              <Rocket size={18} color="#FFFFFF" />
-              <Text className="text-sm font-semibold text-white">{t('build.deploy')}</Text>
+              <Rocket size={18} color={emphasisIcon} />
+              <Text className="text-sm font-semibold text-ink-0 dark:text-ink-950">
+                {t('build.deploy')}
+              </Text>
             </Pressable>
           </View>
         ) : null}

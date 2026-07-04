@@ -27,24 +27,35 @@ const queryClient = new QueryClient({
 
 function RootStack() {
   const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { t } = useTranslation();
   usePushNotifications(isAuthenticated);
 
+  // DESIGN_SYSTEM.md：极简 Header（ink 配色，明暗自适应）
   const headerOptions = (title: string) => ({
     title,
     headerShown: true as const,
-    headerTintColor: '#F8FAFC',
-    headerStyle: { backgroundColor: '#0F172A' },
+    headerShadowVisible: false,
+    headerTintColor: isDark ? '#F5F5F7' : '#09090B',
+    headerStyle: {
+      backgroundColor: isDark ? '#18181B' : '#F5F5F7',
+    },
+    headerTitleStyle: {
+      fontWeight: '600' as const,
+      color: isDark ? '#F5F5F7' : '#09090B',
+    },
   });
 
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#0F172A' },
-        // 暗色优先：状态栏文字浅色
-        statusBarStyle: colorScheme === 'dark' ? 'light' : 'dark',
+        contentStyle: {
+          backgroundColor: isDark ? '#09090B' : '#F5F5F7',
+        },
+        // 状态栏文字随系统主题切换
+        statusBarStyle: isDark ? 'light' : 'dark',
       }}
     >
       <Stack.Screen name="index" />
@@ -124,10 +135,13 @@ export default function RootLayout() {
     return null;
   }
 
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <StatusBar style="light" />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <RootStack />
       </ErrorBoundary>
     </QueryClientProvider>

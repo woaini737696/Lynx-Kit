@@ -65,7 +65,7 @@ export function InspirationInput({
 
   return (
     <div className={cn("w-full", className)}>
-      <div className="relative rounded-2xl border border-border bg-card shadow-lg transition focus-within:border-lynx-500 focus-within:ring-2 focus-within:ring-lynx-500/20">
+      <div className="glass-card relative p-5 transition-all duration-200 focus-within:-translate-y-px">
         <Textarea
           ref={textareaRef}
           value={value}
@@ -75,15 +75,15 @@ export function InspirationInput({
           onKeyDown={onKeyDown}
           placeholder="例如：一个基于 AI 匹配的交友平台，支持语音自我介绍和智能推荐..."
           disabled={isCreating}
-          className="min-h-[140px] resize-none border-0 bg-transparent p-5 text-base shadow-none focus-visible:ring-0"
+          className="min-h-[140px] resize-none border-0 bg-transparent p-0 text-base shadow-none focus-visible:ring-0"
         />
-        <div className="flex items-center justify-between gap-3 px-4 pb-3">
+        <div className="mt-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-1">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="text-muted-foreground"
+              className="text-ink-500 hover:bg-ink-100 dark:text-ink-400 dark:hover:bg-ink-800"
               onClick={() =>
                 toast({ title: "附件功能即将上线", description: "支持上传需求文档 / 草图" })
               }
@@ -96,37 +96,37 @@ export function InspirationInput({
                 "text-xs tabular-nums",
                 count > MAX_LEN * 0.9
                   ? "text-destructive"
-                  : "text-muted-foreground",
+                  : "text-ink-500 dark:text-ink-400",
               )}
             >
               {count}/{MAX_LEN}
             </span>
           </div>
-          <Button
+          <button
             type="button"
             onClick={() => void submit()}
             disabled={!value.trim() || isCreating}
-            className="bg-lynx-500 text-white hover:bg-lynx-600"
+            className="btn-ink inline-flex items-center gap-2 text-sm disabled:opacity-50"
           >
             {isCreating ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 正在创建...
               </>
             ) : (
               <>
-                <Sparkles className="mr-2 h-4 w-4" />
+                <Sparkles className="h-4 w-4" />
                 开始构建
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="h-4 w-4" />
               </>
             )}
-          </Button>
+          </button>
         </div>
       </div>
 
       {examples.length > 0 && (
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="text-sm text-muted-foreground">试试：</span>
+          <span className="text-sm text-ink-500 dark:text-ink-400">试试：</span>
           {examples.map((ex) => (
             <button
               key={ex}
@@ -135,7 +135,7 @@ export function InspirationInput({
                 setValue(ex);
                 textareaRef.current?.focus();
               }}
-              className="rounded-full border border-border bg-background px-3 py-1 text-sm text-foreground/80 transition hover:border-lynx-500 hover:text-lynx-600"
+              className="rounded-full border border-ink-200 bg-ink-50 px-3 py-1 text-sm text-ink-700 transition-all duration-200 hover:-translate-y-px hover:border-ink-950 hover:text-ink-950 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-300 dark:hover:border-ink-100 dark:hover:text-ink-100"
             >
               {ex}
             </button>

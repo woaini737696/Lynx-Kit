@@ -36,14 +36,14 @@ export enum UserStatus {
 export interface User {
   /** 用户 ID（cuid） */
   id: string;
-  /** 邮箱（唯一） */
-  email: string;
+  /** 邮箱（可选联系方式，不再用于登录） */
+  email?: string;
   /** 用户名 */
   name?: string;
   /** 头像 URL */
   avatar?: string;
-  /** 手机号（中国大陆 11 位） */
-  phone?: string;
+  /** 手机号（登录主标识，中国大陆 11 位） */
+  phone: string;
   /** 角色 */
   role: UserRole;
   /** 状态 */

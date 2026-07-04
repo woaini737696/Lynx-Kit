@@ -12,8 +12,6 @@ import {
   XCircle,
 } from "lucide-react";
 import {
-  Card,
-  CardContent,
   Button,
   Badge,
   Skeleton,
@@ -91,39 +89,37 @@ export default function BuildListPage() {
     <div className="mx-auto max-w-5xl px-6 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Hammer className="h-6 w-6 text-lynx-500" />
-          <h1 className="text-2xl font-bold">{t("build.myBuilds")}</h1>
+          <Hammer className="h-6 w-6 text-ink-900 dark:text-ink-100" />
+          <h1 className="text-2xl font-bold text-ink-950 dark:text-ink-0">{t("build.myBuilds")}</h1>
         </div>
         <Link to="/">
-          <Button className="bg-lynx-500 text-white hover:bg-lynx-600">
-            <Plus className="mr-2 h-4 w-4" />
+          <button className="btn-ink inline-flex items-center gap-2 text-sm">
+            <Plus className="h-4 w-4" />
             {t("build.newBuild")}
-          </Button>
+          </button>
         </Link>
       </div>
 
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-xl" />
+            <Skeleton key={i} className="h-20 w-full rounded-card" />
           ))}
         </div>
       ) : sessions.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center py-20 text-center">
-            <Hammer className="mb-3 h-12 w-12 text-muted-foreground/40" />
-            <p className="text-base font-medium">{t("build.empty")}</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t("build.emptySubtitle")}
-            </p>
-            <Link to="/">
-              <Button className="mt-4 bg-lynx-500 text-white hover:bg-lynx-600">
-                {t("build.startBuild")}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="glass-card flex flex-col items-center p-20 text-center">
+          <Hammer className="mb-3 h-12 w-12 text-ink-300 dark:text-ink-700" />
+          <p className="text-base font-medium text-ink-900 dark:text-ink-100">{t("build.empty")}</p>
+          <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">
+            {t("build.emptySubtitle")}
+          </p>
+          <Link to="/" className="mt-4">
+            <button className="btn-ink inline-flex items-center gap-2 text-sm">
+              {t("build.startBuild")}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </Link>
+        </div>
       ) : (
         <div className="space-y-3">
           {sessions.map((s) => {
@@ -131,49 +127,50 @@ export default function BuildListPage() {
             const userInput =
               (s.config?.userInput as string) ?? (s.config?.input as string) ?? t("build.untitled");
             return (
-              <Card key={s.id} className="transition hover:border-lynx-500/40">
-                <CardContent className="flex items-center justify-between gap-4 p-4">
-                  <Link to={`/build/${s.id}`} className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="truncate font-medium">{userInput}</span>
-                      <Badge variant={meta.variant} className="gap-1">
-                        {meta.icon}
-                        {t(`build.status.${s.status}`)}
-                      </Badge>
-                      <Badge variant="outline" className="text-[10px]">
-                        v{s.version}
-                      </Badge>
-                    </div>
-                    <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
-                      <span>{s.productType}</span>
-                      <span>·</span>
-                      <span>{formatDateTime(s.updatedAt)}</span>
-                      {s.deployUrl && (
-                        <>
-                          <span>·</span>
-                          <span className="truncate text-lynx-600">{s.deployUrl}</span>
-                        </>
-                      )}
-                    </div>
-                  </Link>
+              <div
+                key={s.id}
+                className="glass-card flex items-center justify-between gap-4 p-4 transition-all duration-200 hover:-translate-y-px"
+              >
+                <Link to={`/build/${s.id}`} className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <Link to={`/build/${s.id}`}>
-                      <Button variant="outline" size="sm">
-                        {t("build.enterConsole")}
-                        <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => void remove(s.id)}
-                      title={t("build.delete")}
-                    >
-                      <XCircle className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <span className="truncate font-medium text-ink-900 dark:text-ink-100">{userInput}</span>
+                    <Badge variant={meta.variant} className="gap-1">
+                      {meta.icon}
+                      {t(`build.status.${s.status}`)}
+                    </Badge>
+                    <Badge variant="outline" className="text-[10px]">
+                      v{s.version}
+                    </Badge>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="mt-1 flex items-center gap-3 text-xs text-ink-500 dark:text-ink-400">
+                    <span>{s.productType}</span>
+                    <span>·</span>
+                    <span>{formatDateTime(s.updatedAt)}</span>
+                    {s.deployUrl && (
+                      <>
+                        <span>·</span>
+                        <span className="truncate text-ink-700 dark:text-ink-300">{s.deployUrl}</span>
+                      </>
+                    )}
+                  </div>
+                </Link>
+                <div className="flex items-center gap-2">
+                  <Link to={`/build/${s.id}`}>
+                    <Button variant="outline" size="sm">
+                      {t("build.enterConsole")}
+                      <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => void remove(s.id)}
+                    title={t("build.delete")}
+                  >
+                    <XCircle className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+              </div>
             );
           })}
         </div>

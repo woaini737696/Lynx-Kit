@@ -25,8 +25,8 @@ export const USER_KEY = "user";
 export interface AuthUser {
   /** 用户 ID */
   id: string;
-  /** 邮箱 */
-  email: string;
+  /** 手机号（登录主标识） */
+  phone: string;
   /** 角色 */
   role: string;
 }
@@ -105,7 +105,7 @@ export const authMiddleware: MiddlewareHandler = async (c, next) => {
   // 3. 注入用户信息
   const user: AuthUser = {
     id: payload.sub,
-    email: payload.email,
+    phone: payload.phone,
     role: payload.role,
   };
   c.set(USER_KEY, user);
@@ -146,7 +146,7 @@ export const optionalAuthMiddleware: MiddlewareHandler = async (c, next) => {
     if (!(await isTokenBlacklisted(token))) {
       c.set(USER_KEY, {
         id: payload.sub,
-        email: payload.email,
+        phone: payload.phone,
         role: payload.role,
       });
     }

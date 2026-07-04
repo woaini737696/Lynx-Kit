@@ -2,15 +2,8 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { User, Mail, Phone, Save, Loader2 } from "lucide-react";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
   Input,
   Label,
-  Button,
   Avatar,
   AvatarFallback,
   toast,
@@ -71,69 +64,80 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="mb-6 text-2xl font-bold">{t("settings.profile")}</h1>
+      <h1 className="mb-6 text-2xl font-bold text-ink-950 dark:text-ink-0">{t("settings.profile")}</h1>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t("profile.basicInfo")}</CardTitle>
-          <CardDescription>{t("profile.updateAccount")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div className="glass-card overflow-hidden">
+        <div className="border-b border-ink-200/60 px-6 py-4 dark:border-ink-800/60">
+          <h2 className="text-base font-semibold text-ink-950 dark:text-ink-0">{t("profile.basicInfo")}</h2>
+          <p className="mt-0.5 text-sm text-ink-500 dark:text-ink-400">{t("profile.updateAccount")}</p>
+        </div>
+        <div className="space-y-4 p-6">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarFallback className="bg-lynx-500/10 text-lg text-lynx-600">
+              <AvatarFallback className="bg-ink-950 text-lg text-ink-0 dark:bg-ink-100 dark:text-ink-950">
                 {((name || user?.email) ?? "U")[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{name || t("profile.notSet")}</p>
-              <p className="text-sm text-muted-foreground">{user?.email}</p>
+              <p className="font-medium text-ink-950 dark:text-ink-0">{name || t("profile.notSet")}</p>
+              <p className="text-sm text-ink-500 dark:text-ink-400">{user?.email}</p>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label className="flex items-center gap-1.5 text-xs">
-              <User className="h-3.5 w-3.5 text-muted-foreground" />
+            <Label className="flex items-center gap-1.5 text-xs text-ink-700 dark:text-ink-300">
+              <User className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />
               {t("profile.username")}
             </Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t("profile.usernamePlaceholder")}
+              className="input-glass border-0 shadow-none focus-visible:ring-0"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label className="flex items-center gap-1.5 text-xs">
-              <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+            <Label className="flex items-center gap-1.5 text-xs text-ink-700 dark:text-ink-300">
+              <Mail className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />
               {t("auth.email")}
             </Label>
-            <Input value={user?.email ?? ""} disabled className="bg-muted/30" />
+            <Input
+              value={user?.email ?? ""}
+              disabled
+              className="input-glass border-0 bg-ink-100/60 shadow-none focus-visible:ring-0 dark:bg-ink-900/60"
+            />
           </div>
 
           <div className="space-y-1.5">
-            <Label className="flex items-center gap-1.5 text-xs">
-              <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+            <Label className="flex items-center gap-1.5 text-xs text-ink-700 dark:text-ink-300">
+              <Phone className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />
               {t("auth.phone")}
             </Label>
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder={t("profile.phonePlaceholder")}
+              className="input-glass border-0 shadow-none focus-visible:ring-0"
             />
           </div>
-        </CardContent>
-        <CardFooter className="justify-end border-t bg-muted/30 py-3">
-          <Button onClick={() => void save()} disabled={saving} className="bg-lynx-500 text-white hover:bg-lynx-600">
+        </div>
+        <div className="flex justify-end border-t border-ink-200/60 bg-ink-50/50 px-6 py-3 dark:border-ink-800/60 dark:bg-ink-900/40">
+          <button
+            type="button"
+            onClick={() => void save()}
+            disabled={saving}
+            className="btn-ink inline-flex items-center gap-2 text-sm disabled:opacity-50"
+          >
             {saving ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="h-4 w-4" />
             )}
             {saving ? t("profile.saving") : t("common.save")}
-          </Button>
-        </CardFooter>
-      </Card>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

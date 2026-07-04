@@ -1,4 +1,10 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+  useColorScheme,
+} from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,6 +17,10 @@ import {
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
+  const isDark = useColorScheme() === 'dark';
+  const emphasisIcon = isDark ? '#09090B' : '#FFFFFF';
+  const subtleIcon = isDark ? '#A1A1AA' : '#71717A';
+
   const items = [
     {
       label: t('settings.aiModels'),
@@ -35,18 +45,25 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <ScrollView className="flex-1 bg-slate-950" contentContainerClassName="px-4 py-4 gap-2">
+    <ScrollView
+      className="flex-1 bg-ink-100 dark:bg-ink-950"
+      contentContainerClassName="px-4 py-4 gap-2"
+    >
       {items.map((item) => {
         const Icon = item.icon;
         return (
           <Pressable
             key={item.label}
             onPress={item.onPress}
-            className="flex-row items-center gap-3 rounded-2xl bg-slate-800 px-4 py-4 active:opacity-80"
+            className="flex-row items-center gap-3 rounded-3xl border border-ink-200/60 bg-white/70 px-5 py-4 backdrop-blur-xl active:opacity-80 dark:border-ink-800/60 dark:bg-ink-900/70"
           >
-            <Icon size={20} color="#FF6B35" />
-            <Text className="flex-1 text-base text-slate-100">{item.label}</Text>
-            <ChevronRight size={18} color="#475569" />
+            <View className="h-10 w-10 items-center justify-center rounded-full bg-ink-950 dark:bg-ink-100">
+              <Icon size={18} color={emphasisIcon} />
+            </View>
+            <Text className="flex-1 text-base font-medium text-ink-900 dark:text-ink-50">
+              {item.label}
+            </Text>
+            <ChevronRight size={18} color={subtleIcon} />
           </Pressable>
         );
       })}

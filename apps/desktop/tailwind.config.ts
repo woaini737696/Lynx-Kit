@@ -28,6 +28,29 @@ const config: Config = {
           900: "#7F2810",
           950: "#451006",
         },
+        // 8 级灰阶（DESIGN_SYSTEM.md §2）
+        ink: {
+          0: "#FFFFFF",
+          50: "#FAFAFA",
+          100: "#F5F5F7",
+          200: "#EBEBEF",
+          300: "#D8D8DE",
+          400: "#A1A1AA",
+          500: "#71717A",
+          600: "#52525B",
+          700: "#3F3F46",
+          800: "#27272A",
+          900: "#18181B",
+          950: "#09090B",
+        },
+        // Liquid Glass 表层色板（DESIGN_SYSTEM.md §2 毛玻璃 Token）
+        glass: {
+          bg: "rgba(255,255,255,0.55)",
+          "bg-strong": "rgba(255,255,255,0.72)",
+          "bg-subtle": "rgba(255,255,255,0.35)",
+          border: "rgba(255,255,255,0.7)",
+          "border-subtle": "rgba(255,255,255,0.35)",
+        },
         // shadcn/ui 语义色（HSL 字符串，便于主题切换）
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -67,16 +90,33 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        // DESIGN_SYSTEM.md §4 圆角
+        card: "20px",
+        xl: "28px",
+        pill: "9999px",
       },
       fontFamily: {
+        // DESIGN_SYSTEM.md §3 SF Pro 栈
         sans: [
-          "system-ui",
           "-apple-system",
+          "BlinkMacSystemFont",
+          "SF Pro Display",
+          "SF Pro Text",
+          "PingFang SC",
+          "Hiragino Sans GB",
+          "Microsoft YaHei",
           "Segoe UI",
           "Roboto",
           "Helvetica Neue",
           "Arial",
           "sans-serif",
+        ],
+        mono: [
+          "SF Mono",
+          "JetBrains Mono",
+          "ui-monospace",
+          "SFMono-Regular",
+          "monospace",
         ],
       },
       keyframes: {

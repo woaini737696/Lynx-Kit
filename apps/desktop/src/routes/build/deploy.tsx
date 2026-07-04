@@ -13,12 +13,6 @@ import {
   Package,
 } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
   Button,
   Badge,
   Skeleton,
@@ -286,15 +280,15 @@ export default function DeployPage() {
     return (
       <div className="mx-auto max-w-3xl px-6 py-8">
         <Skeleton className="mb-4 h-10 w-48 rounded-md" />
-        <Skeleton className="mb-3 h-40 w-full rounded-xl" />
-        <Skeleton className="h-72 w-full rounded-xl" />
+        <Skeleton className="mb-3 h-40 w-full rounded-card" />
+        <Skeleton className="h-72 w-full rounded-card" />
       </div>
     );
   }
 
   if (!currentSession) {
     return (
-      <div className="px-6 py-20 text-center text-muted-foreground">
+      <div className="px-6 py-20 text-center text-ink-500 dark:text-ink-400">
         会话不存在或已被删除
       </div>
     );
@@ -316,8 +310,8 @@ export default function DeployPage() {
             返回控制台
           </Button>
         </Link>
-        <Rocket className="h-5 w-5 text-lynx-500" />
-        <h1 className="text-xl font-bold">部署</h1>
+        <Rocket className="h-5 w-5 text-ink-900 dark:text-ink-100" />
+        <h1 className="text-lg font-semibold text-ink-950 dark:text-ink-0">部署</h1>
         <Badge
           variant={phase === "success" ? "default" : "secondary"}
           className="gap-1"
@@ -342,17 +336,17 @@ export default function DeployPage() {
       </div>
 
       {/* 部署目标 */}
-      <Card className="mb-4">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <Server className="h-4 w-4 text-lynx-500" />
+      <div className="glass-card mb-4">
+        <div className="border-b border-ink-200/60 p-4 dark:border-ink-800/60">
+          <div className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-ink-100">
+            <Server className="h-4 w-4" />
             部署目标
-          </CardTitle>
-          <CardDescription className="text-xs">
+          </div>
+          <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
             选择部署平台（阿里云约束：本地构建后上传，禁止服务器构建）
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          </p>
+        </div>
+        <div className="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
           {DEPLOY_TARGETS.map((t) => {
             const Icon = t.icon;
             const active = target === t.id;
@@ -362,36 +356,36 @@ export default function DeployPage() {
                 onClick={() => phase !== "deploying" && setTarget(t.id)}
                 disabled={phase === "deploying"}
                 className={
-                  "rounded-lg border p-3 text-left transition " +
+                  "rounded-lg border p-3 text-left transition-all duration-200 hover:-translate-y-px " +
                   (active
-                    ? "border-lynx-500 bg-lynx-500/5"
-                    : "hover:border-lynx-500/40") +
+                    ? "border-ink-950 bg-ink-100/60 dark:border-ink-100 dark:bg-ink-900/60"
+                    : "border-ink-200 hover:border-ink-950 dark:border-ink-700 dark:hover:border-ink-100") +
                   (phase === "deploying" ? " opacity-50" : "")
                 }
               >
-                <Icon className="mb-1.5 h-4 w-4 text-lynx-500" />
-                <div className="text-xs font-medium">{t.name}</div>
-                <div className="mt-0.5 text-[11px] text-muted-foreground">
+                <Icon className="mb-1.5 h-4 w-4 text-ink-900 dark:text-ink-100" />
+                <div className="text-xs font-medium text-ink-900 dark:text-ink-100">{t.name}</div>
+                <div className="mt-0.5 text-[11px] text-ink-500 dark:text-ink-400">
                   {t.desc}
                 </div>
               </button>
             );
           })}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 部署步骤 */}
-      <Card className="mb-4">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm">部署进度</CardTitle>
-          <CardDescription className="text-xs">
+      <div className="glass-card mb-4">
+        <div className="border-b border-ink-200/60 p-4 dark:border-ink-800/60">
+          <div className="text-sm font-semibold text-ink-900 dark:text-ink-100">部署进度</div>
+          <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
             {phase === "idle" && "点击下方按钮开始部署"}
             {phase === "deploying" && "正在执行部署流程..."}
             {phase === "success" && "部署完成，可访问下方 URL"}
             {phase === "error" && "部署失败，请查看日志"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+        <div className="p-4">
           <ol className="space-y-2">
             {DEPLOY_STEPS.map((s, i) => {
               const done = phase === "success" || i < currentStep;
@@ -400,24 +394,26 @@ export default function DeployPage() {
                 <li
                   key={s.id}
                   className={
-                    "flex items-start gap-3 rounded-md border px-3 py-2 " +
-                    (active ? "border-lynx-500/50 bg-lynx-500/5" : "")
+                    "flex items-start gap-3 rounded-md border px-3 py-2 transition-all duration-200 " +
+                    (active
+                      ? "border-ink-950 bg-ink-100/60 dark:border-ink-100 dark:bg-ink-900/60"
+                      : "border-ink-200 dark:border-ink-800")
                   }
                 >
                   <div className="mt-0.5">
                     {done ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-ink-700 dark:text-ink-300" />
                     ) : active ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-lynx-500" />
+                      <Loader2 className="h-4 w-4 animate-spin text-ink-900 dark:text-ink-100" />
                     ) : (
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full border text-[10px] text-muted-foreground">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full border border-ink-300 text-[10px] text-ink-500 dark:border-ink-700 dark:text-ink-400">
                         {i + 1}
                       </span>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs font-medium">{s.label}</div>
-                    <div className="text-[11px] text-muted-foreground">
+                    <div className="text-xs font-medium text-ink-900 dark:text-ink-100">{s.label}</div>
+                    <div className="text-[11px] text-ink-500 dark:text-ink-400">
                       {s.desc}
                     </div>
                   </div>
@@ -425,9 +421,9 @@ export default function DeployPage() {
               );
             })}
           </ol>
-        </CardContent>
-        <CardFooter className="justify-between border-t bg-muted/30 py-3">
-          <span className="text-xs text-muted-foreground">
+        </div>
+        <div className="flex items-center justify-between border-t border-ink-200/60 bg-ink-50/40 p-4 dark:border-ink-800/60 dark:bg-ink-900/40">
+          <span className="text-xs text-ink-500 dark:text-ink-400">
             会话 v{currentSession.version} · {formatDateTime(currentSession.updatedAt)}
           </span>
           <div className="flex items-center gap-2">
@@ -437,15 +433,14 @@ export default function DeployPage() {
               </Button>
             )}
             {phase === "idle" || phase === "error" ? (
-              <Button
-                className="bg-lynx-500 text-white hover:bg-lynx-600"
-                size="sm"
+              <button
+                className="btn-ink inline-flex items-center gap-1.5 text-sm disabled:opacity-50"
                 onClick={() => void runDeploy()}
                 disabled={!canDeploy}
               >
-                <Rocket className="mr-1.5 h-4 w-4" />
+                <Rocket className="h-4 w-4" />
                 一键部署
-              </Button>
+              </button>
             ) : phase === "deploying" ? (
               <Button variant="destructive" size="sm" disabled>
                 <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
@@ -453,23 +448,23 @@ export default function DeployPage() {
               </Button>
             ) : null}
           </div>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
 
       {/* 部署结果 */}
       {phase === "success" && deployUrl && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
+        <div className="glass-card">
+          <div className="border-b border-ink-200/60 p-4 dark:border-ink-800/60">
+            <div className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-ink-100">
+              <CheckCircle2 className="h-4 w-4 text-ink-700 dark:text-ink-300" />
               部署成功
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between rounded-md border bg-muted/20 px-3 py-2">
+            </div>
+          </div>
+          <div className="space-y-3 p-4">
+            <div className="flex items-center justify-between rounded-md border border-ink-200 bg-ink-50/60 px-3 py-2 dark:border-ink-800 dark:bg-ink-900/60">
               <div className="flex items-center gap-2">
-                <Globe className="h-4 w-4 text-lynx-500" />
-                <span className="text-sm text-lynx-700">{deployUrl}</span>
+                <Globe className="h-4 w-4 text-ink-700 dark:text-ink-300" />
+                <span className="text-sm text-ink-900 dark:text-ink-100">{deployUrl}</span>
               </div>
               <a href={deployUrl} target="_blank" rel="noreferrer">
                 <Button variant="outline" size="sm">
@@ -480,26 +475,25 @@ export default function DeployPage() {
             </div>
 
             {/* 一键上架到商店 */}
-            <div className="flex items-center justify-between rounded-md border border-lynx-500/30 bg-lynx-500/5 px-3 py-2">
+            <div className="flex items-center justify-between rounded-md border border-ink-300 bg-ink-100/60 px-3 py-2 dark:border-ink-700 dark:bg-ink-900/60">
               <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-lynx-500" />
+                <Package className="h-4 w-4 text-ink-900 dark:text-ink-100" />
                 <div>
-                  <div className="text-xs font-medium">上架到 AI 应用商店</div>
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="text-xs font-medium text-ink-900 dark:text-ink-100">上架到 AI 应用商店</div>
+                  <div className="text-[11px] text-ink-500 dark:text-ink-400">
                     发布后进入待审核，审核通过即可在商店被搜索 / 购买
                   </div>
                 </div>
               </div>
               <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button
-                    size="sm"
-                    className="bg-lynx-500 text-white hover:bg-lynx-600"
+                  <button
+                    className="btn-ink inline-flex items-center gap-1.5 text-xs"
                     onClick={openPublishDialog}
                   >
-                    <Package className="mr-1.5 h-3.5 w-3.5" />
+                    <Package className="h-3.5 w-3.5" />
                     上架到商店
-                  </Button>
+                  </button>
                 </DialogTrigger>
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
                   <DialogHeader>
@@ -522,7 +516,7 @@ export default function DeployPage() {
                         placeholder="例如：AI 客服小助手"
                       />
                       {publishErrors.name && (
-                        <p className="text-xs text-red-600">
+                        <p className="text-xs text-destructive">
                           {publishErrors.name}
                         </p>
                       )}
@@ -541,7 +535,7 @@ export default function DeployPage() {
                         placeholder="一句话介绍产品的核心功能"
                       />
                       {publishErrors.description && (
-                        <p className="text-xs text-red-600">
+                        <p className="text-xs text-destructive">
                           {publishErrors.description}
                         </p>
                       )}
@@ -572,7 +566,7 @@ export default function DeployPage() {
                           </SelectContent>
                         </Select>
                         {publishErrors.category && (
-                          <p className="text-xs text-red-600">
+                          <p className="text-xs text-destructive">
                             {publishErrors.category}
                           </p>
                         )}
@@ -599,7 +593,7 @@ export default function DeployPage() {
                           </SelectContent>
                         </Select>
                         {publishErrors.pricingType && (
-                          <p className="text-xs text-red-600">
+                          <p className="text-xs text-destructive">
                             {publishErrors.pricingType}
                           </p>
                         )}
@@ -621,7 +615,7 @@ export default function DeployPage() {
                             placeholder="例如：1990 表示 19.9 元"
                           />
                           {publishErrors.price && (
-                            <p className="text-xs text-red-600">
+                            <p className="text-xs text-destructive">
                               {publishErrors.price}
                             </p>
                           )}
@@ -654,7 +648,7 @@ export default function DeployPage() {
                           placeholder="1.0.0"
                         />
                         {publishErrors.version && (
-                          <p className="text-xs text-red-600">
+                          <p className="text-xs text-destructive">
                             {publishErrors.version}
                           </p>
                         )}
@@ -670,7 +664,7 @@ export default function DeployPage() {
                           placeholder="https://..."
                         />
                         {publishErrors.demoUrl && (
-                          <p className="text-xs text-red-600">
+                          <p className="text-xs text-destructive">
                             {publishErrors.demoUrl}
                           </p>
                         )}
@@ -686,29 +680,29 @@ export default function DeployPage() {
                     >
                       取消
                     </Button>
-                    <Button
-                      className="bg-lynx-500 text-white hover:bg-lynx-600"
+                    <button
+                      className="btn-ink inline-flex items-center gap-1.5 text-sm disabled:opacity-50"
                       onClick={() => void submitPublish()}
                       disabled={publishing}
                     >
                       {publishing ? (
                         <>
-                          <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
                           提交中...
                         </>
                       ) : (
                         <>
-                          <Package className="mr-1.5 h-4 w-4" />
+                          <Package className="h-4 w-4" />
                           提交上架
                         </>
                       )}
-                    </Button>
+                    </button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

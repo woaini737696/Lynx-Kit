@@ -12,11 +12,6 @@ import {
   Loader2,
 } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   Button,
   Badge,
   Skeleton,
@@ -96,8 +91,8 @@ npm run dev
 
 /** 文件图标按扩展名 */
 function FileIcon({ name }: { name: string }) {
-  if (name.endsWith(".md")) return <FileText className="h-3.5 w-3.5 text-sky-500" />;
-  return <FileCode2 className="h-3.5 w-3.5 text-lynx-500" />;
+  if (name.endsWith(".md")) return <FileText className="h-3.5 w-3.5 text-ink-500 dark:text-ink-400" />;
+  return <FileCode2 className="h-3.5 w-3.5 text-ink-700 dark:text-ink-300" />;
 }
 
 /** 构建文件树结构 */
@@ -159,7 +154,7 @@ function TreeView({
   toggle: (path: string) => void;
 }) {
   return (
-    <ul className={depth === 0 ? "" : "ml-3 border-l border-border/60 pl-1"}>
+    <ul className={depth === 0 ? "" : "ml-3 border-l border-ink-200/60 pl-1 dark:border-ink-800/60"}>
       {node.children.map((child) => {
         const isExpanded = expanded.has(child.path);
         if (child.isDir) {
@@ -167,13 +162,13 @@ function TreeView({
             <li key={child.path}>
               <button
                 onClick={() => toggle(child.path)}
-                className="flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-left text-xs hover:bg-muted/60"
+                className="flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-left text-xs text-ink-700 transition-all duration-200 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800"
                 style={{ paddingLeft: depth * 8 + 6 }}
               >
                 {isExpanded ? (
-                  <FolderOpen className="h-3.5 w-3.5 text-amber-500" />
+                  <FolderOpen className="h-3.5 w-3.5 text-ink-600 dark:text-ink-400" />
                 ) : (
-                  <Folder className="h-3.5 w-3.5 text-amber-500" />
+                  <Folder className="h-3.5 w-3.5 text-ink-600 dark:text-ink-400" />
                 )}
                 <span className="truncate">{child.name}</span>
               </button>
@@ -196,10 +191,10 @@ function TreeView({
             <button
               onClick={() => child.file && onSelect(child.file)}
               className={
-                "flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-left text-xs " +
+                "flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-left text-xs transition-all duration-200 " +
                 (isSelected
-                  ? "bg-lynx-500/15 text-lynx-700"
-                  : "hover:bg-muted/60")
+                  ? "bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950"
+                  : "text-ink-700 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800")
               }
               style={{ paddingLeft: depth * 8 + 6 }}
             >
@@ -308,8 +303,8 @@ export default function PreviewPage() {
       <div className="mx-auto max-w-6xl px-6 py-8">
         <Skeleton className="mb-4 h-10 w-48 rounded-md" />
         <div className="grid grid-cols-3 gap-4">
-          <Skeleton className="h-96 rounded-xl" />
-          <Skeleton className="col-span-2 h-96 rounded-xl" />
+          <Skeleton className="h-96 rounded-card" />
+          <Skeleton className="col-span-2 h-96 rounded-card" />
         </div>
       </div>
     );
@@ -317,7 +312,7 @@ export default function PreviewPage() {
 
   if (!currentSession) {
     return (
-      <div className="px-6 py-20 text-center text-muted-foreground">
+      <div className="px-6 py-20 text-center text-ink-500 dark:text-ink-400">
         会话不存在或已被删除
       </div>
     );
@@ -331,8 +326,8 @@ export default function PreviewPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-6">
-      {/* 顶部 */}
-      <div className="mb-4 flex items-center justify-between gap-3">
+      {/* 顶部工具栏 */}
+      <div className="glass-card mb-4 flex items-center justify-between gap-3 p-3">
         <div className="flex items-center gap-2">
           <Link to={`/build/${sessionId}`}>
             <Button variant="ghost" size="sm">
@@ -340,15 +335,15 @@ export default function PreviewPage() {
               返回控制台
             </Button>
           </Link>
-          <Eye className="h-5 w-5 text-lynx-500" />
-          <h1 className="text-xl font-bold">代码预览</h1>
+          <Eye className="h-5 w-5 text-ink-900 dark:text-ink-100" />
+          <h1 className="text-lg font-semibold text-ink-950 dark:text-ink-0">代码预览</h1>
           {isMock && (
             <Badge variant="secondary" className="text-[10px]">
               示例数据
             </Badge>
           )}
         </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <div className="flex items-center gap-3 text-xs text-ink-500 dark:text-ink-400">
           <span>{files.length} 个文件</span>
           <span>·</span>
           <span>{totalLines} 行</span>
@@ -357,17 +352,17 @@ export default function PreviewPage() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* 文件树 */}
-        <Card className="lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Folder className="h-4 w-4 text-amber-500" />
+        <div className="glass-card lg:col-span-1">
+          <div className="border-b border-ink-200/60 p-4 dark:border-ink-800/60">
+            <div className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-ink-100">
+              <Folder className="h-4 w-4 text-ink-600 dark:text-ink-400" />
               文件结构
-            </CardTitle>
-            <CardDescription className="text-xs">
+            </div>
+            <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
               {isMock ? "尚未生成代码，展示示例" : "Agent 生成的代码文件"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
+            </p>
+          </div>
+          <div className="p-4">
             <div className="max-h-[520px] overflow-y-auto">
               <TreeView
                 node={tree}
@@ -378,17 +373,17 @@ export default function PreviewPage() {
                 toggle={toggle}
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* 代码内容 */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-2">
+        <div className="glass-card lg:col-span-2">
+          <div className="border-b border-ink-200/60 p-4 dark:border-ink-800/60">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <FileCode2 className="h-4 w-4 text-lynx-500" />
+              <div className="flex items-center gap-2 text-sm font-semibold text-ink-900 dark:text-ink-100">
+                <FileCode2 className="h-4 w-4" />
                 {selected ? selected.path : "未选择文件"}
-              </CardTitle>
+              </div>
               <div className="flex items-center gap-2">
                 {selected && (
                   <Badge variant="outline" className="text-[10px]">
@@ -402,7 +397,7 @@ export default function PreviewPage() {
                   disabled={!selected}
                 >
                   {copied ? (
-                    <Check className="mr-1.5 h-3.5 w-3.5 text-green-600" />
+                    <Check className="mr-1.5 h-3.5 w-3.5 text-ink-700 dark:text-ink-300" />
                   ) : (
                     <Copy className="mr-1.5 h-3.5 w-3.5" />
                   )}
@@ -410,14 +405,14 @@ export default function PreviewPage() {
                 </Button>
               </div>
             </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="max-h-[520px] overflow-auto rounded-md bg-slate-950">
+          </div>
+          <div className="p-4">
+            <div className="max-h-[520px] overflow-auto rounded-lg bg-ink-950">
               {selected ? (
-                <pre className="min-w-full p-4 font-mono text-xs leading-5 text-slate-200">
+                <pre className="min-w-full p-4 font-mono text-xs leading-5 text-ink-100">
                   {selected.content.split("\n").map((line, i) => (
                     <div key={i} className="flex">
-                      <span className="mr-4 inline-block w-8 shrink-0 select-none text-right text-slate-600">
+                      <span className="mr-4 inline-block w-8 shrink-0 select-none text-right text-ink-500">
                         {i + 1}
                       </span>
                       <span className="whitespace-pre">{line || " "}</span>
@@ -425,14 +420,14 @@ export default function PreviewPage() {
                   ))}
                 </pre>
               ) : (
-                <div className="flex h-40 items-center justify-center text-sm text-slate-500">
+                <div className="flex h-40 items-center justify-center text-sm text-ink-500">
                   <Loader2 className="mr-2 h-4 w-4" />
                   请从左侧选择文件
                 </div>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

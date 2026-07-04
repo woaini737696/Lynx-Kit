@@ -41,14 +41,14 @@ export const users = pgTable(
   {
     /** 用户唯一标识（UUID，数据库自动生成） */
     id: uuid("id").defaultRandom().primaryKey(),
-    /** 登录邮箱（全局唯一） */
-    email: text("email").notNull(),
+    /** 邮箱（可选联系方式，不再用于登录） */
+    email: text("email"),
     /** 显示名（可选） */
     name: text("name"),
     /** 头像 URL（可选） */
     avatar: text("avatar"),
-    /** 手机号（可选，全局唯一） */
-    phone: text("phone"),
+    /** 手机号（登录主标识，全局唯一） */
+    phone: text("phone").notNull(),
     /** 关联的 Lynx AI 账户 ID（可选，全局唯一） */
     lynxAiId: text("lynx_ai_id"),
     /** 密码哈希（bcrypt，MVP 阶段直接存数据库，不依赖 Redis） */

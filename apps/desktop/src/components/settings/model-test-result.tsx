@@ -8,7 +8,7 @@ import {
   Clock,
   Zap,
 } from "lucide-react";
-import { Card, CardContent, Badge } from "@lynxkit/ui-web";
+import { Badge } from "@lynxkit/ui-web";
 import { cn } from "@/lib/utils";
 import type { ProviderTestState } from "@/hooks/use-ai-config";
 import type { TestAiModelResult } from "@lynxkit/api-client";
@@ -31,7 +31,7 @@ export function ModelTestResult({
 }: ModelTestResultProps) {
   if (state === "idle") {
     return (
-      <Badge variant="outline" className="text-muted-foreground">
+      <Badge variant="outline" className="border-ink-200 text-ink-500 dark:border-ink-700 dark:text-ink-400">
         未测试
       </Badge>
     );
@@ -40,9 +40,9 @@ export function ModelTestResult({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs",
-        state === "testing" && "border-blue-500/30 bg-blue-500/5 text-blue-600",
-        state === "success" && "border-green-500/30 bg-green-500/5 text-green-600",
+        "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs",
+        state === "testing" && "border-ink-300 bg-ink-100/60 text-ink-700 dark:border-ink-700 dark:bg-ink-800/60 dark:text-ink-300",
+        state === "success" && "border-ink-950/20 bg-ink-100/60 text-ink-950 dark:border-ink-100/20 dark:bg-ink-900/60 dark:text-ink-100",
         state === "failed" && "border-destructive/30 bg-destructive/5 text-destructive",
         className,
       )}
@@ -80,7 +80,7 @@ export function ModelTestResult({
 /** 已配置状态徽标 */
 export function ConfiguredBadge() {
   return (
-    <Badge className="bg-green-500/10 text-green-600">
+    <Badge className="bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950">
       <Zap className="mr-1 h-3 w-3" />
       已配置
     </Badge>

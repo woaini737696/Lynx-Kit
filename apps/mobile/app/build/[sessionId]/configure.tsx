@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   View,
+  useColorScheme,
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -35,6 +36,7 @@ const CLARIFY_FIELDS = [
 
 export default function ConfigureScreen() {
   const { t } = useTranslation();
+  const isDark = useColorScheme() === 'dark';
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const id = Array.isArray(sessionId) ? sessionId[0] : sessionId;
 
@@ -71,8 +73,8 @@ export default function ConfigureScreen() {
 
   if (isLoading || !session) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-950">
-        <ActivityIndicator color="#FF6B35" />
+      <View className="flex-1 items-center justify-center bg-ink-100 dark:bg-ink-950">
+        <ActivityIndicator color="#09090B" />
       </View>
     );
   }
@@ -90,57 +92,56 @@ export default function ConfigureScreen() {
   };
 
   const architecture = session.architecture;
+  const emphasisIcon = isDark ? '#09090B' : '#FFFFFF';
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-ink-100 dark:bg-ink-950" edges={['bottom']}>
       <ScrollView
-        contentContainerClassName="px-4 pb-8 gap-5"
+        contentContainerClassName="px-4 pb-8 gap-5 pt-4"
         keyboardShouldPersistTaps="handled"
       >
-        {/* 状态徽标 */}
-        <View className="flex-row items-center gap-2 pt-4">
-          <View
-            className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${editable ? 'bg-lynx-500/20' : 'bg-slate-800'}`}
-          >
+        {/* 状态徽标（badge-glass） */}
+        <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center gap-1 rounded-full border border-white/70 bg-white/70 px-2.5 py-1 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
             {editable ? (
-              <Save size={12} color="#FF6B35" />
+              <Save size={12} color="#09090B" />
             ) : (
-              <Lock size={12} color="#94A3B8" />
+              <Lock size={12} color="#71717A" />
             )}
-            <Text
-              className={`text-xs ${editable ? 'text-lynx-500' : 'text-slate-400'}`}
-            >
+            <Text className="text-xs text-ink-700 dark:text-ink-300">
               {editable ? t('build.configure') : t('build.readOnly')}
             </Text>
           </View>
-          <View className="rounded-full bg-slate-800 px-2.5 py-1">
-            <Text className="text-xs text-slate-400">
+          <View className="rounded-full border border-white/70 bg-white/70 px-2.5 py-1 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
+            <Text className="text-xs text-ink-700 dark:text-ink-300">
               {t(`build.status.${status}`)}
             </Text>
           </View>
         </View>
 
-        {/* 原始需求（只读） */}
+        {/* 原始需求（只读毛玻璃卡） */}
         {userInput ? (
           <View className="gap-1.5">
-            <Text className="text-sm font-semibold text-slate-200">
+            <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
               {t('build.sessionTitle')}
             </Text>
-            <View className="rounded-xl bg-slate-900 p-3">
-              <Text className="text-sm text-slate-300">{userInput}</Text>
+            <View className="rounded-xl border border-white/70 bg-white/55 p-3 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/55">
+              <Text className="text-sm text-ink-700 dark:text-ink-200">
+                {userInput}
+              </Text>
             </View>
           </View>
         ) : null}
 
-        {/* 澄清问题表单 */}
+        {/* 澄清问题表单（毛玻璃输入框） */}
         <View className="gap-3">
-          <Text className="text-sm font-semibold text-slate-200">
+          <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
             {t('build.clarifyQuestions')}
           </Text>
 
           {CLARIFY_FIELDS.map((field) => (
             <View key={field.id} className="gap-1.5">
-              <Text className="text-xs text-slate-400">
+              <Text className="text-xs text-ink-500 dark:text-ink-400">
                 {t(field.labelKey)}
               </Text>
               {editable ? (
@@ -150,13 +151,13 @@ export default function ConfigureScreen() {
                     setAnswers((prev) => ({ ...prev, [field.id]: v }))
                   }
                   placeholder={field.placeholder}
-                  placeholderTextColor="#64748B"
+                  placeholderTextColor="#A1A1AA"
                   multiline
-                  className="rounded-xl bg-slate-900 px-3 py-2.5 text-sm text-slate-200"
+                  className="rounded-xl border border-white/70 bg-white/55 px-3 py-2.5 text-sm text-ink-900 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/55 dark:text-ink-50"
                 />
               ) : (
-                <View className="rounded-xl bg-slate-900 px-3 py-2.5">
-                  <Text className="text-sm text-slate-300">
+                <View className="rounded-xl border border-white/70 bg-white/55 px-3 py-2.5 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/55">
+                  <Text className="text-sm text-ink-700 dark:text-ink-200">
                     {answers[field.id] || '（未填写）'}
                   </Text>
                 </View>
@@ -168,31 +169,31 @@ export default function ConfigureScreen() {
         {/* 架构产物（ARCHITECT Agent 生成） */}
         {architecture ? (
           <View className="gap-2">
-            <Text className="text-sm font-semibold text-slate-200">
+            <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
               {t('build.architecture')}
             </Text>
-            <View className="gap-2 rounded-xl bg-slate-900 p-3">
+            <View className="gap-2 rounded-2xl border border-white/70 bg-white/70 p-3 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
               <View className="gap-0.5">
-                <Text className="text-xs text-slate-500">
+                <Text className="text-xs text-ink-500 dark:text-ink-400">
                   {t('build.frontendStack')}
                 </Text>
-                <Text className="text-sm text-slate-200">
+                <Text className="text-sm text-ink-900 dark:text-ink-50">
                   {architecture.frontend.join(' / ')}
                 </Text>
               </View>
               <View className="gap-0.5">
-                <Text className="text-xs text-slate-500">
+                <Text className="text-xs text-ink-500 dark:text-ink-400">
                   {t('build.backendStack')}
                 </Text>
-                <Text className="text-sm text-slate-200">
+                <Text className="text-sm text-ink-900 dark:text-ink-50">
                   {architecture.backend.join(' / ')}
                 </Text>
               </View>
               <View className="gap-0.5">
-                <Text className="text-xs text-slate-500">
+                <Text className="text-xs text-ink-500 dark:text-ink-400">
                   {t('build.databaseStack')}
                 </Text>
-                <Text className="text-sm text-slate-200">
+                <Text className="text-sm text-ink-900 dark:text-ink-50">
                   {architecture.database.join(' / ')}
                 </Text>
               </View>
@@ -200,24 +201,24 @@ export default function ConfigureScreen() {
           </View>
         ) : null}
 
-        {/* 提交按钮 / 已提交徽标 */}
+        {/* 提交按钮（纯黑）/ 已提交徽标 */}
         {editable ? (
           <Pressable
             onPress={onSubmit}
             disabled={submitMutation.isPending}
-            className="flex-row items-center justify-center gap-2 rounded-2xl bg-lynx-500 py-3.5 active:opacity-80 disabled:opacity-40"
+            className="flex-row items-center justify-center gap-2 rounded-full bg-ink-950 py-3.5 active:opacity-80 disabled:opacity-40 dark:bg-ink-100"
           >
-            <Save size={16} color="#FFFFFF" />
-            <Text className="text-sm font-semibold text-white">
+            <Save size={16} color={emphasisIcon} />
+            <Text className="text-sm font-semibold text-ink-0 dark:text-ink-950">
               {submitMutation.isPending
                 ? t('common.loading')
                 : t('build.submitConfig')}
             </Text>
           </Pressable>
         ) : (
-          <View className="flex-row items-center justify-center gap-2 rounded-2xl bg-slate-800 py-3.5">
-            <CheckCircle2 size={16} color="#94A3B8" />
-            <Text className="text-sm font-semibold text-slate-400">
+          <View className="flex-row items-center justify-center gap-2 rounded-full border border-ink-300 bg-transparent py-3.5 dark:border-ink-700">
+            <CheckCircle2 size={16} color="#71717A" />
+            <Text className="text-sm font-semibold text-ink-500 dark:text-ink-400">
               {t('build.readOnly')}
             </Text>
           </View>

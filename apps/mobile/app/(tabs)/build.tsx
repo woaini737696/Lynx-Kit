@@ -1,11 +1,12 @@
-import { Alert, FlatList, Pressable, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, Text, View, useColorScheme } from 'react-native';
 import { router } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BuildSession, BuildStatus } from '@lynxkit/shared';
 import { buildApi } from '../../src/lib/api';
 import { EmptyState } from '../../src/components/empty-state';
-import { Hammer, Trash2 } from 'lucide-react-native';
+import { Hammer, Trash2, Plus, ChevronRight } from 'lucide-react-native';
 
 const STATUS_LABEL_KEY: Record<BuildStatus, string> = {
   draft: 'build.status.draft',
@@ -18,19 +19,22 @@ const STATUS_LABEL_KEY: Record<BuildStatus, string> = {
   error: 'build.status.error',
 };
 
+/** 语义状态色（DESIGN_SYSTEM.md 允许的 success/error） */
 const STATUS_COLOR: Record<BuildStatus, string> = {
-  draft: '#64748B',
-  clarifying: '#3B82F6',
-  architecting: '#3B82F6',
-  developing: '#F59E0B',
-  testing: '#F59E0B',
-  deploying: '#F59E0B',
+  draft: '#71717A',
+  clarifying: '#71717A',
+  architecting: '#71717A',
+  developing: '#71717A',
+  testing: '#71717A',
+  deploying: '#71717A',
   deployed: '#22C55E',
   error: '#EF4444',
 };
 
 export default function BuildListScreen() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const isDark = useColorScheme() === 'dark';
   const queryClient = useQueryClient();
   const { data: sessions, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['builds', 'all'],
@@ -60,20 +64,39 @@ export default function BuildListScreen() {
   };
 
   return (
-    <View className="flex-1 bg-slate-950">
-      <View className="px-4 pt-12 pb-3">
-        <Text className="text-2xl font-bold text-white">{t('build.myBuilds')}</Text>
+    <View className="flex-1 bg-ink-100 dark:bg-ink-950">
+      {/* 顶部标题 + 新建构建胶囊按钮 */}
+      <View
+        style={{ paddingTop: insets.top + 16 }}
+        className="px-4 pb-3"
+      >
+        <View className="flex-row items-center justify-between gap-3">
+          <Text className="text-2xl font-semibold text-ink-900 dark:text-ink-50">
+            {t('build.myBuilds')}
+          </Text>
+          <Pressable
+            onPress={() => router.push('/(tabs)/home')}
+            className="flex-row items-center gap-2 rounded-full bg-ink-950 px-4 py-2.5 active:opacity-80 dark:bg-ink-100"
+          >
+            <Plus size={16} color={isDark ? '#09090B' : '#FFFFFF'} />
+            <Text className="text-sm font-semibold text-ink-0 dark:text-ink-950">
+              {t('build.goBuild')}
+            </Text>
+          </Pressable>
+        </View>
       </View>
+
       <FlatList
         data={sessions ?? []}
         keyExtractor={(item) => item.id}
-        contentContainerClassName="px-4 gap-3 pb-6"
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
+        contentContainerClassName="px-4 gap-3"
         refreshing={isRefetching}
         onRefresh={refetch}
         ListEmptyComponent={
           !isLoading ? (
             <EmptyState
-              icon={<Hammer size={28} color="#64748B" />}
+              icon={<Hammer size={28} color="#52525B" />}
               title={t('build.empty')}
               subtitle={t('build.emptyHint')}
               actionLabel={t('build.goBuild')}
@@ -81,7 +104,9 @@ export default function BuildListScreen() {
             />
           ) : null
         }
-        renderItem={({ item }) => <BuildCard session={item} onDelete={() => handleDelete(item)} />}
+        renderItem={({ item }) => (
+          <BuildCard session={item} onDelete={() => handleDelete(item)} />
+        )}
       />
     </View>
   );
@@ -95,35 +120,48 @@ function BuildCard({
   onDelete: () => void;
 }) {
   const { t } = useTranslation();
-  const color = STATUS_COLOR[session.status] ?? '#64748B';
+  const color = STATUS_COLOR[session.status] ?? '#71717A';
+  const isError = session.status === 'error';
   return (
     <Pressable
       onPress={() => router.push(`/build/${session.id}`)}
-      className="gap-2 rounded-2xl bg-slate-800 p-4 active:opacity-80"
+      className="gap-2 rounded-3xl border border-white/70 bg-white/70 p-4 backdrop-blur-xl active:opacity-80 dark:border-ink-800/60 dark:bg-ink-900/70"
     >
       <View className="flex-row items-center justify-between">
-        <Text className="text-base font-semibold text-slate-100" numberOfLines={1}>
+        <Text
+          className="flex-1 text-base font-semibold text-ink-900 dark:text-ink-50"
+          numberOfLines={1}
+        >
           {String(session.config?.name ?? session.productType)}
         </Text>
-        <View className="flex-row items-center gap-1.5">
-          <View className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
-          <Text className="text-xs" style={{ color }}>
+        {/* badge-glass：毛玻璃状态标签 */}
+        <View className="flex-row items-center gap-1.5 rounded-full border border-white/70 bg-white/70 px-2.5 py-1 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
+          <View
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+          <Text
+            className={`text-xs ${isError ? 'text-red-500' : 'text-ink-600 dark:text-ink-300'}`}
+          >
             {t(STATUS_LABEL_KEY[session.status])}
           </Text>
         </View>
       </View>
       <View className="flex-row items-center justify-between">
-        <Text className="text-xs text-slate-500">
+        <Text className="flex-1 text-xs text-ink-500 dark:text-ink-400">
           {t('build.version', { version: session.version })} ·{' '}
           {t('build.updatedAt', { time: new Date(session.updatedAt).toLocaleString() })}
         </Text>
-        <Pressable
-          onPress={onDelete}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          className="active:opacity-50"
-        >
-          <Trash2 size={16} color="#EF4444" />
-        </Pressable>
+        <View className="flex-row items-center gap-1">
+          <ChevronRight size={16} color="#A1A1AA" />
+          <Pressable
+            onPress={onDelete}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            className="active:opacity-50"
+          >
+            <Trash2 size={16} color="#EF4444" />
+          </Pressable>
+        </View>
       </View>
     </Pressable>
   );

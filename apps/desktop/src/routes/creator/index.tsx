@@ -11,11 +11,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   Button,
   Skeleton,
   toast,
@@ -70,7 +65,7 @@ export default function CreatorPage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-4xl px-6 py-8">
-        <Skeleton className="h-48 w-full rounded-xl" />
+        <Skeleton className="h-48 w-full rounded-card" />
       </div>
     );
   }
@@ -79,8 +74,8 @@ export default function CreatorPage() {
     <div className="mx-auto max-w-4xl px-6 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <UserSquare className="h-6 w-6 text-lynx-500" />
-          <h1 className="text-2xl font-bold">{t("creator.centerTitle")}</h1>
+          <UserSquare className="h-6 w-6 text-ink-900 dark:text-ink-100" />
+          <h1 className="text-2xl font-bold text-ink-950 dark:text-ink-0">{t("creator.centerTitle")}</h1>
         </div>
         <Link to="/creator/products">
           <Button variant="outline">
@@ -91,66 +86,64 @@ export default function CreatorPage() {
       </div>
 
       {!profile ? (
-        <Card>
-          <CardContent className="flex flex-col items-center py-16 text-center">
-            <UserSquare className="mb-3 h-12 w-12 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">
-              {t("creator.emptyHint")}
-            </p>
-            <Button
-              onClick={enable}
-              disabled={enabling}
-              className="mt-4 bg-lynx-500 text-white hover:bg-lynx-600"
-            >
-              {enabling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("creator.enableButton")}
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="glass-card flex flex-col items-center p-16 text-center">
+          <UserSquare className="mb-3 h-12 w-12 text-ink-300 dark:text-ink-700" />
+          <p className="text-sm text-ink-500 dark:text-ink-400">
+            {t("creator.emptyHint")}
+          </p>
+          <button
+            onClick={enable}
+            disabled={enabling}
+            className="btn-ink mt-4 inline-flex items-center gap-2 text-sm disabled:opacity-50"
+          >
+            {enabling && <Loader2 className="h-4 w-4 animate-spin" />}
+            {t("creator.enableButton")}
+          </button>
+        </div>
       ) : (
         <>
           {/* 收益统计 */}
           <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
-              icon={<DollarSign className="h-4 w-4 text-green-500" />}
+              icon={<DollarSign className="h-4 w-4" />}
               label={t("creator.stats.totalIncome")}
               value={formatPrice(stats?.totalIncome ?? profile.totalIncome)}
             />
             <StatCard
-              icon={<TrendingUp className="h-4 w-4 text-lynx-500" />}
+              icon={<TrendingUp className="h-4 w-4" />}
               label={t("creator.stats.balance")}
               value={formatPrice(stats?.balance ?? profile.balance)}
             />
             <StatCard
-              icon={<Package className="h-4 w-4 text-blue-500" />}
+              icon={<Package className="h-4 w-4" />}
               label={t("creator.stats.productCount")}
               value={String(stats?.productCount ?? profile.productCount)}
             />
             <StatCard
-              icon={<Star className="h-4 w-4 text-yellow-500" />}
+              icon={<Star className="h-4 w-4" />}
               label={t("creator.stats.avgRating")}
               value={(stats?.avgRating ?? profile.avgRating).toFixed(1)}
             />
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">{t("creator.profile.title")}</CardTitle>
-              <CardDescription>{profile.displayName}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              {profile.bio && <p className="text-muted-foreground">{profile.bio}</p>}
+          <div className="glass-card">
+            <div className="border-b border-ink-200/60 p-5 dark:border-ink-800/60">
+              <div className="text-base font-semibold text-ink-900 dark:text-ink-100">{t("creator.profile.title")}</div>
+              <p className="text-sm text-ink-500 dark:text-ink-400">{profile.displayName}</p>
+            </div>
+            <div className="space-y-2 p-5 text-sm">
+              {profile.bio && <p className="text-ink-600 dark:text-ink-400">{profile.bio}</p>}
               {profile.website && (
                 <a
                   href={profile.website}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-lynx-600 hover:underline"
+                  className="text-ink-950 underline decoration-ink-300 underline-offset-4 hover:text-ink-700 dark:text-ink-100 dark:decoration-ink-600"
                 >
                   {profile.website}
                 </a>
               )}
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-4 text-xs text-ink-500 dark:text-ink-400">
                 <span className="inline-flex items-center gap-1">
                   <Download className="h-3 w-3" />
                   {t("creator.profile.downloads", {
@@ -158,11 +151,11 @@ export default function CreatorPage() {
                   })}
                 </span>
                 {profile.verified && (
-                  <span className="text-green-600">{t("creator.profile.verified")}</span>
+                  <span className="text-ink-900 dark:text-ink-100">{t("creator.profile.verified")}</span>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </>
       )}
     </div>
@@ -179,14 +172,14 @@ function StatCard({
   value: string;
 }) {
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+    <div className="glass-card p-4">
+      <div className="flex items-center gap-2 text-xs text-ink-500 dark:text-ink-400">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-ink-950 text-ink-0 dark:bg-ink-100 dark:text-ink-950">
           {icon}
-          {label}
-        </div>
-        <div className="mt-1 text-xl font-bold">{value}</div>
-      </CardContent>
-    </Card>
+        </span>
+        {label}
+      </div>
+      <div className="mt-1 text-xl font-bold text-ink-950 dark:text-ink-0">{value}</div>
+    </div>
   );
 }

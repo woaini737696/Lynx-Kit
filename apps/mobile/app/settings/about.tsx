@@ -1,4 +1,11 @@
-import { Pressable, ScrollView, Text, View, Linking } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+  Linking,
+  useColorScheme,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Info, ExternalLink } from 'lucide-react-native';
 
@@ -14,45 +21,74 @@ const TECH_STACK = [
 
 export default function AboutScreen() {
   const { t } = useTranslation();
+  const isDark = useColorScheme() === 'dark';
+  const emphasisIcon = isDark ? '#09090B' : '#FFFFFF';
 
   return (
-    <ScrollView className="flex-1 bg-slate-950" contentContainerClassName="px-4 py-4 gap-4">
-      <View className="flex-row items-center gap-2">
-        <Info size={22} color="#FF6B35" />
-        <Text className="text-xl font-bold text-white">{t('about.title')}</Text>
+    <ScrollView
+      className="flex-1 bg-ink-100 dark:bg-ink-950"
+      contentContainerClassName="px-4 py-4 gap-4"
+    >
+      {/* 标题：纯黑圆形图标 */}
+      <View className="flex-row items-center gap-3 pb-1">
+        <View className="h-10 w-10 items-center justify-center rounded-full bg-ink-950 dark:bg-ink-100">
+          <Info size={18} color={emphasisIcon} />
+        </View>
+        <Text className="text-xl font-bold text-ink-900 dark:text-ink-50">
+          {t('about.title')}
+        </Text>
       </View>
 
-      <View className="gap-3 rounded-2xl bg-slate-800 p-4">
+      {/* 应用信息卡片（毛玻璃） */}
+      <View className="gap-4 rounded-3xl border border-ink-200/60 bg-white/70 p-5 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
         <View className="flex-row items-center justify-between">
           <View className="gap-1">
-            <Text className="text-lg font-bold text-white">妙想</Text>
-            <Text className="text-xs text-slate-400">{t('about.tagline')}</Text>
+            <Text className="text-lg font-bold text-ink-900 dark:text-ink-50">
+              妙想
+            </Text>
+            <Text className="text-xs text-ink-500 dark:text-ink-400">
+              {t('about.tagline')}
+            </Text>
           </View>
-          <View className="rounded-full bg-lynx-500/20 px-3 py-1">
-            <Text className="text-sm font-semibold text-lynx-500">v{APP_VERSION}</Text>
+          <View className="rounded-full bg-ink-950 px-3 py-1 dark:bg-ink-100">
+            <Text className="text-sm font-semibold text-ink-0 dark:text-ink-950">
+              v{APP_VERSION}
+            </Text>
           </View>
         </View>
-        <Text className="text-sm leading-5 text-slate-400">
+        <Text className="text-sm leading-5 text-ink-600 dark:text-ink-300">
           {t('about.description')}
         </Text>
         <Pressable
           onPress={() => Linking.openURL(UPDATE_URL)}
-          className="flex-row items-center justify-center gap-2 rounded-xl bg-slate-700 py-3 active:opacity-80"
+          className="flex-row items-center justify-center gap-2 rounded-full bg-ink-950 py-3.5 active:opacity-80 dark:bg-ink-100"
         >
-          <ExternalLink size={16} color="#F8FAFC" />
-          <Text className="text-sm font-medium text-white">{t('about.checkUpdate')}</Text>
+          <ExternalLink size={16} color={emphasisIcon} />
+          <Text className="text-sm font-semibold text-ink-0 dark:text-ink-950">
+            {t('about.checkUpdate')}
+          </Text>
         </Pressable>
       </View>
 
-      <View className="gap-3 rounded-2xl bg-slate-800 p-4">
-        <Text className="text-sm font-semibold text-slate-200">{t('about.techStack')}</Text>
+      {/* 技术栈卡片（毛玻璃） */}
+      <View className="gap-3 rounded-3xl border border-ink-200/60 bg-white/70 p-5 backdrop-blur-xl dark:border-ink-800/60 dark:bg-ink-900/70">
+        <Text className="text-sm font-semibold text-ink-900 dark:text-ink-50">
+          {t('about.techStack')}
+        </Text>
         {TECH_STACK.map((tech) => (
-          <View key={tech.categoryKey} className="gap-1.5">
-            <Text className="text-xs font-medium text-slate-400">{t(tech.categoryKey)}</Text>
+          <View key={tech.categoryKey} className="gap-2">
+            <Text className="text-xs font-medium text-ink-500 dark:text-ink-400">
+              {t(tech.categoryKey)}
+            </Text>
             <View className="flex-row flex-wrap gap-1.5">
               {tech.items.map((item) => (
-                <View key={item} className="rounded-full bg-slate-700 px-2.5 py-1">
-                  <Text className="text-xs text-slate-300">{item}</Text>
+                <View
+                  key={item}
+                  className="rounded-full border border-ink-300 bg-transparent px-2.5 py-1 dark:border-ink-700"
+                >
+                  <Text className="text-xs text-ink-700 dark:text-ink-300">
+                    {item}
+                  </Text>
                 </View>
               ))}
             </View>

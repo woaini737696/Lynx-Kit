@@ -75,7 +75,7 @@ export default function AdminLayout({
     );
   }
 
-  const initials = (user.name ?? user.email).slice(0, 1).toUpperCase();
+  const initials = (user.name ?? user.email ?? "").slice(0, 1).toUpperCase();
   const isSuper = user.role === UserRole.SUPER_ADMIN;
 
   return (

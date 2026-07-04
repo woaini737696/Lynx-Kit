@@ -7,6 +7,32 @@
   :root {
     /* lynx 品牌色（暖橙） */
     --lynx-50: #fff4ed;
+
+    /* 8 级灰阶（DESIGN_SYSTEM.md §2） */
+    --ink-0: #ffffff;
+    --ink-50: #fafafa;
+    --ink-100: #f5f5f7;
+    --ink-200: #ebebef;
+    --ink-300: #d8d8de;
+    --ink-400: #a1a1aa;
+    --ink-500: #71717a;
+    --ink-600: #52525b;
+    --ink-700: #3f3f46;
+    --ink-800: #27272a;
+    --ink-900: #18181b;
+    --ink-950: #09090b;
+
+    /* Liquid Glass 毛玻璃 Token（DESIGN_SYSTEM.md §2） */
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-bg-strong: rgba(255, 255, 255, 0.72);
+    --glass-bg-subtle: rgba(255, 255, 255, 0.35);
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-border-subtle: rgba(255, 255, 255, 0.35);
+    --glass-blur: 30px;
+    --glass-shadow:
+      0 8px 32px rgba(15, 23, 42, 0.08),
+      0 1px 0 rgba(255, 255, 255, 0.6) inset,
+      0 -1px 0 rgba(15, 23, 42, 0.03) inset;
     --lynx-100: #ffe6d4;
     --lynx-200: #ffc8a8;
     --lynx-300: #ffa371;
@@ -62,6 +88,17 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 16 100% 60%;
+
+    /* Liquid Glass 暗色覆盖（DESIGN_SYSTEM.md §2） */
+    --glass-bg: rgba(30, 30, 35, 0.55);
+    --glass-bg-strong: rgba(40, 40, 48, 0.72);
+    --glass-bg-subtle: rgba(30, 30, 35, 0.35);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-subtle: rgba(255, 255, 255, 0.06);
+    --glass-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 1px 0 rgba(255, 255, 255, 0.08) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.2) inset;
   }
 }
 
@@ -135,4 +172,110 @@ body {
       transparent
     );
   background-attachment: fixed;
+}
+
+/* ============ Liquid Glass 工具类（DESIGN_SYSTEM.md §5） ============ */
+@layer components {
+  /* 玻璃卡片：半透明 + 高斯模糊 + 内嵌高光 + 大圆角 */
+  .glass-card {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
+  }
+  .dark .glass-card {
+    border-color: var(--glass-border);
+  }
+
+  /* 玻璃输入框：12px 圆角，focus 时强玻璃背景 */
+  .input-glass {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    transition: border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      background 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .input-glass::placeholder {
+    color: var(--ink-400);
+  }
+  .input-glass:focus {
+    outline: none;
+    border-color: var(--ink-400);
+    background: var(--glass-bg-strong);
+  }
+
+  /* 纯黑主按钮（DESIGN_SYSTEM.md §5.1）：胶囊圆角 + hover 上浮 */
+  .btn-ink {
+    background: var(--ink-950);
+    color: var(--ink-0);
+    border-radius: 9999px;
+    padding: 11px 18px;
+    font-weight: 500;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    transition: background 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-ink:hover:not(:disabled) {
+    background: var(--ink-800);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  }
+  .btn-ink:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  .btn-ink:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ============ 认证页背景（DESIGN_SYSTEM.md §7.1） ============ */
+/* 浅紫渐变光晕 + 网格底纹，仅用于登录/注册页 */
+.auth-bg {
+  position: relative;
+  background-color: var(--ink-50);
+}
+.auth-bg::before {
+  /* 浅紫光晕（radial-gradient，不喧宾夺主） */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(167, 139, 250, 0.18), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 100% 30%, rgba(196, 181, 253, 0.12), transparent 70%),
+    radial-gradient(ellipse 40% 35% at 0% 70%, rgba(216, 180, 254, 0.10), transparent 70%);
+}
+.auth-bg::after {
+  /* 网格底纹 opacity 0.3 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.3;
+  background-image:
+    linear-gradient(to right, var(--ink-300) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ink-300) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 30%, transparent 75%);
+}
+.dark .auth-bg {
+  background-color: var(--ink-950);
+}
+.dark .auth-bg::after {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+/* 暗色模式下玻璃输入框占位符颜色 */
+.dark .input-glass::placeholder {
+  color: var(--ink-500);
 }
