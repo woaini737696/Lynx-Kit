@@ -2,12 +2,12 @@
 
 import * as React from "react";
 import { Search, X, UserCheck, UserX } from "lucide-react";
-import { Badge, Button, Input } from "@lynxkit/ui-web";
+import { Input } from "@lynxkit/ui-web";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { cn, formatDateTime } from "@/lib/utils";
 
 /**
- * 用户管理
+ * 用户管理 - iOS26 极简黑白灰毛玻璃风格
  *
  * 搜索 + 角色筛选 + 分页。数据为占位 mock，后续接入 adminApi.listUsers()。
  */
@@ -44,12 +44,6 @@ const ALL_USERS: AdminUser[] = [
 const ROLE_FILTERS = ["全部", "用户", "创作者", "管理员"] as const;
 type RoleFilter = (typeof ROLE_FILTERS)[number];
 
-const ROLE_VARIANT: Record<AdminUser["role"], "default" | "secondary" | "outline"> = {
-  管理员: "default",
-  创作者: "secondary",
-  用户: "outline",
-};
-
 const PAGE_SIZE = 8;
 
 export default function AdminUsersPage() {
@@ -83,12 +77,12 @@ export default function AdminUsersPage() {
       header: "用户",
       cell: (u) => (
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-lynx-500 to-lynx-600 text-xs font-semibold text-white">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-950 text-xs font-semibold text-white dark:bg-ink-100 dark:text-ink-950">
             {u.name.slice(0, 1)}
-          </div>
+          </span>
           <div>
-            <p className="font-medium">{u.name}</p>
-            <p className="text-xs text-muted-foreground">{u.email}</p>
+            <p className="font-medium text-ink-900 dark:text-ink-50">{u.name}</p>
+            <p className="text-xs text-ink-500 dark:text-ink-400">{u.email}</p>
           </div>
         </div>
       ),
@@ -96,20 +90,33 @@ export default function AdminUsersPage() {
     {
       key: "role",
       header: "角色",
-      cell: (u) => <Badge variant={ROLE_VARIANT[u.role]}>{u.role}</Badge>,
+      cell: (u) => (
+        <span
+          className={cn(
+            "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+            u.role === "管理员"
+              ? "bg-ink-950 text-white dark:bg-ink-100 dark:text-ink-950"
+              : u.role === "创作者"
+                ? "bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-200"
+                : "border border-ink-200 text-ink-500 dark:border-ink-700 dark:text-ink-400",
+          )}
+        >
+          {u.role}
+        </span>
+      ),
     },
     {
       key: "status",
       header: "状态",
       cell: (u) =>
         u.status === "active" ? (
-          <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span className="inline-flex items-center gap-1.5 text-ink-700 dark:text-ink-200">
+            <span className="h-1.5 w-1.5 rounded-full bg-ink-950 dark:bg-ink-100" />
             正常
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 text-red-600 dark:text-red-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+          <span className="inline-flex items-center gap-1.5 text-ink-500 dark:text-ink-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-ink-300 dark:bg-ink-700" />
             封禁
           </span>
         ),
@@ -120,7 +127,9 @@ export default function AdminUsersPage() {
       sortable: true,
       sortValue: (u) => u.createdAt,
       cell: (u) => (
-        <span className="text-muted-foreground">{formatDateTime(u.createdAt)}</span>
+        <span className="text-ink-500 dark:text-ink-400">
+          {formatDateTime(u.createdAt)}
+        </span>
       ),
     },
     {
@@ -129,16 +138,15 @@ export default function AdminUsersPage() {
       className: "text-right",
       cell: (u) =>
         u.role === "管理员" ? (
-          <span className="text-xs text-muted-foreground">—</span>
+          <span className="text-xs text-ink-400">—</span>
         ) : (
-          <Button
-            variant={u.status === "active" ? "outline" : "default"}
-            size="sm"
+          <button
+            type="button"
             className={cn(
-              "h-8 gap-1.5 text-xs",
+              "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all",
               u.status === "active"
-                ? ""
-                : "bg-lynx-500 text-white hover:bg-lynx-600",
+                ? "border border-ink-200/60 bg-white/55 text-ink-700 backdrop-blur-xl hover:bg-white/72 hover:text-ink-950 dark:border-ink-700/60 dark:bg-white/5 dark:text-ink-200 dark:hover:bg-white/10 dark:hover:text-ink-50"
+                : "bg-ink-950 text-white shadow-[0_4px_14px_rgba(0,0,0,0.18)] hover:bg-ink-800 dark:bg-ink-100 dark:text-ink-950 dark:hover:bg-ink-200",
             )}
           >
             {u.status === "active" ? (
@@ -152,54 +160,56 @@ export default function AdminUsersPage() {
                 解封
               </>
             )}
-          </Button>
+          </button>
         ),
     },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">用户管理</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-[-0.02em] text-ink-950 dark:text-ink-50">
+          用户管理
+        </h1>
+        <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">
           管理平台用户、创作者与管理员账号
         </p>
       </div>
 
-      {/* 工具栏：搜索 + 筛选 */}
+      {/* 工具栏：搜索 + 筛选 - 玻璃胶囊 */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
           <Input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="搜索用户名或邮箱…"
-            className="h-10 pl-10 pr-10"
+            className="h-11 rounded-full border-white/70 bg-white/55 pl-11 pr-11 text-base backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-white/10"
           />
           {query ? (
             <button
               type="button"
               aria-label="清除"
               onClick={() => setQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-ink-400 transition-colors hover:text-ink-950 dark:hover:text-ink-50"
             >
               <X className="h-4 w-4" />
             </button>
           ) : null}
         </div>
 
-        <div className="inline-flex rounded-lg border border-border bg-muted p-1 text-sm">
+        <div className="inline-flex gap-1 rounded-full border border-white/40 bg-white/55 p-1 backdrop-blur-xl backdrop-saturate-150 dark:border-white/5 dark:bg-white/5">
           {ROLE_FILTERS.map((r) => (
             <button
               key={r}
               type="button"
               onClick={() => setRole(r)}
               className={cn(
-                "rounded-md px-3 py-1.5 transition",
+                "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all",
                 role === r
-                  ? "bg-background font-medium shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "bg-ink-950 text-white shadow-sm dark:bg-ink-100 dark:text-ink-950"
+                  : "text-ink-500 hover:text-ink-950 dark:text-ink-400 dark:hover:text-ink-50",
               )}
             >
               {r}

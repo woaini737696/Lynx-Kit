@@ -74,7 +74,7 @@ export function TitleBar() {
         </div>
         <div className="flex flex-col leading-none">
           <span className="text-xl font-bold tracking-tight text-foreground">
-            妙想
+            {t("common.brand")}
           </span>
           <span className="text-[10px] text-muted-foreground">
             {t("common.tagline")}

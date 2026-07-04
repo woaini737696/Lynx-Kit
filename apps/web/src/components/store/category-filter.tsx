@@ -22,7 +22,6 @@ export function CategoryFilter({
   onChange,
   className,
 }: CategoryFilterProps) {
-  // 非受控模式：父组件未传 active 时，内部 state 管理选中态
   const [internalActive, setInternalActive] = React.useState("all");
   const active = activeProp ?? internalActive;
   const handleChange = (slug: string) => {
@@ -31,13 +30,7 @@ export function CategoryFilter({
   };
 
   return (
-    <div
-      className={cn(
-        "flex flex-wrap items-center gap-2",
-        className,
-      )}
-      role="tablist"
-    >
+    <div className={cn("flex flex-wrap items-center gap-2", className)} role="tablist">
       {categories.map((c) => {
         const isActive = active === c.slug;
         return (
@@ -48,10 +41,10 @@ export function CategoryFilter({
             aria-selected={isActive}
             onClick={() => handleChange(c.slug)}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
+              "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all",
               isActive
-                ? "border-lynx-500 bg-lynx-500 text-white"
-                : "border-border bg-background text-muted-foreground hover:border-lynx-500/40 hover:text-foreground",
+                ? "border-ink-950 bg-ink-950 text-white shadow-sm dark:border-ink-100 dark:bg-ink-100 dark:text-ink-950"
+                : "border-white/70 bg-white/55 text-ink-600 backdrop-blur-xl backdrop-saturate-150 hover:bg-white/72 hover:text-ink-950 dark:border-white/10 dark:bg-white/10 dark:text-ink-300 dark:hover:bg-white/20 dark:hover:text-ink-50",
             )}
           >
             {c.name}
@@ -59,7 +52,9 @@ export function CategoryFilter({
               <span
                 className={cn(
                   "rounded-full px-1.5 py-0.5 text-[10px]",
-                  isActive ? "bg-white/20" : "bg-muted",
+                  isActive
+                    ? "bg-white/20 dark:bg-ink-950/20"
+                    : "bg-ink-100 dark:bg-ink-800",
                 )}
               >
                 {c.count}

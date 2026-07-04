@@ -30,7 +30,6 @@ export default function LoginPage() {
         login(res.accessToken, res.user);
         toast({ title: "登录成功", description: `欢迎回来，${res.user.name ?? "创作者"}` });
       } else {
-        // 手机号 + 验证码（此处仅占位，等 StoreApi 暴露 sendCode 后接入）
         toast({
           title: "暂未开放",
           description: "手机号登录将在后续版本支持",
@@ -38,7 +37,6 @@ export default function LoginPage() {
         });
         return;
       }
-      // 登录成功跳转到商店页
       router.push("/store");
     } catch (err) {
       toast({
@@ -53,19 +51,21 @@ export default function LoginPage() {
 
   return (
     <div>
-      <h1 className="text-center text-2xl font-bold tracking-tight">登录</h1>
-      <p className="mt-1 text-center text-sm text-muted-foreground">继续你的造物之旅</p>
+      <h1 className="text-center text-2xl font-bold tracking-[-0.02em] text-ink-950 dark:text-ink-50">
+        登录
+      </h1>
+      <p className="mt-1 text-center text-sm text-ink-500 dark:text-ink-400">继续你的造物之旅</p>
 
-      {/* Tab 切换 */}
+      {/* Tab 切换 - 玻璃胶囊 */}
       <div className="mt-6 flex justify-center">
-        <div className="inline-flex rounded-lg border border-border bg-muted p-1 text-sm">
+        <div className="inline-flex rounded-full border border-white/70 bg-white/55 p-1 text-sm backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-white/10">
           <button
             type="button"
             onClick={() => setMode("email")}
             className={
               mode === "email"
-                ? "rounded-md bg-background px-4 py-1.5 font-medium shadow-sm"
-                : "px-4 py-1.5 text-muted-foreground"
+                ? "rounded-full bg-ink-950 px-4 py-1.5 font-medium text-white shadow-sm dark:bg-ink-100 dark:text-ink-950"
+                : "px-4 py-1.5 text-ink-500 dark:text-ink-400"
             }
           >
             邮箱
@@ -75,8 +75,8 @@ export default function LoginPage() {
             onClick={() => setMode("phone")}
             className={
               mode === "phone"
-                ? "rounded-md bg-background px-4 py-1.5 font-medium shadow-sm"
-                : "px-4 py-1.5 text-muted-foreground"
+                ? "rounded-full bg-ink-950 px-4 py-1.5 font-medium text-white shadow-sm dark:bg-ink-100 dark:text-ink-950"
+                : "px-4 py-1.5 text-ink-500 dark:text-ink-400"
             }
           >
             手机号
@@ -88,9 +88,11 @@ export default function LoginPage() {
         {mode === "email" ? (
           <>
             <div className="space-y-1.5">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="email" className="text-ink-700 dark:text-ink-200">
+                邮箱
+              </Label>
               <div className="relative">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
                 <Input
                   id="email"
                   type="email"
@@ -98,22 +100,24 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="pl-10"
+                  className="rounded-xl border-white/70 bg-white/55 pl-10 backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-white/10"
                 />
               </div>
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">密码</Label>
+                <Label htmlFor="password" className="text-ink-700 dark:text-ink-200">
+                  密码
+                </Label>
                 <Link
                   href="/forgot-password"
-                  className="text-xs text-lynx-600 hover:text-lynx-500 dark:text-lynx-400"
+                  className="text-xs text-ink-500 hover:text-ink-950 dark:text-ink-400 dark:hover:text-ink-50"
                 >
                   忘记密码？
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
                 <Input
                   id="password"
                   type="password"
@@ -121,7 +125,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="请输入密码"
-                  className="pl-10"
+                  className="rounded-xl border-white/70 bg-white/55 pl-10 backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-white/10"
                 />
               </div>
             </div>
@@ -129,7 +133,9 @@ export default function LoginPage() {
         ) : (
           <>
             <div className="space-y-1.5">
-              <Label htmlFor="phone">手机号</Label>
+              <Label htmlFor="phone" className="text-ink-700 dark:text-ink-200">
+                手机号
+              </Label>
               <Input
                 id="phone"
                 type="tel"
@@ -137,10 +143,13 @@ export default function LoginPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="请输入手机号"
+                className="rounded-xl border-white/70 bg-white/55 backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-white/10"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="code">验证码</Label>
+              <Label htmlFor="code" className="text-ink-700 dark:text-ink-200">
+                验证码
+              </Label>
               <div className="flex gap-2">
                 <Input
                   id="code"
@@ -150,8 +159,13 @@ export default function LoginPage() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="6 位验证码"
+                  className="rounded-xl border-white/70 bg-white/55 backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-white/10"
                 />
-                <Button type="button" variant="outline">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-xl border-ink-200 bg-white/55 text-ink-700 backdrop-blur-xl dark:border-ink-700 dark:bg-white/10 dark:text-ink-200"
+                >
                   发送验证码
                 </Button>
               </div>
@@ -162,7 +176,7 @@ export default function LoginPage() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-lynx-500 text-white hover:bg-lynx-600"
+          className="w-full rounded-full bg-ink-950 text-white shadow-[0_4px_14px_rgba(0,0,0,0.18)] transition-all hover:bg-ink-800 hover:translate-y-[-1px] dark:bg-ink-100 dark:text-ink-950 dark:hover:bg-ink-200"
         >
           {loading ? "登录中…" : "登录"}
           {!loading ? <ArrowRight className="h-4 w-4" /> : null}
@@ -171,26 +185,34 @@ export default function LoginPage() {
 
       {/* 分隔符 */}
       <div className="my-6 flex items-center gap-3">
-        <Separator className="flex-1" />
-        <span className="text-xs text-muted-foreground">或</span>
-        <Separator className="flex-1" />
+        <Separator className="flex-1 bg-ink-200/60 dark:bg-ink-700/60" />
+        <span className="text-xs text-ink-400 dark:text-ink-500">或</span>
+        <Separator className="flex-1 bg-ink-200/60 dark:bg-ink-700/60" />
       </div>
 
       {/* 第三方登录占位 */}
       <div className="grid grid-cols-2 gap-3">
-        <Button variant="outline" disabled>
+        <Button
+          variant="outline"
+          disabled
+          className="rounded-xl border-ink-200 bg-white/55 text-ink-500 backdrop-blur-xl dark:border-ink-700 dark:bg-white/10 dark:text-ink-400"
+        >
           GitHub
         </Button>
-        <Button variant="outline" disabled>
+        <Button
+          variant="outline"
+          disabled
+          className="rounded-xl border-ink-200 bg-white/55 text-ink-500 backdrop-blur-xl dark:border-ink-700 dark:bg-white/10 dark:text-ink-400"
+        >
           微信
         </Button>
       </div>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="mt-6 text-center text-sm text-ink-500 dark:text-ink-400">
         还没有账号？{" "}
         <Link
           href="/register"
-          className="font-medium text-lynx-600 hover:text-lynx-500 dark:text-lynx-400"
+          className="font-medium text-ink-950 hover:underline dark:text-ink-50"
         >
           立即注册
         </Link>

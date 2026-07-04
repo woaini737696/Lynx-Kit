@@ -1,6 +1,6 @@
 {
   "common": {
-    "brand": "Miaoxiang",
+    "brand": "Miaox",
     "tagline": "From inspiration to launch, zero barrier.",
     "loading": "Loading…",
     "cancel": "Cancel",
@@ -51,8 +51,15 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "fillEmailAndPassword": "Please fill in email and password",
+    "fillAllFields": "Please fill in all fields",
     "loginFailed": "Login failed",
-    "registerFailed": "Sign up failed"
+    "loginSuccess": "Logged in",
+    "registerFailed": "Sign up failed",
+    "registerSuccess": "Signed up, logged in",
+    "name": "Username",
+    "namePlaceholder": "Your nickname",
+    "passwordMinHint": "At least 6 chars",
+    "registerAndLogin": "Sign up and log in"
   },
   "settings": {
     "title": "Settings",
@@ -142,7 +149,7 @@
     }
   },
   "store": {
-    "title": "Miaoxiang Store",
+    "title": "Miaox Store",
     "search": "Search apps…",
     "tryDemo": "Try demo",
     "loadFailed": "Failed to load store",
@@ -166,10 +173,48 @@
   },
   "creator": {
     "title": "Creator",
-    "products": "My products"
+    "products": "My products",
+    "centerTitle": "Creator Center",
+    "manageProducts": "Manage Products",
+    "emptyHint": "Open Creator Center to publish and earn from your AI products",
+    "enableButton": "Enable Creator",
+    "enabledToast": "Creator Center enabled",
+    "enableFailed": "Failed to enable",
+    "stats": {
+      "totalIncome": "Total revenue",
+      "balance": "Withdrawable",
+      "productCount": "Published",
+      "avgRating": "Avg rating"
+    },
+    "profile": {
+      "title": "Creator profile",
+      "downloads": "{{count}} downloads",
+      "verified": "Verified"
+    }
+  },
+  "home": {
+    "badge": "9-layer Agent pipeline · from prompt to launch",
+    "titlePrefix": "Build your",
+    "titleHighlight": "AI product",
+    "subtitle": "Describe your idea, AI makes it real",
+    "feature": {
+      "fast": {
+        "title": "Fast",
+        "desc": "Intent → architecture → code → deploy, all automated"
+      },
+      "reviewable": {
+        "title": "Reviewable",
+        "desc": "Conversational debug, real-time preview"
+      },
+      "local": {
+        "title": "Local first",
+        "descDesktop": "Desktop supports local Ollama offline inference",
+        "descWeb": "Encrypted storage, secure and controllable"
+      }
+    }
   },
   "about": {
-    "description": "Miaoxiang is an all-in-one AI product building platform, from idea to release.",
+    "description": "Miaox is an all-in-one AI product building platform, from idea to release.",
     "newVersion": "New version available",
     "downloading": "Downloading…",
     "checkUpdate": "Check for updates",

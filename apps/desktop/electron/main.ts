@@ -11,7 +11,7 @@ import {
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
-import { createTray, showNotification, setTrayLabel, destroyTray } from "./services/notification.js";
+import { createTray, showNotification, setTrayLabel, destroyTray, DEFAULT_ICON } from "./services/notification.js";
 import { saveFile, openFolder, showInFolder } from "./services/filesystem.js";
 import { detectOllama, listLocalModels } from "./services/local-ai.js";
 import {
@@ -237,7 +237,7 @@ if (!gotLock) {
     registerIpcHandlers();
     createWindow();
 
-    tray = createTray("", () => {
+    tray = createTray(DEFAULT_ICON, () => {
       if (win) {
         win.isVisible() ? win.focus() : win.show();
       }

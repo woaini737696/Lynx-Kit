@@ -2,10 +2,12 @@ import Link from "next/link";
 import { Sparkles, X } from "lucide-react";
 
 /**
- * 认证页布局（全屏居中弹窗 + 毛玻璃背景）
+ * 认证页布局 · iOS26 极简黑白灰
  *
- * 用户访问 /login 或 /register 时，背景为带渐变光晕的模糊画面，
- * 前景为一张半透明毛玻璃质感的卡片，居中显示。
+ * - 全屏居中弹窗
+ * - 背景：极简灰白渐变光晕 + 强毛玻璃模糊
+ * - 卡片：强毛玻璃质感（bg-white/72 backdrop-blur-2xl）
+ * - 顶部品牌 + 右上角圆形玻璃关闭按钮
  */
 export default function AuthLayout({
   children,
@@ -13,47 +15,48 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-background to-muted">
-      {/* 背景装饰光晕（提供模糊所需的底色） */}
+    <div className="relative min-h-screen overflow-hidden bg-white dark:bg-ink-950">
+      {/* 背景装饰光晕 - 极简灰白 */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-lynx-500/30 blur-3xl"
+        className="pointer-events-none absolute -left-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-ink-200/50 blur-3xl dark:bg-ink-700/20"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-40 -right-40 h-[36rem] w-[36rem] rounded-full bg-fuchsia-500/20 blur-3xl"
+        className="pointer-events-none absolute -bottom-40 -right-40 h-[36rem] w-[36rem] rounded-full bg-ink-100/60 blur-3xl dark:bg-ink-800/20"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-400/20 blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink-50/80 blur-3xl dark:bg-ink-800/10"
       />
 
-      {/* 顶部品牌 + 关闭按钮（点击返回首页） */}
-      <div className="absolute left-6 top-6 z-10 flex items-center gap-2">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-lynx-500 to-lynx-600 text-white shadow-lg shadow-lynx-500/30">
-            <Sparkles className="h-5 w-5" />
+      {/* 顶部品牌 - 黑色方块 logo */}
+      <div className="absolute left-6 top-6 z-10 flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink-950 shadow-sm dark:bg-ink-100">
+            <Sparkles className="h-5 w-5 text-white dark:text-ink-950" />
           </span>
-          <span className="text-lg font-bold tracking-tight text-foreground">
+          <span className="text-lg font-semibold tracking-tight text-ink-900 dark:text-ink-50">
             妙想
           </span>
         </Link>
       </div>
 
+      {/* 右上角圆形玻璃关闭按钮 */}
       <Link
         href="/"
         aria-label="返回首页"
-        className="absolute right-6 top-6 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-background/60 text-muted-foreground backdrop-blur transition hover:bg-background hover:text-foreground"
+        className="absolute right-6 top-6 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/55 text-ink-600 backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/72 hover:text-ink-950 dark:border-white/10 dark:bg-white/10 dark:text-ink-300 dark:hover:bg-white/20 dark:hover:text-ink-50"
       >
         <X className="h-4 w-4" />
       </Link>
 
-      {/* 全屏居中弹窗卡片（毛玻璃） */}
+      {/* 全屏居中弹窗卡片 - 强毛玻璃 */}
       <div className="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-md rounded-2xl border border-white/40 bg-white/70 p-8 shadow-2xl shadow-black/10 backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/70 sm:p-10">
-          {/* 顶部 Slogan */}
+        <div className="w-full max-w-md rounded-[28px] border border-white/70 bg-white/72 p-8 shadow-[0_20px_60px_rgba(15,23,42,0.2),0_1px_0_rgba(255,255,255,0.8)_inset] backdrop-blur-2xl backdrop-saturate-200 dark:border-white/10 dark:bg-ink-900/72 sm:p-10">
+          {/* 顶部 Slogan - 极简黑 */}
           <div className="mb-8 text-center">
-            <h2 className="bg-gradient-to-r from-lynx-600 to-fuchsia-600 bg-clip-text text-2xl font-bold tracking-tight text-transparent dark:from-lynx-400 dark:to-fuchsia-400">
+            <h2 className="text-2xl font-bold tracking-[-0.02em] text-ink-950 dark:text-ink-50">
               从灵感到上线，全流程零门槛。
             </h2>
           </div>
@@ -62,7 +65,7 @@ export default function AuthLayout({
       </div>
 
       {/* 底部版权 */}
-      <p className="absolute bottom-4 left-0 right-0 z-10 text-center text-xs text-muted-foreground">
+      <p className="absolute bottom-4 left-0 right-0 z-10 text-center text-xs text-ink-400 dark:text-ink-500">
         © {new Date().getFullYear()} 妙想. 保留所有权利。
       </p>
     </div>

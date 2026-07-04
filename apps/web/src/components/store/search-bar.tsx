@@ -43,25 +43,21 @@ export function SearchBar({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={cn("relative w-full", className)}
-      role="search"
-    >
-      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+    <form onSubmit={handleSubmit} className={cn("relative w-full", className)} role="search">
+      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
       <Input
         type="search"
         value={current}
         onChange={handleChange}
         placeholder={placeholder}
-        className="h-11 pl-10 pr-10"
+        className="h-12 rounded-full border-white/70 bg-white/55 pl-11 pr-11 text-base backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-white/10"
       />
       {current ? (
         <button
           type="button"
           onClick={handleClear}
           aria-label="清除搜索"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-ink-400 transition-colors hover:text-ink-950 dark:hover:text-ink-50"
         >
           <X className="h-4 w-4" />
         </button>

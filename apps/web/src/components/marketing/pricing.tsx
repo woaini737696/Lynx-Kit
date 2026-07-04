@@ -20,12 +20,7 @@ const PLANS: PricingPlan[] = [
     price: "¥0",
     period: "永久免费",
     desc: "适合个人尝鲜与本地构建",
-    features: [
-      "每月 5 次构建",
-      "本地优先 AI 推理",
-      "基础 9 层 Agent 流水线",
-      "社区支持",
-    ],
+    features: ["每月 5 次构建", "本地优先 AI 推理", "基础 9 层 Agent 流水线", "社区支持"],
     cta: "免费开始",
     href: "/register",
   },
@@ -50,13 +45,7 @@ const PLANS: PricingPlan[] = [
     price: "¥399",
     period: "/ 月",
     desc: "适合成长期团队协作",
-    features: [
-      "10 个团队席位",
-      "共享 AI 模型配额",
-      "团队商店与权限管理",
-      "SSO 单点登录",
-      "专属客服支持",
-    ],
+    features: ["10 个团队席位", "共享 AI 模型配额", "团队商店与权限管理", "SSO 单点登录", "专属客服支持"],
     cta: "联系销售",
     href: "/contact?plan=team",
   },
@@ -67,13 +56,13 @@ export function Pricing() {
     <section id="pricing" className="relative py-24 sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-lynx-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-400">
             定价
           </p>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+          <h2 className="mt-3 text-3xl font-bold tracking-[-0.02em] text-ink-950 sm:text-4xl md:text-5xl dark:text-ink-50">
             简单透明的定价
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-4 text-lg text-ink-500 dark:text-ink-400">
             从个人到团队，按需选择
           </p>
         </div>
@@ -83,35 +72,37 @@ export function Pricing() {
             <article
               key={plan.name}
               className={cn(
-                "relative flex flex-col rounded-2xl border p-6 transition-all",
+                "relative flex flex-col rounded-2xl p-6 transition-all duration-300",
                 plan.highlighted
-                  ? "border-lynx-500 shadow-xl shadow-lynx-500/10 md:-translate-y-2"
-                  : "border-border hover:border-lynx-500/50",
+                  ? "border-2 border-ink-950 bg-white shadow-[0_8px_32px_rgba(15,23,42,0.08)] md:-translate-y-2 dark:border-ink-100 dark:bg-ink-900"
+                  : "glow-card hover:-translate-y-1",
               )}
             >
               {plan.highlighted ? (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-lynx-500 text-white">最受欢迎</Badge>
+                  <Badge className="rounded-full bg-ink-950 px-3 py-1 text-xs font-medium text-white dark:bg-ink-100 dark:text-ink-950">
+                    最受欢迎
+                  </Badge>
                 </div>
               ) : null}
 
-              <h3 className="text-lg font-semibold">{plan.name}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{plan.desc}</p>
+              <h3 className="text-lg font-semibold tracking-[-0.01em] text-ink-900 dark:text-ink-50">
+                {plan.name}
+              </h3>
+              <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">{plan.desc}</p>
 
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold tracking-tight">
+                <span className="text-4xl font-bold tracking-[-0.03em] text-ink-950 dark:text-ink-50">
                   {plan.price}
                 </span>
-                <span className="text-sm text-muted-foreground">
-                  {plan.period}
-                </span>
+                <span className="text-sm text-ink-500 dark:text-ink-400">{plan.period}</span>
               </div>
 
               <ul className="mt-6 flex-1 space-y-3">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-lynx-500" />
-                    <span className="text-muted-foreground">{f}</span>
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-ink-950 dark:text-ink-100" />
+                    <span className="text-ink-600 dark:text-ink-300">{f}</span>
                   </li>
                 ))}
               </ul>
@@ -119,10 +110,10 @@ export function Pricing() {
               <Button
                 asChild
                 className={cn(
-                  "mt-6 w-full",
+                  "mt-6 w-full rounded-full",
                   plan.highlighted
-                    ? "bg-lynx-500 text-white hover:bg-lynx-600"
-                    : "",
+                    ? "bg-ink-950 text-white shadow-[0_4px_14px_rgba(0,0,0,0.18)] hover:bg-ink-800 dark:bg-ink-100 dark:text-ink-950 dark:hover:bg-ink-200"
+                    : "border border-ink-200 bg-white text-ink-900 hover:bg-ink-50 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-50 dark:hover:bg-ink-800",
                 )}
                 variant={plan.highlighted ? "default" : "outline"}
               >

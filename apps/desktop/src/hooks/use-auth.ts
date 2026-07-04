@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "@lynxkit/ui-web";
 import { useAuthStore } from "@lynxkit/store";
 import { authApi } from "@/lib/api";
@@ -13,6 +14,7 @@ import { authApi } from "@/lib/api";
  * 登录成功后 token 持久化到 localStorage，后续请求自动注入 Authorization 头。
  */
 export function useAuth() {
+  const { t } = useTranslation();
   const { user, token, isAuthenticated, setUser, logout, updateProfile } =
     useAuthStore();
 
@@ -21,7 +23,7 @@ export function useAuth() {
       authApi.login(email, password),
     onSuccess: (res) => {
       setUser(res.user, res.accessToken);
-      toast({ title: "登录成功", variant: "success" });
+      toast({ title: t("auth.loginSuccess"), variant: "success" });
     },
   });
 
@@ -29,7 +31,7 @@ export function useAuth() {
     mutationFn: authApi.register,
     onSuccess: (res) => {
       setUser(res.user, res.accessToken);
-      toast({ title: "注册成功，已自动登录", variant: "success" });
+      toast({ title: t("auth.registerSuccess"), variant: "success" });
     },
   });
 

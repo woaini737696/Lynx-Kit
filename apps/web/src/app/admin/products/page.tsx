@@ -2,20 +2,12 @@
 
 import * as React from "react";
 import { toast } from "@lynxkit/ui-web";
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@lynxkit/ui-web";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { cn, formatPrice } from "@/lib/utils";
 import { storeApi } from "@/lib/api";
 
 /**
- * 商品管理
+ * 商品管理 - iOS26 极简黑白灰毛玻璃风格
  *
  * 商品列表 + 审核状态切换 + 下架操作。
  * 下架通过 @lynxkit/api-client 的 StoreApi.unpublish 调用后端。
@@ -49,11 +41,11 @@ const PRODUCTS: AdminProduct[] = [
 
 const AUDIT: Record<
   AuditStatus,
-  { label: string; variant: "default" | "secondary" | "outline" }
+  { label: string; tone: "ink" | "muted" | "outline" }
 > = {
-  published: { label: "已上架", variant: "default" },
-  pending: { label: "待审核", variant: "secondary" },
-  rejected: { label: "已驳回", variant: "outline" },
+  published: { label: "已上架", tone: "ink" },
+  pending: { label: "待审核", tone: "muted" },
+  rejected: { label: "已驳回", tone: "outline" },
 };
 
 const STATUS_FILTERS = ["全部", "已上架", "待审核", "已驳回"] as const;
@@ -65,6 +57,24 @@ const FILTER_TO_STATUS: Record<StatusFilter, AuditStatus | null> = {
   待审核: "pending",
   已驳回: "rejected",
 };
+
+function AuditBadge({ status }: { status: AuditStatus }) {
+  const cfg = AUDIT[status];
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+        cfg.tone === "ink"
+          ? "bg-ink-950 text-white dark:bg-ink-100 dark:text-ink-950"
+          : cfg.tone === "muted"
+            ? "bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300"
+            : "border border-ink-200 text-ink-500 dark:border-ink-700 dark:text-ink-400",
+      )}
+    >
+      {cfg.label}
+    </span>
+  );
+}
 
 export default function AdminProductsPage() {
   const [items, setItems] = React.useState<AdminProduct[]>(PRODUCTS);
@@ -99,7 +109,7 @@ export default function AdminProductsPage() {
 
   function handleReject(p: AdminProduct) {
     setAuditStatus(p.id, "rejected");
-    toast({ title: "已驳回", description: p.name, variant: "destructive" });
+    toast({ title: "已驳回", description: p.name });
   }
 
   const columns: Column<AdminProduct>[] = [
@@ -108,15 +118,15 @@ export default function AdminProductsPage() {
       header: "商品",
       cell: (p) => (
         <div>
-          <p className="font-medium">{p.name}</p>
-          <p className="text-xs text-muted-foreground">{p.category}</p>
+          <p className="font-medium text-ink-900 dark:text-ink-50">{p.name}</p>
+          <p className="text-xs text-ink-500 dark:text-ink-400">{p.category}</p>
         </div>
       ),
     },
     {
       key: "creator",
       header: "创作者",
-      cell: (p) => <span className="text-muted-foreground">{p.creator}</span>,
+      cell: (p) => <span className="text-ink-500 dark:text-ink-400">{p.creator}</span>,
     },
     {
       key: "price",
@@ -124,7 +134,7 @@ export default function AdminProductsPage() {
       sortable: true,
       sortValue: (p) => p.price,
       cell: (p) => (
-        <span className="font-medium text-lynx-600 dark:text-lynx-400">
+        <span className="font-semibold text-ink-950 dark:text-ink-50">
           {p.price === 0 ? "免费" : formatPrice(p.price)}
         </span>
       ),
@@ -135,7 +145,9 @@ export default function AdminProductsPage() {
       sortable: true,
       sortValue: (p) => p.downloads,
       cell: (p) => (
-        <span className="text-muted-foreground">{p.downloads.toLocaleString()}</span>
+        <span className="text-ink-500 dark:text-ink-400">
+          {p.downloads.toLocaleString()}
+        </span>
       ),
     },
     {
@@ -145,20 +157,18 @@ export default function AdminProductsPage() {
       sortValue: (p) => p.rating,
       cell: (p) =>
         p.rating > 0 ? (
-          <span className="inline-flex items-center gap-1">
-            <span className="text-amber-500">★</span>
+          <span className="inline-flex items-center gap-1 text-ink-950 dark:text-ink-50">
+            <span className="text-ink-950 dark:text-ink-50">★</span>
             {p.rating.toFixed(1)}
           </span>
         ) : (
-          <span className="text-muted-foreground">—</span>
+          <span className="text-ink-400">—</span>
         ),
     },
     {
       key: "status",
       header: "状态",
-      cell: (p) => (
-        <Badge variant={AUDIT[p.status].variant}>{AUDIT[p.status].label}</Badge>
-      ),
+      cell: (p) => <AuditBadge status={p.status} />,
     },
     {
       key: "actions",
@@ -168,41 +178,37 @@ export default function AdminProductsPage() {
         <div className="flex items-center justify-end gap-2">
           {p.status === "pending" ? (
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 gap-1.5 text-xs"
+              <button
+                type="button"
+                className="inline-flex h-8 items-center gap-1.5 rounded-full bg-ink-950 px-3 text-xs font-medium text-white shadow-[0_4px_14px_rgba(0,0,0,0.18)] transition-all hover:bg-ink-800 dark:bg-ink-100 dark:text-ink-950 dark:hover:bg-ink-200"
                 onClick={() => handleApprove(p)}
               >
                 通过
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 gap-1.5 text-xs text-red-600 hover:text-red-700"
+              </button>
+              <button
+                type="button"
+                className="inline-flex h-8 items-center gap-1.5 rounded-full border border-ink-200/60 bg-white/55 px-3 text-xs font-medium text-ink-700 backdrop-blur-xl transition-all hover:bg-white/72 hover:text-ink-950 dark:border-ink-700/60 dark:bg-white/5 dark:text-ink-200 dark:hover:bg-white/10 dark:hover:text-ink-50"
                 onClick={() => handleReject(p)}
               >
                 驳回
-              </Button>
+              </button>
             </>
           ) : p.status === "published" ? (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1.5 text-xs text-red-600 hover:text-red-700"
+            <button
+              type="button"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-ink-200/60 bg-white/55 px-3 text-xs font-medium text-ink-500 backdrop-blur-xl transition-all hover:bg-white/72 hover:text-ink-950 dark:border-ink-700/60 dark:bg-white/5 dark:text-ink-300 dark:hover:bg-white/10 dark:hover:text-ink-50"
               onClick={() => void handleUnpublish(p)}
             >
               下架
-            </Button>
+            </button>
           ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1.5 text-xs"
+            <button
+              type="button"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-ink-200/60 bg-white/55 px-3 text-xs font-medium text-ink-700 backdrop-blur-xl transition-all hover:bg-white/72 hover:text-ink-950 dark:border-ink-700/60 dark:bg-white/5 dark:text-ink-200 dark:hover:bg-white/10 dark:hover:text-ink-50"
               onClick={() => handleApprove(p)}
             >
               重新上架
-            </Button>
+            </button>
           )}
         </div>
       ),
@@ -210,25 +216,27 @@ export default function AdminProductsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">商品管理</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-[-0.02em] text-ink-950 dark:text-ink-50">
+            商品管理
+          </h1>
+          <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">
             审核创作者上架的商品，下架违规内容
           </p>
         </div>
-        <div className="inline-flex rounded-lg border border-border bg-muted p-1 text-sm">
+        <div className="inline-flex gap-1 rounded-full border border-white/40 bg-white/55 p-1 backdrop-blur-xl backdrop-saturate-150 dark:border-white/5 dark:bg-white/5">
           {STATUS_FILTERS.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setFilter(s)}
               className={cn(
-                "rounded-md px-3 py-1.5 transition",
+                "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all",
                 filter === s
-                  ? "bg-background font-medium shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "bg-ink-950 text-white shadow-sm dark:bg-ink-100 dark:text-ink-950"
+                  : "text-ink-500 hover:text-ink-950 dark:text-ink-400 dark:hover:text-ink-50",
               )}
             >
               {s}
@@ -237,23 +245,21 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
+      <div className="glow-card p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-base font-semibold tracking-[-0.01em] text-ink-950 dark:text-ink-50">
             全部商品
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
-              {filtered.length} 件
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DataTable
-            columns={columns}
-            data={filtered}
-            rowKey={(p) => p.id}
-          />
-        </CardContent>
-      </Card>
+          </h2>
+          <span className="text-xs text-ink-500 dark:text-ink-400">
+            {filtered.length} 件
+          </span>
+        </div>
+        <DataTable
+          columns={columns}
+          data={filtered}
+          rowKey={(p) => p.id}
+        />
+      </div>
     </div>
   );
 }

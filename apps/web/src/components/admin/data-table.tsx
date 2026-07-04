@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * 通用数据表格
+ * 通用数据表格 - iOS26 毛玻璃质感
  *
  * - 列定义支持自定义渲染与排序（sortable + sortValue）
  * - 可选分页（pagination 受控）
@@ -84,15 +84,15 @@ export function DataTable<T>({
 
   return (
     <div className={cn("w-full", className)}>
-      <div className="overflow-x-auto rounded-lg border border-border">
+      <div className="overflow-x-auto rounded-2xl border border-white/40 bg-white/55 backdrop-blur-xl backdrop-saturate-150 dark:border-white/5 dark:bg-white/5">
         <table className="w-full text-sm">
-          <thead className="border-b border-border bg-muted/40">
+          <thead className="border-b border-ink-200/60 bg-white/40 dark:border-ink-800/60 dark:bg-white/5">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-3 text-left font-medium text-muted-foreground",
+                    "px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.06em] text-ink-500 dark:text-ink-400",
                     col.className,
                   )}
                 >
@@ -100,7 +100,7 @@ export function DataTable<T>({
                     <button
                       type="button"
                       onClick={() => toggleSort(col)}
-                      className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
+                      className="inline-flex items-center gap-1 transition-colors hover:text-ink-950 dark:hover:text-ink-50"
                     >
                       {col.header}
                       {sortKey === col.key ? (
@@ -110,7 +110,7 @@ export function DataTable<T>({
                           <ArrowDown className="h-3.5 w-3.5" />
                         )
                       ) : (
-                        <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground/50" />
+                        <ChevronsUpDown className="h-3.5 w-3.5 text-ink-300 dark:text-ink-700" />
                       )}
                     </button>
                   ) : (
@@ -120,12 +120,12 @@ export function DataTable<T>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-ink-200/40 dark:divide-ink-800/60">
             {sortedData.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-10 text-center text-muted-foreground"
+                  className="px-4 py-10 text-center text-ink-500 dark:text-ink-400"
                 >
                   {empty ?? "暂无数据"}
                 </td>
@@ -134,12 +134,15 @@ export function DataTable<T>({
               sortedData.map((row, i) => (
                 <tr
                   key={rowKey ? rowKey(row, i) : i}
-                  className="transition-colors hover:bg-muted/30"
+                  className="transition-colors hover:bg-white/72 dark:hover:bg-white/10"
                 >
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className={cn("px-4 py-3 align-middle", col.className)}
+                      className={cn(
+                        "px-4 py-3 align-middle text-ink-700 dark:text-ink-200",
+                        col.className,
+                      )}
                     >
                       {col.cell(row)}
                     </td>
@@ -152,8 +155,8 @@ export function DataTable<T>({
       </div>
 
       {pagination ? (
-        <div className="mt-3 flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
+        <div className="mt-3 flex items-center justify-between text-sm text-ink-500 dark:text-ink-400">
+          <span>
             共 {pagination.total} 条 · 第 {pagination.page}/{totalPages} 页
           </span>
           <div className="flex items-center gap-2">
@@ -161,7 +164,7 @@ export function DataTable<T>({
               type="button"
               disabled={pagination.page <= 1}
               onClick={() => pagination.onPageChange(pagination.page - 1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-ink-200/60 bg-white/55 text-ink-600 backdrop-blur-xl transition-colors hover:bg-white/72 hover:text-ink-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-ink-700/60 dark:bg-white/5 dark:text-ink-300 dark:hover:bg-white/10 dark:hover:text-ink-50"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -169,7 +172,7 @@ export function DataTable<T>({
               type="button"
               disabled={pagination.page >= totalPages}
               onClick={() => pagination.onPageChange(pagination.page + 1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-ink-200/60 bg-white/55 text-ink-600 backdrop-blur-xl transition-colors hover:bg-white/72 hover:text-ink-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-ink-700/60 dark:bg-white/5 dark:text-ink-300 dark:hover:bg-white/10 dark:hover:text-ink-50"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

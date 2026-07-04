@@ -12,13 +12,6 @@ import {
   Server,
   ChevronRight,
 } from "lucide-react";
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@lynxkit/ui-web";
 import { StatsCard } from "@/components/admin/stats-card";
 import {
   DataTable,
@@ -32,7 +25,7 @@ import {
 } from "@/lib/utils";
 
 /**
- * 仪表盘
+ * 仪表盘 - iOS26 极简黑白灰毛玻璃风格
  *
  * 在接入管理员 API 之前，下列数据为占位 mock（与 store/data.ts 风格一致）。
  * 后续切换为 adminApi.stats() 返回。
@@ -134,28 +127,46 @@ const RECENT_ORDERS: RecentOrder[] = [
   },
 ];
 
-const ROLE_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
-  创作者: "default",
-  用户: "secondary",
-};
-
 const ORDER_STATUS: Record<
   RecentOrder["status"],
-  { label: string; variant: "default" | "secondary" | "outline" }
+  { label: string; tone: "ink" | "muted" | "outline" }
 > = {
-  pending: { label: "待支付", variant: "secondary" },
-  completed: { label: "已完成", variant: "default" },
-  refunded: { label: "已退款", variant: "outline" },
+  pending: { label: "待支付", tone: "muted" },
+  completed: { label: "已完成", tone: "ink" },
+  refunded: { label: "已退款", tone: "outline" },
 };
+
+function OrderBadge({ status }: { status: RecentOrder["status"] }) {
+  const cfg = ORDER_STATUS[status];
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+        cfg.tone === "ink"
+          ? "bg-ink-950 text-white dark:bg-ink-100 dark:text-ink-950"
+          : cfg.tone === "muted"
+            ? "bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300"
+            : "border border-ink-200 text-ink-500 dark:border-ink-700 dark:text-ink-400",
+      )}
+    >
+      {cfg.label}
+    </span>
+  );
+}
 
 const userColumns: Column<RecentUser>[] = [
   {
     key: "name",
     header: "用户",
     cell: (u) => (
-      <div>
-        <p className="font-medium">{u.name}</p>
-        <p className="text-xs text-muted-foreground">{u.email}</p>
+      <div className="flex items-center gap-3">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-950 text-xs font-semibold text-white dark:bg-ink-100 dark:text-ink-950">
+          {u.name.slice(0, 1)}
+        </span>
+        <div>
+          <p className="font-medium text-ink-900 dark:text-ink-50">{u.name}</p>
+          <p className="text-xs text-ink-500 dark:text-ink-400">{u.email}</p>
+        </div>
       </div>
     ),
   },
@@ -163,7 +174,16 @@ const userColumns: Column<RecentUser>[] = [
     key: "role",
     header: "角色",
     cell: (u) => (
-      <Badge variant={ROLE_VARIANT[u.role] ?? "secondary"}>{u.role}</Badge>
+      <span
+        className={cn(
+          "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+          u.role === "创作者"
+            ? "bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-200"
+            : "text-ink-500 dark:text-ink-400",
+        )}
+      >
+        {u.role}
+      </span>
     ),
   },
   {
@@ -171,13 +191,13 @@ const userColumns: Column<RecentUser>[] = [
     header: "状态",
     cell: (u) =>
       u.status === "active" ? (
-        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        <span className="inline-flex items-center gap-1.5 text-ink-700 dark:text-ink-200">
+          <span className="h-1.5 w-1.5 rounded-full bg-ink-950 dark:bg-ink-100" />
           正常
         </span>
       ) : (
-        <span className="inline-flex items-center gap-1 text-red-600 dark:text-red-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+        <span className="inline-flex items-center gap-1.5 text-ink-500 dark:text-ink-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-ink-300 dark:bg-ink-700" />
           封禁
         </span>
       ),
@@ -188,7 +208,9 @@ const userColumns: Column<RecentUser>[] = [
     sortable: true,
     sortValue: (u) => u.createdAt,
     cell: (u) => (
-      <span className="text-muted-foreground">{formatDateTime(u.createdAt)}</span>
+      <span className="text-ink-500 dark:text-ink-400">
+        {formatDateTime(u.createdAt)}
+      </span>
     ),
   },
 ];
@@ -197,17 +219,17 @@ const orderColumns: Column<RecentOrder>[] = [
   {
     key: "id",
     header: "订单号",
-    cell: (o) => <span className="font-mono text-xs">{o.id}</span>,
+    cell: (o) => <span className="font-mono text-xs text-ink-700 dark:text-ink-200">{o.id}</span>,
   },
   {
     key: "product",
     header: "商品",
-    cell: (o) => <span className="font-medium">{o.product}</span>,
+    cell: (o) => <span className="font-medium text-ink-900 dark:text-ink-50">{o.product}</span>,
   },
   {
     key: "buyer",
     header: "买家",
-    cell: (o) => <span className="text-muted-foreground">{o.buyer}</span>,
+    cell: (o) => <span className="text-ink-500 dark:text-ink-400">{o.buyer}</span>,
   },
   {
     key: "amount",
@@ -215,7 +237,7 @@ const orderColumns: Column<RecentOrder>[] = [
     sortable: true,
     sortValue: (o) => o.amount,
     cell: (o) => (
-      <span className="font-medium text-lynx-600 dark:text-lynx-400">
+      <span className="font-semibold text-ink-950 dark:text-ink-50">
         {formatPrice(o.amount)}
       </span>
     ),
@@ -223,11 +245,7 @@ const orderColumns: Column<RecentOrder>[] = [
   {
     key: "status",
     header: "状态",
-    cell: (o) => (
-      <Badge variant={ORDER_STATUS[o.status].variant}>
-        {ORDER_STATUS[o.status].label}
-      </Badge>
-    ),
+    cell: (o) => <OrderBadge status={o.status} />,
   },
   {
     key: "createdAt",
@@ -235,7 +253,9 @@ const orderColumns: Column<RecentOrder>[] = [
     sortable: true,
     sortValue: (o) => o.createdAt,
     cell: (o) => (
-      <span className="text-muted-foreground">{formatDateTime(o.createdAt)}</span>
+      <span className="text-ink-500 dark:text-ink-400">
+        {formatDateTime(o.createdAt)}
+      </span>
     ),
   },
 ];
@@ -274,11 +294,13 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* 页头 */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">仪表盘</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-[-0.02em] text-ink-950 dark:text-ink-50">
+          仪表盘
+        </h1>
+        <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">
           平台整体运行状况与关键指标概览
         </p>
       </div>
@@ -311,78 +333,79 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      {/* 系统健康 */}
+      {/* 系统健康 - 玻璃卡片 */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {health.map((h) => {
           const Icon = h.icon;
           return (
-            <Card key={h.label}>
-              <CardContent className="flex items-center gap-4 p-5">
-                <div
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-lg",
-                    h.ok
-                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                      : "bg-red-500/10 text-red-600 dark:text-red-400",
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{h.label}</p>
-                  <p className="text-lg font-bold tracking-tight">{h.value}</p>
-                  <p className="text-[11px] text-muted-foreground">{h.hint}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div
+              key={h.label}
+              className="glow-card flex items-center gap-4 p-5"
+            >
+              <div
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-xl",
+                  h.ok
+                    ? "bg-ink-950 text-white dark:bg-ink-100 dark:text-ink-950"
+                    : "bg-ink-200 text-ink-600 dark:bg-ink-800 dark:text-ink-300",
+                )}
+              >
+                <Icon className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.06em] text-ink-500 dark:text-ink-400">
+                  {h.label}
+                </p>
+                <p className="text-xl font-bold tracking-[-0.02em] text-ink-950 dark:text-ink-50">
+                  {h.value}
+                </p>
+                <p className="text-[11px] text-ink-500 dark:text-ink-400">{h.hint}</p>
+              </div>
+            </div>
           );
         })}
       </div>
 
-      {/* 最近注册用户 + 最近交易 */}
+      {/* 最近注册用户 + 最近交易 - 玻璃容器 */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <section>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-base">最近注册用户</CardTitle>
-              <Link
-                href="/admin/users"
-                className="inline-flex items-center text-xs text-lynx-600 hover:text-lynx-500 dark:text-lynx-400"
-              >
-                查看全部
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
-            </CardHeader>
-            <CardContent>
-              <DataTable
-                columns={userColumns}
-                data={RECENT_USERS}
-                rowKey={(u) => u.id}
-              />
-            </CardContent>
-          </Card>
+        <section className="glow-card p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-base font-semibold tracking-[-0.01em] text-ink-950 dark:text-ink-50">
+              最近注册用户
+            </h2>
+            <Link
+              href="/admin/users"
+              className="inline-flex items-center gap-0.5 text-xs font-medium text-ink-950 transition-colors hover:text-ink-700 dark:text-ink-50 dark:hover:text-ink-200"
+            >
+              查看全部
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <DataTable
+            columns={userColumns}
+            data={RECENT_USERS}
+            rowKey={(u) => u.id}
+          />
         </section>
 
-        <section>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-base">最近交易</CardTitle>
-              <Link
-                href="/admin/orders"
-                className="inline-flex items-center text-xs text-lynx-600 hover:text-lynx-500 dark:text-lynx-400"
-              >
-                查看全部
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
-            </CardHeader>
-            <CardContent>
-              <DataTable
-                columns={orderColumns}
-                data={RECENT_ORDERS}
-                rowKey={(o) => o.id}
-              />
-            </CardContent>
-          </Card>
+        <section className="glow-card p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-base font-semibold tracking-[-0.01em] text-ink-950 dark:text-ink-50">
+              最近交易
+            </h2>
+            <Link
+              href="/admin/orders"
+              className="inline-flex items-center gap-0.5 text-xs font-medium text-ink-950 transition-colors hover:text-ink-700 dark:text-ink-50 dark:hover:text-ink-200"
+            >
+              查看全部
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <DataTable
+            columns={orderColumns}
+            data={RECENT_ORDERS}
+            rowKey={(o) => o.id}
+          />
         </section>
       </div>
     </div>

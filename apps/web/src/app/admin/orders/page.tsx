@@ -3,12 +3,6 @@
 import * as React from "react";
 import { RefreshCw } from "lucide-react";
 import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -21,7 +15,7 @@ import { DataTable, type Column } from "@/components/admin/data-table";
 import { cn, formatDateTime, formatPrice } from "@/lib/utils";
 
 /**
- * 订单管理
+ * 订单管理 - iOS26 极简黑白灰毛玻璃风格
  *
  * 订单列表 + 状态筛选 + 退款操作。数据为占位 mock，后续接入 adminApi.listOrders()。
  */
@@ -53,13 +47,33 @@ const ORDERS: AdminOrder[] = [
 
 const ORDER_STATUS: Record<
   OrderStatus,
-  { label: string; variant: "default" | "secondary" | "outline" | "destructive" }
+  { label: string; tone: "ink" | "muted" | "outline" | "destructive" }
 > = {
-  pending: { label: "待支付", variant: "secondary" },
-  completed: { label: "已完成", variant: "default" },
-  refunded: { label: "已退款", variant: "outline" },
-  failed: { label: "失败", variant: "destructive" },
+  pending: { label: "待支付", tone: "muted" },
+  completed: { label: "已完成", tone: "ink" },
+  refunded: { label: "已退款", tone: "outline" },
+  failed: { label: "失败", tone: "destructive" },
 };
+
+function OrderBadge({ status }: { status: OrderStatus }) {
+  const cfg = ORDER_STATUS[status];
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+        cfg.tone === "ink"
+          ? "bg-ink-950 text-white dark:bg-ink-100 dark:text-ink-950"
+          : cfg.tone === "muted"
+            ? "bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300"
+            : cfg.tone === "destructive"
+              ? "bg-ink-950 text-white dark:bg-ink-100 dark:text-ink-950"
+              : "border border-ink-200 text-ink-500 dark:border-ink-700 dark:text-ink-400",
+      )}
+    >
+      {cfg.label}
+    </span>
+  );
+}
 
 const STATUS_FILTERS = ["全部", "已完成", "待支付", "已退款", "失败"] as const;
 type StatusFilter = (typeof STATUS_FILTERS)[number];
@@ -107,22 +121,22 @@ export default function AdminOrdersPage() {
     {
       key: "id",
       header: "订单号",
-      cell: (o) => <span className="font-mono text-xs">{o.id}</span>,
+      cell: (o) => <span className="font-mono text-xs text-ink-700 dark:text-ink-200">{o.id}</span>,
     },
     {
       key: "product",
       header: "商品",
-      cell: (o) => <span className="font-medium">{o.product}</span>,
+      cell: (o) => <span className="font-medium text-ink-900 dark:text-ink-50">{o.product}</span>,
     },
     {
       key: "buyer",
       header: "买家",
-      cell: (o) => <span className="text-muted-foreground">{o.buyer}</span>,
+      cell: (o) => <span className="text-ink-500 dark:text-ink-400">{o.buyer}</span>,
     },
     {
       key: "seller",
       header: "卖家",
-      cell: (o) => <span className="text-muted-foreground">{o.seller}</span>,
+      cell: (o) => <span className="text-ink-500 dark:text-ink-400">{o.seller}</span>,
     },
     {
       key: "amount",
@@ -130,7 +144,7 @@ export default function AdminOrdersPage() {
       sortable: true,
       sortValue: (o) => o.amount,
       cell: (o) => (
-        <span className="font-medium text-lynx-600 dark:text-lynx-400">
+        <span className="font-semibold text-ink-950 dark:text-ink-50">
           {formatPrice(o.amount)}
         </span>
       ),
@@ -138,11 +152,7 @@ export default function AdminOrdersPage() {
     {
       key: "status",
       header: "状态",
-      cell: (o) => (
-        <Badge variant={ORDER_STATUS[o.status].variant}>
-          {ORDER_STATUS[o.status].label}
-        </Badge>
-      ),
+      cell: (o) => <OrderBadge status={o.status} />,
     },
     {
       key: "createdAt",
@@ -150,7 +160,9 @@ export default function AdminOrdersPage() {
       sortable: true,
       sortValue: (o) => o.createdAt,
       cell: (o) => (
-        <span className="text-muted-foreground">{formatDateTime(o.createdAt)}</span>
+        <span className="text-ink-500 dark:text-ink-400">
+          {formatDateTime(o.createdAt)}
+        </span>
       ),
     },
     {
@@ -159,41 +171,42 @@ export default function AdminOrdersPage() {
       className: "text-right",
       cell: (o) =>
         o.status === "completed" ? (
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1.5 text-xs text-red-600 hover:text-red-700"
+          <button
+            type="button"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full border border-ink-200/60 bg-white/55 px-3 text-xs font-medium text-ink-700 backdrop-blur-xl transition-all hover:bg-white/72 hover:text-ink-950 dark:border-ink-700/60 dark:bg-white/5 dark:text-ink-200 dark:hover:bg-white/10 dark:hover:text-ink-50"
             onClick={() => setRefundTarget(o)}
           >
             <RefreshCw className="h-3.5 w-3.5" />
             退款
-          </Button>
+          </button>
         ) : (
-          <span className="text-xs text-muted-foreground">—</span>
+          <span className="text-xs text-ink-400">—</span>
         ),
     },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">订单管理</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-[-0.02em] text-ink-950 dark:text-ink-50">
+            订单管理
+          </h1>
+          <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">
             查看平台交易订单并处理退款
           </p>
         </div>
-        <div className="inline-flex rounded-lg border border-border bg-muted p-1 text-sm">
+        <div className="inline-flex gap-1 rounded-full border border-white/40 bg-white/55 p-1 backdrop-blur-xl backdrop-saturate-150 dark:border-white/5 dark:bg-white/5">
           {STATUS_FILTERS.map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setFilter(s)}
               className={cn(
-                "rounded-md px-3 py-1.5 transition",
+                "rounded-full px-3.5 py-1.5 text-sm font-medium transition-all",
                 filter === s
-                  ? "bg-background font-medium shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "bg-ink-950 text-white shadow-sm dark:bg-ink-100 dark:text-ink-950"
+                  : "text-ink-500 hover:text-ink-950 dark:text-ink-400 dark:hover:text-ink-50",
               )}
             >
               {s}
@@ -202,69 +215,71 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
+      <div className="glow-card p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-base font-semibold tracking-[-0.01em] text-ink-950 dark:text-ink-50">
             全部订单
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
-              {filtered.length} 笔
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DataTable columns={columns} data={filtered} rowKey={(o) => o.id} />
-        </CardContent>
-      </Card>
+          </h2>
+          <span className="text-xs text-ink-500 dark:text-ink-400">
+            {filtered.length} 笔
+          </span>
+        </div>
+        <DataTable columns={columns} data={filtered} rowKey={(o) => o.id} />
+      </div>
 
-      {/* 退款确认弹窗 */}
+      {/* 退款确认弹窗 - 毛玻璃 */}
       <Dialog
         open={refundTarget !== null}
         onOpenChange={(open) => !open && setRefundTarget(null)}
       >
-        <DialogContent>
+        <DialogContent className="rounded-[28px] border-white/70 bg-white/72 backdrop-blur-2xl backdrop-saturate-200 dark:border-white/10 dark:bg-ink-900/72">
           <DialogHeader>
-            <DialogTitle>确认退款</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-2xl font-bold tracking-[-0.02em] text-ink-950 dark:text-ink-50">
+              确认退款
+            </DialogTitle>
+            <DialogDescription className="text-ink-500 dark:text-ink-400">
               退款后订单状态将变为「已退款」，且不可撤销。请确认操作。
             </DialogDescription>
           </DialogHeader>
           {refundTarget ? (
-            <div className="space-y-2 rounded-lg border border-border bg-muted/40 p-4 text-sm">
+            <div className="space-y-2 rounded-2xl border border-ink-200/60 bg-white/55 p-4 text-sm backdrop-blur-xl dark:border-ink-800/60 dark:bg-white/5">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">订单号</span>
-                <span className="font-mono">{refundTarget.id}</span>
+                <span className="text-ink-500 dark:text-ink-400">订单号</span>
+                <span className="font-mono text-ink-900 dark:text-ink-50">{refundTarget.id}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">商品</span>
-                <span className="font-medium">{refundTarget.product}</span>
+                <span className="text-ink-500 dark:text-ink-400">商品</span>
+                <span className="font-medium text-ink-900 dark:text-ink-50">{refundTarget.product}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">买家</span>
-                <span>{refundTarget.buyer}</span>
+                <span className="text-ink-500 dark:text-ink-400">买家</span>
+                <span className="text-ink-900 dark:text-ink-50">{refundTarget.buyer}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">退款金额</span>
-                <span className="font-semibold text-red-600 dark:text-red-400">
+                <span className="text-ink-500 dark:text-ink-400">退款金额</span>
+                <span className="font-semibold text-ink-950 dark:text-ink-50">
                   {formatPrice(refundTarget.amount)}
                 </span>
               </div>
             </div>
           ) : null}
           <DialogFooter>
-            <Button
-              variant="outline"
+            <button
+              type="button"
               onClick={() => setRefundTarget(null)}
               disabled={refunding}
+              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-ink-200/60 bg-white/55 px-5 text-sm font-medium text-ink-700 backdrop-blur-xl transition-all hover:bg-white/72 hover:text-ink-950 disabled:opacity-50 dark:border-ink-700/60 dark:bg-white/5 dark:text-ink-200 dark:hover:bg-white/10 dark:hover:text-ink-50"
             >
               取消
-            </Button>
-            <Button
-              className="bg-red-500 text-white hover:bg-red-600"
+            </button>
+            <button
+              type="button"
               onClick={handleRefund}
               disabled={refunding}
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-ink-950 px-5 text-sm font-medium text-white shadow-[0_4px_14px_rgba(0,0,0,0.18)] transition-all hover:bg-ink-800 disabled:opacity-50 dark:bg-ink-100 dark:text-ink-950 dark:hover:bg-ink-200"
             >
               {refunding ? "处理中…" : "确认退款"}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

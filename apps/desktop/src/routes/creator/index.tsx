@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   UserSquare,
   Package,
@@ -25,6 +26,7 @@ import type { CreatorProfile } from "@lynxkit/shared";
 import type { CreatorStats } from "@lynxkit/api-client";
 
 export default function CreatorPage() {
+  const { t } = useTranslation();
   const [profile, setProfile] = React.useState<CreatorProfile | null>(null);
   const [stats, setStats] = React.useState<CreatorStats | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -53,10 +55,10 @@ export default function CreatorPage() {
     try {
       const p = await creatorApi.enable({});
       setProfile(p);
-      toast({ title: "创作者中心已开通", variant: "success" });
+      toast({ title: t("creator.enabledToast"), variant: "success" });
     } catch (e) {
       toast({
-        title: "开通失败",
+        title: t("creator.enableFailed"),
         description: e instanceof Error ? e.message : String(e),
         variant: "destructive",
       });
@@ -78,12 +80,12 @@ export default function CreatorPage() {
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <UserSquare className="h-6 w-6 text-lynx-500" />
-          <h1 className="text-2xl font-bold">创作者中心</h1>
+          <h1 className="text-2xl font-bold">{t("creator.centerTitle")}</h1>
         </div>
         <Link to="/creator/products">
           <Button variant="outline">
             <Package className="mr-2 h-4 w-4" />
-            管理产品
+            {t("creator.manageProducts")}
           </Button>
         </Link>
       </div>
@@ -93,7 +95,7 @@ export default function CreatorPage() {
           <CardContent className="flex flex-col items-center py-16 text-center">
             <UserSquare className="mb-3 h-12 w-12 text-muted-foreground/40" />
             <p className="text-sm text-muted-foreground">
-              开通创作者中心，上架你的 AI 产品赚取收益
+              {t("creator.emptyHint")}
             </p>
             <Button
               onClick={enable}
@@ -101,7 +103,7 @@ export default function CreatorPage() {
               className="mt-4 bg-lynx-500 text-white hover:bg-lynx-600"
             >
               {enabling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              开通创作者
+              {t("creator.enableButton")}
             </Button>
           </CardContent>
         </Card>
@@ -111,29 +113,29 @@ export default function CreatorPage() {
           <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard
               icon={<DollarSign className="h-4 w-4 text-green-500" />}
-              label="累计销售额"
+              label={t("creator.stats.totalIncome")}
               value={formatPrice(stats?.totalIncome ?? profile.totalIncome)}
             />
             <StatCard
               icon={<TrendingUp className="h-4 w-4 text-lynx-500" />}
-              label="可提现余额"
+              label={t("creator.stats.balance")}
               value={formatPrice(stats?.balance ?? profile.balance)}
             />
             <StatCard
               icon={<Package className="h-4 w-4 text-blue-500" />}
-              label="上架产品"
+              label={t("creator.stats.productCount")}
               value={String(stats?.productCount ?? profile.productCount)}
             />
             <StatCard
               icon={<Star className="h-4 w-4 text-yellow-500" />}
-              label="平均评分"
+              label={t("creator.stats.avgRating")}
               value={(stats?.avgRating ?? profile.avgRating).toFixed(1)}
             />
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">创作者档案</CardTitle>
+              <CardTitle className="text-base">{t("creator.profile.title")}</CardTitle>
               <CardDescription>{profile.displayName}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
@@ -151,10 +153,12 @@ export default function CreatorPage() {
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1">
                   <Download className="h-3 w-3" />
-                  {stats?.totalDownloads ?? profile.totalDownloads} 下载
+                  {t("creator.profile.downloads", {
+                    count: stats?.totalDownloads ?? profile.totalDownloads,
+                  })}
                 </span>
                 {profile.verified && (
-                  <span className="text-green-600">已实名认证</span>
+                  <span className="text-green-600">{t("creator.profile.verified")}</span>
                 )}
               </div>
             </CardContent>

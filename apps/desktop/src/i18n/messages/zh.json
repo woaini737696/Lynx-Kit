@@ -51,8 +51,15 @@
     "noAccount": "还没有账号？",
     "hasAccount": "已有账号？",
     "fillEmailAndPassword": "请填写邮箱和密码",
+    "fillAllFields": "请完整填写注册信息",
     "loginFailed": "登录失败",
-    "registerFailed": "注册失败"
+    "loginSuccess": "登录成功",
+    "registerFailed": "注册失败",
+    "registerSuccess": "注册成功，已自动登录",
+    "name": "用户名",
+    "namePlaceholder": "你的昵称",
+    "passwordMinHint": "至少 6 位",
+    "registerAndLogin": "注册并登录"
   },
   "settings": {
     "title": "设置",
@@ -166,7 +173,45 @@
   },
   "creator": {
     "title": "创作者",
-    "products": "我的产品"
+    "products": "我的产品",
+    "centerTitle": "创作者中心",
+    "manageProducts": "管理产品",
+    "emptyHint": "开通创作者中心，上架你的 AI 产品赚取收益",
+    "enableButton": "开通创作者",
+    "enabledToast": "创作者中心已开通",
+    "enableFailed": "开通失败",
+    "stats": {
+      "totalIncome": "累计销售额",
+      "balance": "可提现余额",
+      "productCount": "上架产品",
+      "avgRating": "平均评分"
+    },
+    "profile": {
+      "title": "创作者档案",
+      "downloads": "{{count}} 下载",
+      "verified": "已实名认证"
+    }
+  },
+  "home": {
+    "badge": "9 层 Agent 流水线 · 一句话到上线",
+    "titlePrefix": "构建你的",
+    "titleHighlight": "AI 产品",
+    "subtitle": "描述你的想法，AI 帮你实现",
+    "feature": {
+      "fast": {
+        "title": "极速生成",
+        "desc": "意图 → 架构 → 代码 → 部署全自动化"
+      },
+      "reviewable": {
+        "title": "代码可审",
+        "desc": "对话式调试，实时预览产物"
+      },
+      "local": {
+        "title": "本地优先",
+        "descDesktop": "桌面端支持本地 Ollama 离线推理",
+        "descWeb": "数据加密存储，安全可控"
+      }
+    }
   },
   "about": {
     "description": "妙想是一站式 AI 产品构建平台，从需求到上架全链路贯通。",

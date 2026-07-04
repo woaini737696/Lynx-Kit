@@ -1,4 +1,4 @@
-import { Notification, Tray, Menu, nativeImage, type MenuItemConstructorOptions } from "electron";
+import { app, Notification, Tray, Menu, nativeImage, type MenuItemConstructorOptions } from "electron";
 import path from "node:path";
 
 /**
@@ -68,8 +68,7 @@ export function destroyTray(): void {
 
 export { tray };
 
-// 兼容默认图标路径（build/icon.png）
-export const DEFAULT_ICON = path.join(
-  process.env.NODE_ENV === "development" ? "../../public" : "../build",
-  "icon.png",
-);
+// 默认图标路径：开发态用 apps/desktop/build/icon.png；打包后用 process.resourcesPath/icon.png
+export const DEFAULT_ICON = app.isPackaged
+  ? path.join(process.resourcesPath, "icon.png")
+  : path.join(app.getAppPath(), "build", "icon.png");

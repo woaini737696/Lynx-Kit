@@ -42,18 +42,20 @@ const FOOTER_GROUPS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="border-t border-ink-200/60 bg-ink-50/30 dark:border-ink-800/60 dark:bg-ink-950/30">
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-6">
           {/* Brand column */}
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-lynx-500 to-lynx-600">
-                <Sparkles className="h-4 w-4 text-white" />
+            <Link href="/" className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink-950 shadow-sm dark:bg-ink-100">
+                <Sparkles className="h-4 w-4 text-white dark:text-ink-950" />
               </span>
-              <span className="text-lg font-bold tracking-tight">妙想</span>
+              <span className="text-lg font-semibold tracking-tight text-ink-900 dark:text-ink-50">
+                妙想
+              </span>
             </Link>
-            <p className="mt-3 max-w-xs text-sm text-muted-foreground">
+            <p className="mt-3 max-w-xs text-sm text-ink-500 dark:text-ink-400">
               AI 时代，人人都是造物主。从一句话到上线，只需一杯咖啡的时间。
             </p>
             <div className="mt-4 flex items-center gap-3">
@@ -61,7 +63,7 @@ export function Footer() {
                 href="https://github.com/lynxkit"
                 target="_blank"
                 rel="noreferrer"
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="text-ink-400 transition-colors hover:text-ink-950 dark:hover:text-ink-50"
                 aria-label="GitHub"
               >
                 <Github className="h-5 w-5" />
@@ -70,14 +72,14 @@ export function Footer() {
                 href="https://twitter.com/lynxkit"
                 target="_blank"
                 rel="noreferrer"
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="text-ink-400 transition-colors hover:text-ink-950 dark:hover:text-ink-50"
                 aria-label="Twitter"
               >
                 <Twitter className="h-5 w-5" />
               </a>
               <a
                 href="mailto:hello@lynxkit.com"
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="text-ink-400 transition-colors hover:text-ink-950 dark:hover:text-ink-50"
                 aria-label="Email"
               >
                 <Mail className="h-5 w-5" />
@@ -88,13 +90,15 @@ export function Footer() {
           {/* Link groups */}
           {FOOTER_GROUPS.map((group) => (
             <div key={group.title}>
-              <h3 className="text-sm font-semibold">{group.title}</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-500 dark:text-ink-400">
+                {group.title}
+              </h3>
               <ul className="mt-3 space-y-2">
                 {group.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="text-sm text-ink-600 transition-colors hover:text-ink-950 dark:text-ink-300 dark:hover:text-ink-50"
                     >
                       {link.label}
                     </Link>
@@ -105,13 +109,12 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
-          <p className="text-xs text-muted-foreground">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-ink-200/60 pt-6 sm:flex-row dark:border-ink-800/60">
+          <p className="text-xs text-ink-500 dark:text-ink-400">
             © {new Date().getFullYear()} 妙想. 保留所有权利。
           </p>
-          <p className="text-xs text-muted-foreground">
-            Made with <span className="text-lynx-500">♥</span> by super
-            individuals.
+          <p className="text-xs text-ink-500 dark:text-ink-400">
+            Made by super individuals.
           </p>
         </div>
       </div>

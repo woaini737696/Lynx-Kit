@@ -2,10 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============ LynxKit 主题变量（shadcn/ui 语义色，HSL 字符串） ============ */
+/* ============ 妙想 Web 主题变量（DESIGN_SYSTEM.md 规范） ============ */
+/* 极简黑白灰 + iOS 26 Liquid Glass 毛玻璃质感 */
 @layer base {
   :root {
-    /* lynx 品牌色（暖橙） */
+    /* lynx 品牌色（保留暖橙，仅用于移动端兼容；Web 端新页面应使用 ink-*） */
     --lynx-50: #fff4ed;
     --lynx-100: #ffe6d4;
     --lynx-200: #ffc8a8;
@@ -18,50 +19,75 @@
     --lynx-900: #7f2810;
     --lynx-950: #451006;
 
-    /* 亮色：白底深字 */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* iOS26 毛玻璃 Token */
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-bg-strong: rgba(255, 255, 255, 0.72);
+    --glass-bg-subtle: rgba(255, 255, 255, 0.35);
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-border-subtle: rgba(255, 255, 255, 0.35);
+    --glass-blur: 30px;
+    --glass-blur-strong: 40px;
+    --glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.08),
+      0 1px 0 rgba(255, 255, 255, 0.6) inset,
+      0 -1px 0 rgba(15, 23, 42, 0.03) inset;
+    --glass-shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.2),
+      0 1px 0 rgba(255, 255, 255, 0.8) inset;
+
+    /* shadcn/ui 语义色 - 极简黑白灰版本 */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 240 10% 3.9%; /* #18181B */
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 16 100% 60%; /* lynx-500 #FF6B35 */
+    --primary: 240 10% 3.9%; /* 黑色 #18181B，DESIGN_SYSTEM 规范 */
     --primary-foreground: 0 0% 100%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 16 100% 95%;
-    --accent-foreground: 16 100% 30%;
-    --destructive: 0 84.2% 60.2%;
+    --muted-foreground: 240 4% 46%; /* #71717A */
+    --accent: 240 4% 95%;
+    --accent-foreground: 240 5% 10%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 16 100% 60%;
-    --radius: 0.6rem;
+    --border: 240 5% 90%;
+    --input: 240 5% 90%;
+    --ring: 240 10% 3.9%; /* 黑色 focus ring */
+    --radius: 0.75rem; /* 12px - iOS26 大圆角 */
   }
 
   .dark {
-    /* 暗色：深底浅字 */
-    --background: 240 10% 3.9%;
+    /* 暗色：深底浅字 + 玻璃 Token 覆盖 */
+    --glass-bg: rgba(30, 30, 35, 0.55);
+    --glass-bg-strong: rgba(40, 40, 48, 0.72);
+    --glass-bg-subtle: rgba(30, 30, 35, 0.35);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-subtle: rgba(255, 255, 255, 0.06);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+      0 1px 0 rgba(255, 255, 255, 0.08) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.2) inset;
+    --glass-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.6),
+      0 1px 0 rgba(255, 255, 255, 0.08) inset;
+
+    --background: 240 10% 3.9%; /* #09090B */
     --foreground: 0 0% 98%;
     --card: 240 8% 6%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 5%;
     --popover-foreground: 0 0% 98%;
-    --primary: 16 100% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 98%; /* 暗色模式下按钮反白 */
+    --primary-foreground: 240 10% 3.9%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 16 40% 14%;
-    --accent-foreground: 16 100% 85%;
+    --accent: 240 4% 14%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 16 100% 60%;
+    --ring: 0 0% 98%;
   }
 }
 
@@ -77,11 +103,13 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family:
-      var(--font-inter), var(--font-noto-sans-sc), system-ui, -apple-system,
-      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont,
+      "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB",
+      "Microsoft YaHei", system-ui, sans-serif;
+    /* 字距收紧（iOS26 风格） */
+    letter-spacing: -0.01em;
   }
-  /* 自定义滚动条 */
+  /* 自定义滚动条 - 极简灰 */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -91,31 +119,155 @@
   }
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--muted-foreground) / 0.3);
-    border-radius: 4px;
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.5);
   }
 }
 
-/* ============ 营销页装饰：渐变光晕 / 网格底 / 粒子 ============ */
+/* ============ iOS26 Liquid Glass 组件类 ============ */
 @layer components {
-  /* 营销 Hero 顶部光晕 */
+  /* 默认玻璃卡片 */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.25rem; /* 20px */
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* 强玻璃卡片（弹窗） */
+  .glass-card-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(var(--glass-blur-strong)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(200%);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.75rem; /* 28px */
+    box-shadow: var(--glass-shadow-lg);
+  }
+
+  /* 轻玻璃 hover 态 */
+  .glass-card-subtle {
+    background: var(--glass-bg-subtle);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid var(--glass-border-subtle);
+    border-radius: 0.75rem;
+  }
+
+  /* 玻璃输入框 */
+  .glass-input {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.75rem; /* 12px */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .glass-input:focus {
+    outline: none;
+    border-color: hsl(240 5% 40%);
+    background: var(--glass-bg-strong);
+  }
+
+  /* 玻璃胶囊按钮 */
+  .glass-btn {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 9999px;
+    color: hsl(240 5% 10%);
+    box-shadow: var(--glass-shadow);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .glass-btn:hover {
+    background: var(--glass-bg-strong);
+    transform: translateY(-1px);
+  }
+
+  /* 全屏毛玻璃弹窗 overlay */
+  .glass-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(0 0% 100% / 0.4);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+  }
+  .dark .glass-overlay {
+    background: hsl(240 10% 3.9% / 0.4);
+  }
+
+  /* 圆形关闭按钮 */
+  .glass-close {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border-subtle);
+    border-radius: 9999px;
+  }
+
+  /* 黑色强调按钮（iOS26 风格） */
+  .btn-ink {
+    background: #09090b; /* ink-950 */
+    color: #ffffff;
+    border-radius: 9999px;
+    padding: 0.5rem 1.125rem;
+    font-weight: 500;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-ink:hover {
+    background: #27272a; /* ink-800 */
+    transform: translateY(-1px);
+  }
+  .dark .btn-ink {
+    background: #fafafa;
+    color: #09090b;
+  }
+  .dark .btn-ink:hover {
+    background: #f5f5f7;
+  }
+
+  /* 黑色徽章 */
+  .badge-ink {
+    background: #09090b;
+    color: #ffffff;
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .dark .badge-ink {
+    background: #fafafa;
+    color: #09090b;
+  }
+}
+
+/* ============ Hero 装饰（极简灰白版本） ============ */
+@layer components {
+  /* Hero 顶部光晕 - 极简灰白 */
   .hero-glow {
     background:
       radial-gradient(
         ellipse 80% 50% at 50% -10%,
-        hsl(16 100% 60% / 0.18),
+        rgba(168, 162, 158, 0.12),
         transparent
       ),
       radial-gradient(
         ellipse 60% 40% at 80% 20%,
-        hsl(280 80% 60% / 0.08),
+        rgba(212, 212, 216, 0.08),
         transparent
       );
   }
 
-  /* 网格底纹 */
+  /* 网格底纹 - 灰色 */
   .grid-bg {
     background-image:
       linear-gradient(to right, hsl(var(--border) / 0.5) 1px, transparent 1px),
@@ -129,18 +281,21 @@
     );
   }
 
-  /* 渐变文字 */
+  /* 渐变文字 - 黑灰渐变 */
   .text-gradient {
-    @apply bg-gradient-to-r from-lynx-500 via-lynx-400 to-lynx-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-ink-950 via-ink-800 to-ink-600 bg-clip-text text-transparent;
   }
 
-  /* 卡片光晕悬浮 */
+  /* 玻璃卡片光晕悬浮（替代 glow-card） */
   .glow-card {
-    @apply relative overflow-hidden rounded-xl border border-border bg-card/60 backdrop-blur transition-all hover:border-lynx-500/50 hover:bg-card hover:shadow-lg hover:shadow-lynx-500/10;
+    @apply relative overflow-hidden rounded-2xl border border-border/60 bg-white/55 backdrop-blur-xl transition-all hover:border-ink-300 hover:bg-white/72 hover:shadow-lg;
+  }
+  .dark .glow-card {
+    @apply border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10;
   }
 }
 
-/* ============ 浮动粒子动画 ============ */
+/* ============ 浮动粒子动画 - 极简灰 ============ */
 @keyframes particle-float {
   0%,
   100% {
@@ -149,7 +304,7 @@
   }
   10%,
   90% {
-    opacity: 0.6;
+    opacity: 0.4;
   }
   50% {
     transform: translate3d(20px, -40px, 0);
@@ -160,4 +315,13 @@
   border-radius: 9999px;
   pointer-events: none;
   animation: particle-float 8s ease-in-out infinite;
+}
+
+/* ============ 滚动条隐藏工具 ============ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

@@ -39,7 +39,7 @@ export function Toaster() {
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="pointer-events-none fixed right-0 top-0 z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:max-w-sm"
+      className="pointer-events-none fixed right-0 bottom-0 z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:max-w-sm"
     >
       {toasts.map(({ id, title, description, variant }) => (
         <Toast key={id} variant={variant} onDismiss={() => dismiss(id)}>
