@@ -288,7 +288,7 @@
 
   /* 玻璃卡片光晕悬浮（替代 glow-card） */
   .glow-card {
-    @apply relative overflow-hidden rounded-2xl border border-border/60 bg-white/55 backdrop-blur-xl transition-all hover:border-ink-300 hover:bg-white/72 hover:shadow-lg;
+    @apply relative overflow-hidden rounded-2xl border border-border/60 bg-white/55 backdrop-blur-xl transition-all hover:border-ink-300 hover:bg-white/75 hover:shadow-lg;
   }
   .dark .glow-card {
     @apply border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10;

@@ -29,6 +29,7 @@ import { creatorRoutes } from "./routes/creator.js";
 import { systemRoutes } from "./routes/system.js";
 import { telemetryRoutes } from "./routes/telemetry.js";
 import { adminRoutes } from "./routes/admin.js";
+import { membershipRoutes } from "./routes/membership.js";
 
 import { errorHandler, registerErrorHandler } from "./middleware/error.js";
 import { authMiddleware } from "./middleware/auth.js";
@@ -95,6 +96,9 @@ v1.route("/store", storeRoutes);
 // 创作者中心（全部需 auth）
 v1.use("/creator/*", authMiddleware);
 v1.route("/creator", creatorRoutes);
+
+// 会员路由（/plans 公开，其余需 auth，在路由内部已挂载）
+v1.route("/membership", membershipRoutes);
 
 // 系统路由（公开）
 v1.route("/system", systemRoutes);

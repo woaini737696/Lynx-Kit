@@ -66,3 +66,7 @@ apps/mobile/ios/
 # Temporary
 tmp/
 temp/
+
+# Deploy build artifacts (regenerated locally, never committed)
+deploy/**/*.zip
+

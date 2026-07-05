@@ -37,6 +37,10 @@ import {
   systemConfigs,
   templates,
   creatorProfiles,
+  membershipPlans,
+  userMemberships,
+  sCoinBalances,
+  sCoinTransactions,
 } from "@lynxkit/db";
 
 import { getDb } from "../lib/db.js";
@@ -761,3 +765,403 @@ adminRoutes.get("/audit", zValidator("query", paginationSchema), async (c) => {
     total: auditLog.length,
   });
 });
+
+// ============ 10. 会员管理（迭代 14C）============
+
+/**
+ * 手动开通/续费会员 schema
+ * - tier: 目标档位
+ * - durationMonths: 开通时长（月）
+ * - source: 开通来源（默认 MANUAL）
+ * - note: 备注
+ */
+const grantMembershipSchema = z.object({
+  userId: z.string().uuid(),
+  tier: z.enum(["FREE", "LITE", "PRO", "MAX"]),
+  durationMonths: z.number().int().min(1).max(36),
+  source: z.enum(["MANUAL", "GIFT", "TRIAL"]).default("MANUAL"),
+  note: z.string().max(500).optional(),
+});
+
+/**
+ * 调整 S 币余额 schema
+ * - delta: 正数赠送，负数扣减
+ * - note: 备注
+ */
+const adjustSCoinSchema = z.object({
+  userId: z.string().uuid(),
+  delta: z.number().int().refine((n) => n !== 0, "delta 不能为 0"),
+  note: z.string().max(500).optional(),
+});
+
+/**
+ * GET /admin/memberships/plans
+ * 获取所有会员档位配置（含禁用的）
+ */
+adminRoutes.get("/memberships/plans", async (c) => {
+  const db = getDb();
+  const plans = await db
+    .select()
+    .from(membershipPlans)
+    .orderBy(membershipPlans.sortOrder);
+
+  return c.json({ list: plans });
+});
+
+/**
+ * GET /admin/memberships
+ * 用户会员管理列表（分页 + 搜索）
+ *
+ * 返回每个用户的当前会员状态 + S 币余额
+ */
+adminRoutes.get("/memberships", zValidator("query", paginationSchema), async (c) => {
+  const db = getDb();
+  const { page, pageSize, search } = c.req.valid("query");
+  const offset = (page - 1) * pageSize;
+
+  // 构造查询：users LEFT JOIN user_memberships（ACTIVE）+ LEFT JOIN scoin_balances
+  const userQuery = db
+    .select({
+      id: users.id,
+      phone: users.phone,
+      name: users.name,
+      role: users.role,
+      status: users.status,
+      createdAt: users.createdAt,
+    })
+    .from(users)
+    .where(search ? ilike(users.phone, `%${search}%`) : sql`TRUE`)
+    .orderBy(desc(users.createdAt))
+    .limit(pageSize)
+    .offset(offset);
+
+  const userList = await userQuery;
+  const totalRows = await db
+    .select({ count: count() })
+    .from(users)
+    .where(search ? ilike(users.phone, `%${search}%`) : sql`TRUE`);
+
+  // 并行查询每个用户的会员状态 + S 币余额
+  const enriched = await Promise.all(
+    userList.map(async (u) => {
+      const [membership, balance] = await Promise.all([
+        db
+          .select()
+          .from(userMemberships)
+          .where(
+            and(
+              eq(userMemberships.userId, u.id),
+              eq(userMemberships.status, "ACTIVE"),
+            ),
+          )
+          .orderBy(desc(userMemberships.createdAt))
+          .limit(1)
+          .then((rows) => rows[0] ?? null),
+        db
+          .select()
+          .from(sCoinBalances)
+          .where(eq(sCoinBalances.userId, u.id))
+          .limit(1)
+          .then((rows) => rows[0] ?? null),
+      ]);
+      return {
+        ...u,
+        membership: membership
+          ? {
+              tier: membership.tier,
+              status: membership.status,
+              source: membership.source,
+              startedAt: membership.startedAt,
+              expiresAt: membership.expiresAt,
+            }
+          : null,
+        scoinBalance: balance?.balance ?? 0,
+      };
+    }),
+  );
+
+  return c.json({
+    list: enriched,
+    total: totalRows[0]?.count ?? 0,
+    page,
+    pageSize,
+  });
+});
+
+/**
+ * POST /admin/memberships/grant
+ * 手动开通/续费会员
+ * 1. 将用户当前 ACTIVE 会员标记为 CANCELED
+ * 2. 新增一条 ACTIVE 会员记录，expiresAt = NOW + durationMonths
+ * 3. 如果是付费档位，按月数赠送 S 币（monthlySCoinGrant × durationMonths）
+ */
+adminRoutes.post("/memberships/grant", zValidator("json", grantMembershipSchema), async (c) => {
+  const db = getDb();
+  const operator = getCurrentUser(c);
+  const { userId, tier, durationMonths, source, note } = c.req.valid("json");
+
+  // 1. 校验用户存在
+  const targetUser = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+    .then((rows) => rows[0]);
+  if (!targetUser) {
+    throw new NotFoundError("目标用户不存在");
+  }
+
+  // 2. 校验档位存在
+  const plan = await db
+    .select()
+    .from(membershipPlans)
+    .where(eq(membershipPlans.tier, tier))
+    .limit(1)
+    .then((rows) => rows[0]);
+  if (!plan) {
+    throw new BadRequestError(`档位 ${tier} 不存在`);
+  }
+
+  // 3. 取消当前 ACTIVE 会员
+  await db
+    .update(userMemberships)
+    .set({ status: "CANCELED", updatedAt: new Date() })
+    .where(
+      and(
+        eq(userMemberships.userId, userId),
+        eq(userMemberships.status, "ACTIVE"),
+      ),
+    );
+
+  // 4. 计算到期时间
+  const now = new Date();
+  const expiresAt = new Date(now);
+  expiresAt.setMonth(expiresAt.getMonth() + durationMonths);
+
+  // 5. 插入新会员记录
+  const [newMembership] = await db
+    .insert(userMemberships)
+    .values({
+      userId,
+      tier,
+      status: "ACTIVE",
+      source,
+      durationMonths,
+      startedAt: now,
+      expiresAt: tier === "FREE" ? null : expiresAt,
+      operatorId: operator.id,
+      note: note ?? `后台手动开通 ${plan.name} × ${durationMonths} 月`,
+    })
+    .returning();
+
+  if (!newMembership) {
+    throw new Error("会员开通失败：数据库返回空");
+  }
+
+  // 6. 付费档位赠送 S 币（monthlySCoinGrant × durationMonths）
+  let grantedSCoin = 0;
+  if (tier !== "FREE" && plan.monthlySCoinGrant > 0) {
+    grantedSCoin = plan.monthlySCoinGrant * durationMonths;
+    await grantSCoinInternal(db, userId, grantedSCoin, "GRANT", operator.id, `开通 ${plan.name} 赠送 ${grantedSCoin} S 币`, "membership", newMembership.id);
+  }
+
+  logger.info(
+    { operatorId: operator.id, targetUserId: userId, tier, durationMonths, grantedSCoin, membershipId: newMembership.id },
+    "管理员手动开通会员",
+  );
+
+  return c.json({
+    membership: {
+      id: newMembership.id,
+      tier: newMembership.tier,
+      status: newMembership.status,
+      startedAt: newMembership.startedAt,
+      expiresAt: newMembership.expiresAt,
+    },
+    grantedSCoin,
+  });
+});
+
+/**
+ * POST /admin/memberships/scoin/adjust
+ * 手动调整 S 币余额（赠送/扣减）
+ */
+adminRoutes.post(
+  "/memberships/scoin/adjust",
+  zValidator("json", adjustSCoinSchema),
+  async (c) => {
+    const db = getDb();
+    const operator = getCurrentUser(c);
+    const { userId, delta, note } = c.req.valid("json");
+
+    // 校验用户
+    const targetUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1)
+      .then((rows) => rows[0]);
+    if (!targetUser) {
+      throw new NotFoundError("目标用户不存在");
+    }
+
+    const txType = delta > 0 ? "GRANT" : "ADJUST";
+    const finalNote = note ?? (delta > 0 ? `后台赠送 ${delta} S 币` : `后台扣减 ${Math.abs(delta)} S 币`);
+
+    const result = await grantSCoinInternal(
+      db,
+      userId,
+      delta,
+      txType,
+      operator.id,
+      finalNote,
+      "admin_adjust",
+      null,
+    );
+
+    logger.info(
+      { operatorId: operator.id, targetUserId: userId, delta, newBalance: result.balanceAfter },
+      "管理员调整 S 币余额",
+    );
+
+    return c.json({
+      balance: result.balanceAfter,
+      delta,
+      transaction: {
+        id: result.txId,
+        type: txType,
+        delta,
+        balanceAfter: result.balanceAfter,
+      },
+    });
+  },
+);
+
+/**
+ * GET /admin/memberships/scoin/transactions
+ * 全平台 S 币流水（分页 + 用户筛选）
+ */
+adminRoutes.get(
+  "/memberships/scoin/transactions",
+  zValidator("query", paginationSchema),
+  async (c) => {
+    const db = getDb();
+    const { page, pageSize, search } = c.req.valid("query");
+    const offset = (page - 1) * pageSize;
+
+    const conditions = search
+      ? ilike(users.phone, `%${search}%`)
+      : sql`TRUE`;
+
+    // join users 取手机号
+    const rows = await db
+      .select({
+        txId: sCoinTransactions.id,
+        userId: sCoinTransactions.userId,
+        userPhone: users.phone,
+        userName: users.name,
+        type: sCoinTransactions.type,
+        delta: sCoinTransactions.delta,
+        balanceAfter: sCoinTransactions.balanceAfter,
+        refType: sCoinTransactions.refType,
+        refId: sCoinTransactions.refId,
+        note: sCoinTransactions.note,
+        createdAt: sCoinTransactions.createdAt,
+      })
+      .from(sCoinTransactions)
+      .innerJoin(users, eq(sCoinTransactions.userId, users.id))
+      .where(conditions)
+      .orderBy(desc(sCoinTransactions.createdAt))
+      .limit(pageSize)
+      .offset(offset);
+
+    const totalRows = await db
+      .select({ count: count() })
+      .from(sCoinTransactions)
+      .innerJoin(users, eq(sCoinTransactions.userId, users.id))
+      .where(conditions);
+
+    return c.json({
+      list: rows,
+      total: totalRows[0]?.count ?? 0,
+      page,
+      pageSize,
+    });
+  },
+);
+
+/**
+ * 内部工具函数：调整 S 币余额并写流水
+ *
+ * - 余额表不存在时自动插入
+ * - delta 正数为增加，负数为减少（扣减时不允许透支，需先校验）
+ * - 写入流水记录 balanceAfter
+ */
+async function grantSCoinInternal(
+  db: ReturnType<typeof getDb>,
+  userId: string,
+  delta: number,
+  type: "RECHARGE" | "CONSUME" | "GRANT" | "REFUND" | "EXCHANGE" | "ADJUST",
+  operatorId: string,
+  note: string,
+  refType: string | null,
+  refId: string | null,
+): Promise<{ balanceAfter: number; txId: string }> {
+  // 1. 查询当前余额（不存在则初始化）
+  const existing = await db
+    .select()
+    .from(sCoinBalances)
+    .where(eq(sCoinBalances.userId, userId))
+    .limit(1)
+    .then((rows) => rows[0]);
+
+  const currentBalance = existing?.balance ?? 0;
+  const newBalance = currentBalance + delta;
+
+  if (newBalance < 0) {
+    throw new BadRequestError(
+      `余额不足：当前 ${currentBalance}，尝试扣减 ${Math.abs(delta)}`,
+    );
+  }
+
+  // 2. 更新或插入余额表
+  if (existing) {
+    await db
+      .update(sCoinBalances)
+      .set({
+        balance: newBalance,
+        totalGranted: delta > 0 ? (existing.totalGranted ?? 0) + delta : existing.totalGranted,
+        totalConsumed: delta < 0 ? (existing.totalConsumed ?? 0) + Math.abs(delta) : existing.totalConsumed,
+        updatedAt: new Date(),
+      })
+      .where(eq(sCoinBalances.userId, userId));
+  } else {
+    await db.insert(sCoinBalances).values({
+      userId,
+      balance: newBalance,
+      totalGranted: delta > 0 ? delta : 0,
+      totalConsumed: delta < 0 ? Math.abs(delta) : 0,
+    });
+  }
+
+  // 3. 写流水
+  const [tx] = await db
+    .insert(sCoinTransactions)
+    .values({
+      userId,
+      type,
+      delta,
+      balanceAfter: newBalance,
+      refType,
+      refId,
+      operatorId,
+      note,
+    })
+    .returning();
+
+  if (!tx) {
+    throw new Error("S 币流水写入失败");
+  }
+
+  return { balanceAfter: newBalance, txId: tx.id };
+}

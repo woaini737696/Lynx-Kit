@@ -37,6 +37,18 @@ export { creatorProfiles } from "./creators";
 // 系统模块
 export { systemConfigs, templates } from "./system";
 
+// 会员模块
+export {
+  membershipPlans,
+  userMemberships,
+  sCoinBalances,
+  sCoinTransactions,
+  membershipTierEnum,
+  membershipStatusEnum,
+  membershipSourceEnum,
+  sCoinTxTypeEnum,
+} from "./memberships";
+
 // ===== 关系定义（用于 db.query 关系查询 API） =====
 
 import { users } from "./users";
@@ -45,6 +57,12 @@ import { buildSessions, buildLogs, buildVersions } from "./build-sessions";
 import { storeProducts, transactions, reviews } from "./store";
 import { creatorProfiles } from "./creators";
 import { systemConfigs, templates } from "./system";
+import {
+  membershipPlans,
+  userMemberships,
+  sCoinBalances,
+  sCoinTransactions,
+} from "./memberships";
 
 /**
  * users 关系：一个用户拥有多个服务器 / 构建会话 / 商店产品 / 评价，
@@ -63,6 +81,12 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   transactionsAsSeller: many(transactions, { relationName: "transactionsSeller" }),
   reviews: many(reviews, { relationName: "reviewsUser" }),
   creatorProfile: one(creatorProfiles),
+  /** 会员历史记录（含当前 ACTIVE） */
+  memberships: many(userMemberships),
+  /** S 币余额（1:1） */
+  sCoinBalance: one(sCoinBalances),
+  /** S 币流水 */
+  sCoinTransactions: many(sCoinTransactions),
 }));
 
 /**
@@ -168,6 +192,46 @@ export const creatorProfilesRelations = relations(creatorProfiles, ({ one }) => 
 }));
 
 /**
+ * user_memberships 关系：属于一个用户（多对一）。
+ */
+export const userMembershipsRelations = relations(userMemberships, ({ one }) => ({
+  user: one(users, {
+    fields: [userMemberships.userId],
+    references: [users.id],
+  }),
+  operator: one(users, {
+    fields: [userMemberships.operatorId],
+    references: [users.id],
+    relationName: "membershipsOperator",
+  }),
+}));
+
+/**
+ * scoin_balances 关系：1:1 属于一个用户。
+ */
+export const sCoinBalancesRelations = relations(sCoinBalances, ({ one }) => ({
+  user: one(users, {
+    fields: [sCoinBalances.userId],
+    references: [users.id],
+  }),
+}));
+
+/**
+ * scoin_transactions 关系：属于一个用户（多对一）。
+ */
+export const sCoinTransactionsRelations = relations(sCoinTransactions, ({ one }) => ({
+  user: one(users, {
+    fields: [sCoinTransactions.userId],
+    references: [users.id],
+  }),
+  operator: one(users, {
+    fields: [sCoinTransactions.operatorId],
+    references: [users.id],
+    relationName: "scoinTxOperator",
+  }),
+}));
+
+/**
  * 完整 schema 对象（用于 drizzle 客户端 schema 注册与 db.query API）。
  *
  * 使用：
@@ -189,6 +253,10 @@ export const schema = {
   creatorProfiles,
   systemConfigs,
   templates,
+  membershipPlans,
+  userMemberships,
+  sCoinBalances,
+  sCoinTransactions,
   usersRelations,
   serversRelations,
   buildSessionsRelations,
@@ -198,6 +266,9 @@ export const schema = {
   transactionsRelations,
   reviewsRelations,
   creatorProfilesRelations,
+  userMembershipsRelations,
+  sCoinBalancesRelations,
+  sCoinTransactionsRelations,
 };
 
 export type Schema = typeof schema;

@@ -80,6 +80,46 @@ export interface PageResult<T> {
   pageSize: number;
 }
 
+// ===== 会员管理类型 =====
+export type MembershipTier = "FREE" | "LITE" | "PRO" | "MAX";
+export type MembershipStatus = "ACTIVE" | "EXPIRED" | "CANCELLED" | "SUSPENDED";
+export type MembershipSource = "MANUAL" | "GIFT" | "TRIAL";
+
+export interface MembershipInfo {
+  tier: MembershipTier;
+  status: MembershipStatus;
+  startedAt: string;
+  expiresAt: string;
+}
+
+export interface MembershipUser extends AdminUser {
+  createdAt: string;
+  membership: MembershipInfo | null;
+  scoinBalance: number;
+}
+
+export interface MembershipPlan {
+  id: string;
+  tier: MembershipTier;
+  name: string;
+  priceMonthly: number;
+  monthlySCoinGrant: number;
+}
+
+export interface SCoinTransaction {
+  txId: string;
+  userId: string;
+  userPhone: string;
+  userName: string | null;
+  type: string;
+  delta: number;
+  balanceAfter: number;
+  refType: string | null;
+  refId: string | null;
+  note: string | null;
+  createdAt: string;
+}
+
 export const adminApi = {
   // ===== 认证 =====
   async login(phone: string, password: string) {
@@ -127,6 +167,32 @@ export const adminApi = {
   updateUser: (id: string, data: Partial<AdminUser>) =>
     request(`/users/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteUser: (id: string) => request(`/users/${id}`, { method: "DELETE" }),
+
+  // ===== 会员管理 =====
+  getMemberships: (params: { page?: number; pageSize?: number; search?: string }) => {
+    const q = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => v && q.set(k, String(v)));
+    return request<PageResult<MembershipUser>>(`/memberships?${q}`);
+  },
+  getMembershipPlans: () => request<{ list: MembershipPlan[] }>("/memberships/plans"),
+  grantMembership: (data: {
+    userId: string;
+    tier: MembershipTier;
+    durationMonths: number;
+    source: MembershipSource;
+    note?: string;
+  }) => request("/memberships/grant", { method: "POST", body: JSON.stringify(data) }),
+  adjustSCoin: (data: { userId: string; delta: number; note?: string }) =>
+    request("/memberships/scoin/adjust", { method: "POST", body: JSON.stringify(data) }),
+  getSCoinTransactions: (params: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+  }) => {
+    const q = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => v && q.set(k, String(v)));
+    return request<PageResult<SCoinTransaction>>(`/memberships/scoin/transactions?${q}`);
+  },
 
   // ===== 系统配置 =====
   getConfigs: () => request("/configs"),
