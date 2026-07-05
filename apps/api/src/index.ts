@@ -28,6 +28,7 @@ import { storeRoutes } from "./routes/store.js";
 import { creatorRoutes } from "./routes/creator.js";
 import { systemRoutes } from "./routes/system.js";
 import { telemetryRoutes } from "./routes/telemetry.js";
+import { adminRoutes } from "./routes/admin.js";
 
 import { errorHandler, registerErrorHandler } from "./middleware/error.js";
 import { authMiddleware } from "./middleware/auth.js";
@@ -100,6 +101,9 @@ v1.route("/system", systemRoutes);
 
 // 遥测路由（公开，无需鉴权——客户端可在未登录时上报错误/性能）
 v1.route("/telemetry", telemetryRoutes);
+
+// 管理后台路由（需 authMiddleware + ADMIN 角色，在 adminRoutes 内部已挂载）
+v1.route("/admin", adminRoutes);
 
 app.route("/api/v1", v1);
 
