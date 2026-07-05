@@ -11,6 +11,7 @@ import type { MiddlewareHandler } from "hono";
 import { nanoid } from "nanoid";
 
 import { logger } from "../lib/logger.js";
+import { recordHttpRequest, isPrometheusEnabled } from "../lib/metrics.js";
 
 /** context 中存储 requestId 的 key */
 const REQUEST_ID_KEY = "requestId";
@@ -47,6 +48,16 @@ export const requestLogger: MiddlewareHandler = async (c, next) => {
 
   // 回传 requestId 给客户端
   c.res.headers.set(REQUEST_ID_HEADER, requestId);
+
+  // 记录 Prometheus 指标（路由路径用 c.req.routePath 而非完整 path，避免高基数）
+  if (isPrometheusEnabled()) {
+    recordHttpRequest(
+      c.req.method,
+      c.req.routePath ?? c.req.path,
+      c.res.status,
+      durationMs / 1000,
+    );
+  }
 
   logger.info(
     {

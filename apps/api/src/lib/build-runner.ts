@@ -23,6 +23,7 @@ import { type AgentLog, type AgentRole, LogLevel } from "@lynxkit/shared";
 
 import { getDb } from "./db.js";
 import { logger } from "./logger.js";
+import { recordBuildJob } from "./metrics.js";
 
 /** 构建任务输入参数（与 lib/queue.ts 的 BuildJobData 对齐） */
 export interface BuildJobData {
@@ -68,6 +69,7 @@ export async function processBuildJob(data: BuildJobData): Promise<void> {
   const db = getDb();
   const { sessionId, userId, userInput, answers } = data;
 
+  const startTime = Date.now();
   logger.info({ sessionId, userId }, "开始处理构建任务");
 
   // 加载会话（确认存在且属于该用户）
@@ -159,6 +161,9 @@ export async function processBuildJob(data: BuildJobData): Promise<void> {
       { sessionId, deployUrl: result.deployUrl, fileCount: result.generatedFiles.length },
       "构建任务完成",
     );
+
+    // 记录 Prometheus 业务指标（构建成功 + 耗时）
+    recordBuildJob("completed", (Date.now() - startTime) / 1000);
   } catch (err) {
     // 批量写入已收集的日志
     for (const logEntry of logBuffer) {
@@ -183,6 +188,8 @@ export async function processBuildJob(data: BuildJobData): Promise<void> {
     });
 
     logger.error({ err, sessionId }, "构建任务异常");
+    // 记录 Prometheus 业务指标（构建失败 + 耗时）
+    recordBuildJob("failed", (Date.now() - startTime) / 1000);
     throw err; // 重新抛出，让 BullMQ 记录失败
   }
 }

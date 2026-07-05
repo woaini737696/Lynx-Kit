@@ -140,6 +140,8 @@ export const userMemberships = pgTable(
     userIdIdx: index("user_memberships_user_id_idx").on(table.userId),
     statusIdx: index("user_memberships_status_idx").on(table.status),
     expiresIdx: index("user_memberships_expires_at_idx").on(table.expiresAt),
+    /** 复合索引：用户 + 状态（查询用户当前 ACTIVE 会员高频） */
+    userStatusIdx: index("user_memberships_user_status_idx").on(table.userId, table.status),
   }),
 );
 
@@ -199,5 +201,7 @@ export const sCoinTransactions = pgTable(
     userIdIdx: index("scoin_tx_user_id_idx").on(table.userId),
     typeIdx: index("scoin_tx_type_idx").on(table.type),
     createdAtIdx: index("scoin_tx_created_at_idx").on(table.createdAt),
+    /** 复合索引：用户 + 创建时间（用户 S 币流水分页查询） */
+    userCreatedIdx: index("scoin_tx_user_created_idx").on(table.userId, table.createdAt),
   }),
 );

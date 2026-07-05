@@ -157,6 +157,7 @@ export const adminApi = {
 
   // ===== 数据看板 =====
   getStats: () => request("/stats"),
+  getDashboard: () => request("/dashboard"),
 
   // ===== 用户管理 =====
   getUsers: (params: { page?: number; pageSize?: number; search?: string; status?: string; role?: string }) => {

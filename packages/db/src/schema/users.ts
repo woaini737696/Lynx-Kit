@@ -71,5 +71,11 @@ export const users = pgTable(
     lynxAiIdIdx: uniqueIndex("users_lynx_ai_id_idx").on(table.lynxAiId),
     /** 用户 ID 索引（被外键引用） */
     idIdx: index("users_id_idx").on(table.id),
+    /** 角色索引（admin 后台按角色筛选） */
+    roleIdx: index("users_role_idx").on(table.role),
+    /** 状态索引（admin 后台按状态筛选） */
+    statusIdx: index("users_status_idx").on(table.status),
+    /** 创建时间索引（按注册时间分页排序） */
+    createdAtIdx: index("users_created_at_idx").on(table.createdAt),
   }),
 );

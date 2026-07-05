@@ -204,6 +204,8 @@ export const storeProducts = pgTable(
       table.status,
       table.createdAt,
     ),
+    // 注意：embeddings 字段的 pgvector IVFFlat 索引由迁移脚本 0005_add_indexes.sql
+    // 手动创建（Drizzle ORM 不直接支持 pgvector 索引类型）
   }),
 );
 
@@ -256,6 +258,14 @@ export const transactions = pgTable(
     /** 复合索引：买家 + 状态 + 创建时间（买家订单分页） */
     buyerStatusCreatedIdx: index("transactions_buyer_status_created_idx").on(
       table.buyerId,
+      table.status,
+      table.createdAt,
+    ),
+    /** 卖家 ID 索引（创作者查询自己的销售记录） */
+    sellerIdIdx: index("transactions_seller_id_idx").on(table.sellerId),
+    /** 复合索引：卖家 + 状态 + 创建时间（创作者销售订单分页） */
+    sellerStatusCreatedIdx: index("transactions_seller_status_created_idx").on(
+      table.sellerId,
       table.status,
       table.createdAt,
     ),

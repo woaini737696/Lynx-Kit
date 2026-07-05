@@ -5,6 +5,7 @@
  * 执行完整的 9 层 Agent 流水线。
  *
  * 启动：pnpm worker  （独立进程，与 API 服务解耦）
+ * 生产部署：PM2 fork 模式单实例（避免集群模式下重复消费队列）
  *
  * 流程：
  *   1. 从 BullMQ 队列消费 build 任务
@@ -17,6 +18,13 @@
  * 注意：processBuildJob 与 lib/build-service.ts 的同步降级路径共用，
  * 任何执行逻辑变更只需修改 build-runner.ts 一处。
  */
+// 在最早期加载 .env 文件（PM2 部署时 --env-file 参数不生效）
+try {
+  (process as { loadEnvFile?: (path?: string) => void }).loadEnvFile?.(".env");
+} catch {
+  // .env 文件不存在时忽略
+}
+
 import { Worker } from "bullmq";
 import type { ConnectionOptions } from "bullmq";
 

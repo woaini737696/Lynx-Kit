@@ -29,6 +29,8 @@ import { getDb } from "../lib/db.js";
 import { publishBuildToStore } from "../lib/publish-service.js";
 import { embedText, toPgVectorLiteral } from "../lib/embeddings.js";
 import { logger } from "../lib/logger.js";
+import { cached, cacheInvalidatePattern } from "../lib/cache.js";
+import { recordStorePublish, recordStorePurchase } from "../lib/metrics.js";
 import { authMiddleware, getCurrentUser } from "../middleware/auth.js";
 import {
   NotFoundError,
@@ -167,6 +169,12 @@ storeRoutes.post(
       "产品已上架到商店（待审核）",
     );
 
+    // 失效商店列表缓存（新上架产品将出现在审核通过后的列表中）
+    await cacheInvalidatePattern("store:list:*");
+
+    // 记录 Prometheus 业务指标
+    recordStorePublish(input.category);
+
     return c.json({ ok: true, product: result.product }, 201);
   },
 );
@@ -184,24 +192,29 @@ storeRoutes.get(
     const query = c.req.valid("query");
     const db = getDb();
 
-    const where = and(
-      eq(storeProducts.status, "PUBLISHED"),
-      query.category ? eq(storeProducts.category, query.category) : undefined,
-    );
+    const cacheKey = `store:list:${query.category ?? "all"}:${query.sort}:p${query.page}:s${query.pageSize}`;
+    const cachedResult = await cached(cacheKey, async () => {
+      const where = and(
+        eq(storeProducts.status, "PUBLISHED"),
+        query.category ? eq(storeProducts.category, query.category) : undefined,
+      );
 
-    const items = await db.query.storeProducts.findMany({
-      where,
-      orderBy: buildOrderBy(query.sort),
-      limit: query.pageSize,
-      offset: (query.page - 1) * query.pageSize,
-    });
+      const items = await db.query.storeProducts.findMany({
+        where,
+        orderBy: buildOrderBy(query.sort),
+        limit: query.pageSize,
+        offset: (query.page - 1) * query.pageSize,
+      });
 
-    return c.json({
-      products: items,
-      page: query.page,
-      pageSize: query.pageSize,
-      total: items.length,
-    });
+      return {
+        products: items,
+        page: query.page,
+        pageSize: query.pageSize,
+        total: items.length,
+      };
+    }, 60);
+
+    return c.json(cachedResult);
   },
 );
 
@@ -261,17 +274,21 @@ storeRoutes.get(
     const { productId } = c.req.valid("param");
     const db = getDb();
 
-    const product = await db.query.storeProducts.findFirst({
-      where: eq(storeProducts.id, productId),
-      with: {
-        reviews: { orderBy: [desc(reviews.createdAt)], limit: 20 },
-      },
-    });
-    if (!product) {
-      throw new NotFoundError("产品");
-    }
+    const cacheKey = `store:detail:${productId}`;
+    const cachedResult = await cached(cacheKey, async () => {
+      const product = await db.query.storeProducts.findFirst({
+        where: eq(storeProducts.id, productId),
+        with: {
+          reviews: { orderBy: [desc(reviews.createdAt)], limit: 20 },
+        },
+      });
+      if (!product) {
+        throw new NotFoundError("产品");
+      }
+      return { product };
+    }, 120);
 
-    return c.json({ product });
+    return c.json(cachedResult);
   },
 );
 
@@ -481,6 +498,13 @@ storeRoutes.post(
 
     logger.info({ txId: tx.id, productId, userId: user.id }, "产品购买完成");
 
+    // 失效产品详情缓存（usageCount 已变化）
+    await cacheInvalidatePattern(`store:detail:${productId}`);
+    await cacheInvalidatePattern("store:list:*");
+
+    // 记录 Prometheus 业务指标
+    recordStorePurchase(product.pricingType === "SUBSCRIPTION" ? "SUBSCRIPTION" : "PURCHASE");
+
     return c.json({ transaction: tx }, 201);
   },
 );
@@ -557,6 +581,10 @@ storeRoutes.post(
       .where(eq(storeProducts.id, productId));
 
     logger.info({ reviewId: review.id, productId, rating: input.rating }, "产品评价已提交");
+
+    // 失效产品详情缓存（评分与评价数已更新）
+    await cacheInvalidatePattern(`store:detail:${productId}`);
+    await cacheInvalidatePattern("store:list:*");
 
     return c.json({ review }, 201);
   },

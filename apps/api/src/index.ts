@@ -2,10 +2,11 @@
  * LynxKit API 入口 - Hono.js + @hono/node-server
  *
  * 启动流程：
- *   1. 加载并校验环境变量（env.ts）
- *   2. 注册全局中间件（错误处理 → 日志 → CORS → 限流）
- *   3. 挂载 API v1 路由
- *   4. 启动 HTTP 服务（默认端口 8787）
+ *   1. 加载 .env 文件（PM2 集群模式下 --env-file 不生效，需手动加载）
+ *   2. 加载并校验环境变量（env.ts）
+ *   3. 注册全局中间件（错误处理 → 日志 → CORS → 限流）
+ *   4. 挂载 API v1 路由
+ *   5. 启动 HTTP 服务（默认端口 8787）
  *
  * 路由结构：
  *   GET  /health              健康检查（无需鉴权）
@@ -16,7 +17,16 @@
  *   /api/v1/creator/*        创作者中心（需 auth）
  *   /api/v1/system/*         系统（健康/模板/AI Provider/配置）
  *   /api/v1/telemetry/*      遥测（错误/性能上报，公开）
+ *   GET  /metrics            Prometheus 指标端点
  */
+// 在最早期加载 .env 文件（PM2 集群模式下 --env-file 参数不生效）
+// Node 20.6+ 提供 process.loadEnvFile()，找不到文件时静默失败
+try {
+  (process as { loadEnvFile?: (path?: string) => void }).loadEnvFile?.(".env");
+} catch {
+  // .env 文件不存在时忽略（开发环境依赖外部 .env，生产环境由 PM2 注入）
+}
+
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
@@ -38,6 +48,12 @@ import { requestLogger } from "./middleware/logging.js";
 
 import { env, corsOrigins } from "./env.js";
 import { logger as pinoLogger } from "./lib/logger.js";
+import { initMetrics, isPrometheusEnabled, getMetricsString, getMetricsContentType } from "./lib/metrics.js";
+
+// 初始化 Prometheus 指标（启动时收集默认指标 + 自定义业务指标）
+if (env.PROMETHEUS_ENABLED) {
+  initMetrics();
+}
 
 const app = new Hono();
 
@@ -75,6 +91,17 @@ app.use("/api/*", rateLimitMiddleware);
 app.get("/health", (c) =>
   c.json({ status: "ok", timestamp: Date.now(), service: "lynxkit-api" }),
 );
+
+// ===== Prometheus 指标端点（无需鉴权，建议在 Nginx 层限制仅内网访问）=====
+app.get("/metrics", async (c) => {
+  if (!isPrometheusEnabled()) {
+    return c.json({ error: "Prometheus 监控未启用" }, 404);
+  }
+  const metrics = await getMetricsString();
+  return new Response(metrics, {
+    headers: { "Content-Type": getMetricsContentType() },
+  });
+});
 
 // ===== API v1 路由 =====
 const v1 = new Hono();

@@ -49,6 +49,10 @@ const envSchema = z.object({
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
   /** Sentry DSN（缺失则不上报） */
   SENTRY_DSN: z.string().url().optional(),
+
+  // ===== 监控（迭代 14E） =====
+  /** 是否启用 Prometheus /metrics 端点（默认 true） */
+  PROMETHEUS_ENABLED: z.coerce.boolean().default(true),
 });
 
 /**

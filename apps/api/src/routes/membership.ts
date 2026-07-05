@@ -23,6 +23,7 @@ import {
 } from "@lynxkit/db";
 
 import { getDb } from "../lib/db.js";
+import { cached } from "../lib/cache.js";
 import { authMiddleware, getCurrentUser } from "../middleware/auth.js";
 import { BadRequestError, NotFoundError } from "../middleware/error.js";
 
@@ -50,28 +51,33 @@ async function refreshExpiredMemberships(userId: string): Promise<void> {
 /**
  * GET /plans
  * 公开：获取所有启用的会员档位（按 sortOrder 排序）
+ * 缓存 5 分钟（档位变更不频繁，admin 修改时会通过 cacheInvalidatePattern 失效）
  */
 membershipRoutes.get("/plans", async (c) => {
-  const db = getDb();
-  const plans = await db
-    .select()
-    .from(membershipPlans)
-    .where(eq(membershipPlans.enabled, true))
-    .orderBy(membershipPlans.sortOrder);
+  const result = await cached("membership:plans:enabled", async () => {
+    const db = getDb();
+    const plans = await db
+      .select()
+      .from(membershipPlans)
+      .where(eq(membershipPlans.enabled, true))
+      .orderBy(membershipPlans.sortOrder);
 
-  return c.json({
-    list: plans.map((p) => ({
-      id: p.id,
-      tier: p.tier,
-      name: p.name,
-      priceMonthly: p.priceMonthly,
-      priceYearly: p.priceYearly,
-      monthlySCoinGrant: p.monthlySCoinGrant,
-      tokenToSCoinRate: p.tokenToSCoinRate,
-      features: p.features,
-      sortOrder: p.sortOrder,
-    })),
-  });
+    return {
+      list: plans.map((p) => ({
+        id: p.id,
+        tier: p.tier,
+        name: p.name,
+        priceMonthly: p.priceMonthly,
+        priceYearly: p.priceYearly,
+        monthlySCoinGrant: p.monthlySCoinGrant,
+        tokenToSCoinRate: p.tokenToSCoinRate,
+        features: p.features,
+        sortOrder: p.sortOrder,
+      })),
+    };
+  }, 300);
+
+  return c.json(result);
 });
 
 /**
