@@ -6,7 +6,7 @@ productName: 妙想
 copyright: Copyright © 2026 妙想
 
 directories:
-  output: installer
+  output: release
   buildResources: build
 
 # 打包产物包含的文件：electron-vite 构建产物（out/）+ package.json

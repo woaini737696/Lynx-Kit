@@ -89,7 +89,7 @@ export default function LoginPage() {
         title: "登录成功",
         description: `欢迎回来，${res.user.name ?? "创作者"}`,
       });
-      router.push("/");
+      router.push("/membership");
     } catch (err) {
       toast({
         title: "登录失败",

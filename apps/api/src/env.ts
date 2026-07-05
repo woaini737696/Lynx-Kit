@@ -7,8 +7,19 @@
  *   - 可选变量缺失 → 走默认值或 undefined
  *
  * 全局唯一入口，业务代码统一从 `env` 读取配置，禁止直接访问 process.env。
+ *
+ * 注意：loadEnvFile 必须在 env.ts 中（而非 index.ts），
+ * 否则 esbuild bundling 后 init_env() 在 loadEnvFile 之前执行，导致 safeParse 失败。
  */
 import { z } from "zod";
+
+// 在最早期加载 .env 文件（PM2 集群模式下 --env-file 参数不生效）
+// Node 20.6+ 提供 process.loadEnvFile()，找不到文件时静默失败
+try {
+  (process as { loadEnvFile?: (path?: string) => void }).loadEnvFile?.(".env");
+} catch {
+  // .env 文件不存在时忽略（开发环境依赖外部 .env，生产环境由 PM2 注入）
+}
 
 const envSchema = z.object({
   /** 运行环境 */

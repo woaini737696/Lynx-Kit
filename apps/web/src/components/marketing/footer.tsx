@@ -14,28 +14,28 @@ const FOOTER_GROUPS = [
   {
     title: "资源",
     links: [
-      { label: "文档", href: "/docs" },
-      { label: "API 参考", href: "/docs/api" },
-      { label: "示例", href: "/#examples" },
-      { label: "更新日志", href: "/changelog" },
+      { label: "文档", href: "#", placeholder: true },
+      { label: "API 参考", href: "#", placeholder: true },
+      { label: "示例", href: "/store" },
+      { label: "更新日志", href: "#", placeholder: true },
     ],
   },
   {
     title: "公司",
     links: [
       { label: "关于我们", href: "/about" },
-      { label: "联系", href: "/contact" },
-      { label: "招聘", href: "/careers" },
-      { label: "媒体资源", href: "/press" },
+      { label: "联系", href: "mailto:hello@lynxkit.com" },
+      { label: "招聘", href: "#", placeholder: true },
+      { label: "媒体资源", href: "#", placeholder: true },
     ],
   },
   {
     title: "法律",
     links: [
-      { label: "隐私政策", href: "/privacy" },
-      { label: "用户协议", href: "/terms" },
-      { label: "Cookie 政策", href: "/cookies" },
-      { label: "许可证", href: "/license" },
+      { label: "隐私政策", href: "#", placeholder: true },
+      { label: "用户协议", href: "#", placeholder: true },
+      { label: "Cookie 政策", href: "#", placeholder: true },
+      { label: "许可证", href: "#", placeholder: true },
     ],
   },
 ];
@@ -95,13 +95,22 @@ export function Footer() {
               </h3>
               <ul className="mt-3 space-y-2">
                 {group.links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-ink-600 transition-colors hover:text-ink-950 dark:text-ink-300 dark:hover:text-ink-50"
-                    >
-                      {link.label}
-                    </Link>
+                  <li key={link.label}>
+                    {link.placeholder ? (
+                      <span
+                        title="敬请期待"
+                        className="cursor-not-allowed text-sm text-ink-300 dark:text-ink-600"
+                      >
+                        {link.label}
+                      </span>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-sm text-ink-600 transition-colors hover:text-ink-950 dark:text-ink-300 dark:hover:text-ink-50"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

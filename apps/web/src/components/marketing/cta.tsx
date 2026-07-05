@@ -1,25 +1,24 @@
+"use client";
+
+import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight, Mail, Crown } from "lucide-react";
 import { Button } from "@lynxkit/ui-web";
+import { useAuthStore } from "@lynxkit/store";
 
+/**
+ * 营销首页底部 CTA · iOS26 极简黑白灰
+ *
+ * - 主 CTA：根据登录态切换
+ *   - 未登录 → "免费开始" 跳 /register
+ *   - 已登录 → "前往会员中心" 跳 /membership
+ * - 次 CTA：联系销售（不变）
+ */
 export function CTA() {
-  return (
-    <section className="relative overflow-hidden py-24 sm:py-32">
-      {/* 黑色背景 - 极简强调 */}
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-ink-950 dark:bg-ink-900"
-      />
-      {/* 装饰圆 - 灰色光晕 */}
-      <div
-        aria-hidden
-        className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-white/5 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-white/5 blur-3xl"
-      />
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
+  return (
+    <section className="relative overflow-hidden bg-ink-950 py-24 dark:bg-ink-900 sm:py-32">
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center text-white">
           <h2 className="text-3xl font-bold tracking-[-0.03em] sm:text-4xl md:text-5xl">
@@ -30,28 +29,35 @@ export function CTA() {
           </p>
 
           <div className="mt-10 flex w-full flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            {/* 主按钮 - 白底黑字 */}
+            {/* 主按钮 - 白底黑字，按登录态切换 */}
             <Button
               asChild
               size="lg"
               className="w-full rounded-full bg-white px-6 text-ink-950 shadow-lg hover:bg-white/90 hover:translate-y-[-1px] sm:w-auto"
             >
-              <Link href="/register">
-                免费开始
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+              {isAuthenticated ? (
+                <Link href="/membership">
+                  <Crown className="h-4 w-4" />
+                  前往会员中心
+                </Link>
+              ) : (
+                <Link href="/register">
+                  免费开始
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
             </Button>
-            {/* 次按钮 - 透明边框 */}
+            {/* 次按钮 - 透明边框 - mailto 邮箱链接 */}
             <Button
               asChild
               size="lg"
               variant="outline"
               className="w-full rounded-full border-white/30 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white sm:w-auto"
             >
-              <Link href="/contact">
+              <a href="mailto:hello@lynxkit.com?subject=销售咨询">
                 <Mail className="h-4 w-4" />
                 联系销售
-              </Link>
+              </a>
             </Button>
           </div>
 

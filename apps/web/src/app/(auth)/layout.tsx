@@ -16,18 +16,10 @@ export default function AuthLayout({
 }) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-white dark:bg-ink-950">
-      {/* 背景装饰光晕 - 极简灰白 */}
+      {/* 背景装饰光晕 - 极简灰白（单层简化） */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-ink-200/50 blur-3xl dark:bg-ink-700/20"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-40 -right-40 h-[36rem] w-[36rem] rounded-full bg-ink-100/60 blur-3xl dark:bg-ink-800/20"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink-50/80 blur-3xl dark:bg-ink-800/10"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink-100/60 blur-3xl dark:bg-ink-800/15"
       />
 
       {/* 顶部品牌 - 黑色方块 logo */}

@@ -19,13 +19,7 @@
  *   /api/v1/telemetry/*      遥测（错误/性能上报，公开）
  *   GET  /metrics            Prometheus 指标端点
  */
-// 在最早期加载 .env 文件（PM2 集群模式下 --env-file 参数不生效）
-// Node 20.6+ 提供 process.loadEnvFile()，找不到文件时静默失败
-try {
-  (process as { loadEnvFile?: (path?: string) => void }).loadEnvFile?.(".env");
-} catch {
-  // .env 文件不存在时忽略（开发环境依赖外部 .env，生产环境由 PM2 注入）
-}
+// .env 文件加载已移到 env.ts 顶部（esbuild bundling 后 init_env() 在 import 之前执行）
 
 import { Hono } from "hono";
 import { cors } from "hono/cors";

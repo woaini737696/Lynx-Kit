@@ -15,8 +15,8 @@ import { env } from "../env.js";
 import { logger } from "./logger.js";
 import { getRedis } from "./redis.js";
 
-/** 构建队列名称 */
-export const BUILD_QUEUE_NAME = "lynxkit:build";
+/** 构建队列名称（BullMQ 不允许队列名包含 ':'，使用 '-' 分隔） */
+export const BUILD_QUEUE_NAME = "lynxkit-build";
 
 /** 构建任务输入参数 */
 export interface BuildJobData {

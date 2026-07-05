@@ -494,11 +494,6 @@ function CurrentTierCard({
 
   return (
     <div className="glass-card relative overflow-hidden p-6">
-      {/* 装饰角标 */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-ink-100/60 blur-2xl dark:bg-ink-800/30"
-      />
       <div className="relative">
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium uppercase tracking-wider text-ink-400">
@@ -565,10 +560,6 @@ function SCoinBalanceCard({
 }) {
   return (
     <div className="glass-card relative overflow-hidden p-6">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-ink-200/50 blur-2xl dark:bg-ink-700/20"
-      />
       <div className="relative">
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium uppercase tracking-wider text-ink-400">

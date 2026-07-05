@@ -83,15 +83,6 @@ export default function UserLayout({
 
   return (
     <div className="relative min-h-screen bg-ink-50 dark:bg-ink-950">
-      {/* 背景光晕 - 极简灰白 */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-ink-200/40 blur-3xl dark:bg-ink-800/20" />
-        <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-ink-300/30 blur-3xl dark:bg-ink-700/20" />
-      </div>
-
       <div className="relative flex min-h-screen">
         {/* 侧边栏（桌面端） - 毛玻璃 */}
         <aside className="hidden w-64 shrink-0 flex-col border-r border-white/40 bg-white/55 backdrop-blur-2xl backdrop-saturate-150 dark:border-white/5 dark:bg-white/5 lg:flex">

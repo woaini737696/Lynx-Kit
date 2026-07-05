@@ -129,7 +129,7 @@ export default function RegisterPage() {
         title: "注册成功",
         description: "欢迎加入妙想，开始你的造物之旅",
       });
-      router.push("/");
+      router.push("/membership");
     } catch (err) {
       toast({
         title: "注册失败",
