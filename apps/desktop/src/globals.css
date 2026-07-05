@@ -233,6 +233,36 @@ body {
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  /* 全屏遮罩：重度毛玻璃（DESIGN_SYSTEM §5 弹窗背景） */
+  .glass-overlay {
+    background: rgba(15, 15, 18, 0.32);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+  }
+  .dark .glass-overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  /* 强液态玻璃：用于全屏弹窗主容器（DESIGN_SYSTEM §5 液态玻璃） */
+  .glass-card-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(50px) saturate(200%);
+    -webkit-backdrop-filter: blur(50px) saturate(200%);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow:
+      0 24px 64px rgba(15, 23, 42, 0.18),
+      0 2px 0 rgba(255, 255, 255, 0.7) inset,
+      0 -2px 0 rgba(15, 23, 42, 0.04) inset;
+  }
+  .dark .glass-card-strong {
+    border-color: var(--glass-border);
+    box-shadow:
+      0 24px 64px rgba(0, 0, 0, 0.5),
+      0 2px 0 rgba(255, 255, 255, 0.08) inset,
+      0 -2px 0 rgba(0, 0, 0, 0.2) inset;
+  }
 }
 
 /* ============ 认证页背景（DESIGN_SYSTEM.md §7.1） ============ */

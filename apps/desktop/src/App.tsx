@@ -1,12 +1,11 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Providers } from './providers';
 import { ErrorBoundary } from './components/error-boundary';
 import { AppShell } from './components/layout/app-shell';
 import { ProtectedRoute } from './components/auth/protected-route';
+import { AuthModal } from './components/auth/auth-modal';
 // 导入所有页面组件
 import HomePage from './routes/home';
-import LoginPage from './routes/auth/login';
-import RegisterPage from './routes/auth/register';
 import BuildListPage from './routes/build/list';
 import BuildConsolePage from './routes/build/console';
 import ConfigurePage from './routes/build/configure';
@@ -31,10 +30,12 @@ export default function App() {
             <Route element={<AppShell />}>
               {/* 公开路由 */}
               <Route index element={<HomePage />} />
-              <Route path="login" element={<LoginPage />} />
-              <Route path="register" element={<RegisterPage />} />
               <Route path="store" element={<StorePage />} />
               <Route path="store/:productId" element={<ProductDetailPage />} />
+
+              {/* 兼容旧版 /login /register 深链：重定向到首页并由 ProtectedRoute 触发弹窗 */}
+              <Route path="login" element={<Navigate to="/" replace />} />
+              <Route path="register" element={<Navigate to="/" replace />} />
 
               {/* 需登录访问的路由 */}
               <Route element={<ProtectedRoute />}>
@@ -53,6 +54,8 @@ export default function App() {
               </Route>
             </Route>
           </Routes>
+          {/* 全屏液态玻璃认证弹窗（取代 /login /register 路由页） */}
+          <AuthModal />
         </HashRouter>
       </Providers>
     </ErrorBoundary>

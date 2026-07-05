@@ -40,6 +40,7 @@ node_modules/pw-browsers/
 
 # Electron
 release/
+release-*/
 installer/
 installer-v2/
 dist-installer/

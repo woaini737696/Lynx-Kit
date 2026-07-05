@@ -13,6 +13,7 @@ import {
 import { Button, Avatar, AvatarFallback } from "@lynxkit/ui-web";
 import { cn } from "@/lib/utils";
 import { useUIStore, useAuthStore } from "@lynxkit/store";
+import { useAuthModal } from "@/store/auth-modal";
 
 /**
  * 侧边导航栏
@@ -22,7 +23,7 @@ import { useUIStore, useAuthStore } from "@lynxkit/store";
  *
  * 底部固定区域：
  * - 已登录：显示用户头像 + 退出按钮
- * - 未登录：显示登录入口（固定在左下角）
+ * - 未登录：显示登录入口（点击触发 AuthModal，不再路由跳转）
  */
 const NAV = [
   { href: "/build", labelKey: "nav.build", icon: LayoutGrid },
@@ -37,6 +38,7 @@ export function Sidebar() {
   const { t } = useTranslation();
   const open = useUIStore((s) => s.sidebarOpen);
   const { user, isAuthenticated, logout } = useAuthStore();
+  const openAuthModal = useAuthModal((s) => s.openAuthModal);
 
   return (
     <aside
@@ -104,13 +106,17 @@ export function Sidebar() {
             </Button>
           </div>
         ) : (
-          <Button
-            onClick={() => navigate("/login")}
-            className="btn-ink w-full border-0"
+          // 未登录：登录按钮（纯黑底白字，符合 DESIGN_SYSTEM §5.1 黑白灰）
+          // 用原生 button + .btn-ink 而非 shadcn Button 默认变体，
+          // 避免被 bg-primary 工具类覆盖为品牌橙色
+          <button
+            type="button"
+            onClick={() => openAuthModal("login")}
+            className="btn-ink flex w-full items-center justify-center gap-2 border-0"
           >
-            <LogIn className="mr-2 h-4 w-4" />
+            <LogIn className="h-4 w-4" />
             {t("nav.login")}
-          </Button>
+          </button>
         )}
 
         <a
