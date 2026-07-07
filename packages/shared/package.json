@@ -1,26 +1,30 @@
 {
-  "name": "@lynxkit/shared",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*"
-  },
-  "scripts": {
-    "build": "tsc -b",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src --max-warnings 0"
-  },
-  "dependencies": {
-    "zod": "^3.23.8",
-    "nanoid": "^5.0.7"
-  },
-  "devDependencies": {
-    "typescript": "^5.6.0",
-    "@types/node": "^22.5.0",
-    "eslint": "^9.10.0"
-  }
+	"name": "@lynxkit/shared",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./constants": "./src/constants/index.ts",
+		"./crypto": "./src/crypto/index.ts",
+		"./schemas": "./src/schemas/index.ts",
+		"./types": "./src/types/index.ts",
+		"./utils": "./src/utils/index.ts"
+	},
+	"scripts": {
+		"build": "tsc -b",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src --max-warnings 0"
+	},
+	"dependencies": {
+		"zod": "^3.23.8",
+		"nanoid": "^5.0.7"
+	},
+	"devDependencies": {
+		"typescript": "^5.6.0",
+		"@types/node": "^22.5.0",
+		"eslint": "^9.10.0"
+	}
 }

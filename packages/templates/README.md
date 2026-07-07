@@ -20,24 +20,16 @@ packages/templates/
 │   └── Caddyfile            # 自动 HTTPS + 反向代理
 │
 ├── static-site/             # 品牌展示（完整基座）
-├── service-booking/         # 服务预约（仅 template.json + 占位）
-├── content-publish/         # 内容发布（仅 template.json + 占位）
-├── light-commerce/          # 电商交易（仅 template.json + 占位）
-├── event-manage/            # 活动管理（仅 template.json + 占位）
-├── admin-dashboard/         # 管理后台（仅 template.json + 占位）
 └── social/                  # AI 社交（W1 首发，AI-native，含完整 scaffold）
 ```
 
-## 6 大预设架构模板
+## 已实现模板
 
 | 模板 ID | 名称 | 技术栈 | 适用场景 |
 |---------|------|--------|----------|
 | `static-site` | 品牌展示 | Next.js 15 + Tailwind + Caddy | 个人官网、作品集、企业官网、落地页 |
-| `service-booking` | 服务预约 | Next.js 15 + PostgreSQL + PWA | 教练预约、美容理疗、摄影档期、咨询预约 |
-| `content-publish` | 内容发布 | Next.js 15 + PostgreSQL + MDX | 个人博客、知识库、newsletter、文档站 |
-| `light-commerce` | 电商交易 | Next.js 15 + PostgreSQL + Stripe | 手作商城、知识付费、会员订阅、虚拟商品 |
-| `event-manage` | 活动管理 | Next.js 15 + PostgreSQL + PWA | 活动报名、会议签到、课程管理、聚会组织 |
-| `admin-dashboard` | 管理后台 | Next.js 15 + PostgreSQL + shadcn/ui | 内部工具、客户管理、数据看板、CRM |
+
+> **注意**：曾规划的 `service-booking` / `content-publish` / `light-commerce` / `event-manage` / `admin-dashboard` 5 个模板因仅有占位文件已于 2026-07-07 删除。新增模板必须先实现完整 `src/` scaffold 再入库，禁止提交空壳模板（见 DEVELOPMENT.md §8.4）。
 
 ## AI-native 模板（Week 1 首发）
 

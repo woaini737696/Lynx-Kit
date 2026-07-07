@@ -1,6 +1,8 @@
-# LynxKit 开发流程规范
+# LynxKit 开发流程规范（v1.2）
 
 > 本文档为 LynxKit 项目的强制开发规范。每次接收任务/需求时必须严格遵守，不得跳过任何环节。
+>
+> **v1.2 变更**（2026-07-07）：新增 §8.4 模块边界与显式 exports、§8.5 TDD 强制流程、§8.6 AI 改动前 checklist；§8.3 补充枚举值唯一真相源约束。
 >
 > **核心原则**：能少写就不多写；能用简单方案就不做复杂；能共用组件/代码就绝不重复写；找到的 bug 必须彻底修复，不得搁置。
 
@@ -218,6 +220,89 @@
 ### 8.3 一致性原则
 - 跨端实现必须对齐：mobile / desktop / web 三端对同一后端契约的字段使用必须一致（如 `accessToken` vs `token`）。
 - 枚举值使用必须与类型定义对齐：禁止凭记忆写字面值（如 `clarify` vs `clarifying`），必须 import 枚举常量。
+- **枚举值唯一真相源**：所有枚举值（Role / Status / PricingType / Category 等）以 `packages/db` 的 `pgEnum` 定义为准（大写形式），`packages/shared` 的类型必须与 db 对齐，禁止两端各自维护字面量。
+
+### 8.4 模块边界与显式 exports（v1.2 新增）
+
+**触发时机**：新增 / 修改 package 的 `package.json` 时。
+
+- **禁止使用 `"./*": "./src/*"` 通配 exports**：通配导出允许 AI 绕过公共 API 深导入内部文件，重构时破坏隐式契约。
+- 所有 `packages/*` 必须使用显式 `exports` 字段，逐个声明对外暴露的子路径：
+  ```json
+  {
+    "exports": {
+      ".": "./src/index.ts",
+      "./constants": "./src/constants/index.ts",
+      "./types": "./src/types/index.ts",
+      "./utils": "./src/utils/index.ts"
+    }
+  }
+  ```
+- 新增子路径导出时，必须同步更新 `exports` 字段，不得依赖通配。
+- **packages/templates 模板校验**：每个模板目录必须含 `src/` 子目录或 `scaffold/` 完整实现，禁止提交只有 `template.json` + `.gitkeep` 的空壳模板。
+
+### 8.5 TDD 强制流程（v1.2 新增）
+
+**触发时机**：任何代码改动（新功能 / bug 修复 / 重构）。
+
+必须按以下顺序执行，**禁止先写实现再补测试**：
+
+1. **RED 阶段**：先写测试文件，断言预期行为（断言失败而非导入失败）。运行 `pnpm test <file>` 确认测试因实现缺失而失败。
+2. **GREEN 阶段**：写最小实现让测试通过。若 GREEN 阶段发现真实 bug（如边界值问题），**立即修复**，并在开发日志记录。
+3. **REFACTOR 阶段**：将纯函数/纯逻辑接入 UI/路由，保持测试全过。运行 `pnpm typecheck` 确认无新类型错误。
+
+**提交规范**：
+- commit message 必须标注前缀：
+  - `[TDD]` — 按 TDD 流程实现的功能 / 修复
+  - `[STYLE]` — 纯样式 / CSS 改动（可不写测试）
+  - `[COPY]` — 纯文案 / i18n 改动（可不写测试）
+  - `[CONFIG]` — 纯配置 / 依赖升级（可不写测试）
+  - `[REFACTOR]` — 重构（必须有测试保证行为不变）
+  - `[DOCS]` — 文档改动
+- CI 会校验 commit message 前缀；`[TDD]` / `[REFACTOR]` 的 commit 必须包含 `.test.ts` 文件。
+
+### 8.6 AI 改动前 checklist（v1.2 新增）
+
+**触发时机**：AI 在改动任何代码前。
+
+必须先在回复中显式列出以下分析（未列出则禁止开始编码）：
+
+1. **影响面分析**：
+   - 直接改动：本次会修改哪些文件（列绝对路径）
+   - 可能受影响：哪些文件调用了被改动的模块（通过 Grep 确认）
+   - 跨端影响：改动是否影响其他 app / package（如改动 `packages/shared` 会影响所有 app）
+
+2. **测试覆盖检查**：
+   - 涉及的文件当前是否有测试？
+   - 如果没有 → 先写测试（RED 阶段）
+   - 如果有 → 确认改动后跑测试验证不破坏
+
+3. **回滚方案**：
+   - 如果改动出问题，回滚命令是什么（通常是 `git revert HEAD`）
+   - 是否需要 DB 迁移回滚（如涉及 DB 改动）
+
+4. **验收标准**：
+   - 自动化：跑哪些测试命令（`pnpm test` / `pnpm typecheck`）
+   - 手动：验收哪些用户场景（具体操作步骤）
+
+**示例输出**：
+```
+## 影响面分析
+- 直接改动：apps/desktop/src/components/auth/login-form.tsx
+- 可能受影响：apps/desktop/src/components/auth/auth-modal.tsx（调用 login-form）
+- 跨端影响：无（仅桌面端）
+
+## 测试覆盖
+- login-form.tsx 当前无测试 → 先补 test (RED)
+- auth-modal.test.ts 已存在 → 跑测试验证不破坏
+
+## 回滚方案
+git revert HEAD
+
+## 验收标准
+- pnpm test 通过
+- 手动验收：打开桌面端 → 点击登录 → 弹窗显示 → 输入测试账号 → 登录成功
+```
 
 ## 9. 架构师视角全局架构评审（每次迭代必做）
 

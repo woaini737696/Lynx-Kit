@@ -8,6 +8,8 @@
 /**
  * 产品类型枚举（8 类）
  *
+ * 枚举值与 packages/db/src/schema/build-sessions.ts 的 productTypeEnum 对齐（大写）。
+ *
  * - SOCIAL：AI 社交（交友/匹配/陪伴/社群）
  * - SYSTEM：AI 系统（平台/中台/自动化）
  * - WORKSTATION：AI 工作站（工具/创作/知识管理）
@@ -18,14 +20,14 @@
  * - HARDWARE：AI 硬件（IoT/智能家居/机器人）
  */
 export enum ProductType {
-  SOCIAL = "social",
-  SYSTEM = "system",
-  WORKSTATION = "workstation",
-  DATA = "data",
-  ADMIN = "admin",
-  APP = "app",
-  MARKETING = "marketing",
-  HARDWARE = "hardware",
+	SOCIAL = "SOCIAL",
+	SYSTEM = "SYSTEM",
+	WORKSTATION = "WORKSTATION",
+	DATA = "DATA",
+	ADMIN = "ADMIN",
+	APP = "APP",
+	MARKETING = "MARKETING",
+	HARDWARE = "HARDWARE",
 }
 
 /** ProductType 字符串字面量类型，便于序列化与索引签名 */

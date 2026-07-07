@@ -1,0 +1,5 @@
+#!/bin/sh
+# LynxKit pre-commit hook（v1.2）
+# - lint-staged：对暂存文件跑 biome check（格式化 + lint）
+# - typecheck / test / coverage 在 CI 跑（避免 pre-commit 过慢）
+pnpm exec lint-staged

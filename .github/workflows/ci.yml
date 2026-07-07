@@ -23,7 +23,7 @@ jobs:
       - run: pnpm lint
         continue-on-error: true
       - run: pnpm typecheck
-      - run: pnpm test
+      - run: pnpm test:coverage
 
   build:
     name: Build All Packages
